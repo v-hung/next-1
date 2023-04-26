@@ -1,46 +1,47 @@
-import { demos } from '@/lib/demos';
-import Link from 'next/link';
+"use client"
+
+import ClientOnly from "components/ClientOnly";
+import { Alert, Navbar } from "flowbite-react";
 
 export default function Page() {
   return (
-    <div className="space-y-6">
-      <div className="space-y-8 text-white">
-        {demos
-          .filter((section) =>
-            section.items.some((x) => typeof x.isDisabled === 'undefined'),
-          )
-          .map((section) => {
-            return (
-              <div key={section.name} className="space-y-3">
-                <div className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
-                  {section.name}
-                </div>
-
-                <div className="grid grid-cols-2 gap-5">
-                  {section.items
-                    .filter((item) => !item.isDisabled)
-                    .map((item) => {
-                      return (
-                        <Link
-                          href={`/${item.slug}`}
-                          key={item.name}
-                          className="block space-y-1.5 rounded-lg border border-white/10 px-4 py-3 hover:border-white/20"
-                        >
-                          <div>{item.name}</div>
-
-                          {item.description ? (
-                            <div className="line-clamp-3 text-sm text-zinc-400">
-                              {item.description}
-                            </div>
-                          ) : null}
-                        </Link>
-                      );
-                    })}
-                </div>
-              </div>
-            );
-          })}
-      </div>
-    </div>
+    <ClientOnly>
+      <Navbar
+        fluid={true}
+        rounded={true}
+      >
+        <Navbar.Brand href="https://flowbite.com/">
+          <img
+            src="https://flowbite.com/docs/images/logo.svg"
+            className="mr-3 h-6 sm:h-9"
+            alt="Flowbite Logo"
+          />
+          <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
+            Flowbite
+          </span>
+        </Navbar.Brand>
+        <Navbar.Toggle />
+        <Navbar.Collapse>
+          <Navbar.Link
+            href="/navbars"
+            active={true}
+          >
+            Home
+          </Navbar.Link>
+          <Navbar.Link href="/navbars">
+            About
+          </Navbar.Link>
+          <Navbar.Link href="/navbars">
+            Services
+          </Navbar.Link>
+          <Navbar.Link href="/navbars">
+            Pricing
+          </Navbar.Link>
+          <Navbar.Link href="/navbars">
+            Contact
+          </Navbar.Link>
+        </Navbar.Collapse>
+      </Navbar>
+    </ClientOnly>
   );
 }
