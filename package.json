@@ -16,6 +16,7 @@
   "dependencies": {
     "clsx": "1.2.1",
     "flowbite": "1.6.5",
+    "flowbite-datepicker": "1.2.2",
     "flowbite-react": "0.4.4",
     "next": "latest",
     "react": "18.2.0",
