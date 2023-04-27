@@ -12,5 +12,12 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return (
+    <div className='w-full min-h-screen bg-gray-100 text-[#333]'>
+      <MenuAdmin/>
+      <div>
+        {children}
+      </div>
+    </div>
+  );
 }

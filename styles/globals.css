@@ -2,6 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes shimmer {
+  100% {-webkit-mask-position:left}
+}
+
+@layer base {
+  * {
+    @apply border-[#dcdce4];
+  }
+
+  input, select, textarea {
+    background: transparent !important;
+  }
+  input:focus, textarea:focus, a:focus {
+    outline: none;
+	}
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover, 
+  input:-webkit-autofill:focus, 
+  input:-webkit-autofill:active{
+    /* -webkit-box-shadow: 0 0 0 30px white inset !important; */
+    transition: background-color 600000s 0s, color 600000s 0s;
+  } 
+}
+
 @layer components {
   .icon {
     @apply block w-5 h-5;
@@ -9,5 +34,23 @@
 
   .icon svg {
     @apply !w-full !h-full !fill-current;
+  }
+
+  .bg-full {
+    @apply absolute w-full h-full top-0 left-0;
+  }
+
+  .img-cover {
+    @apply w-full h-full object-cover;
+  }
+}
+
+@layer utilities {
+  .shimmer {
+    color: grey;
+    display:block;
+    -webkit-mask:linear-gradient(-60deg,#000 30%,#0005,#000 70%) right/300% 100%;
+    background-repeat: no-repeat;
+    animation: shimmer 2.5s infinite;
   }
 }

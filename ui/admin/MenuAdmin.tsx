@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import Image from 'next/image'
 import Logo from "@/public/logo.png";
 import { GoDashboard } from "react-icons/go";
+import { BiUser, BiKey, BiCog, BiCategory, BiBaguette } from "react-icons/bi";
 import Link from 'next/link';
 
 const MenuAdmin = () => {
@@ -20,33 +21,51 @@ const MenuAdmin = () => {
     setIsHover(false);
   }
 
-  const links = [
+  const managerLinks = [
     {
       icon: <GoDashboard size={24} />,
-      name: "Trang chủ",
+      name: "Bảng điều khiển",
       path: "/"
     },
     {
-      icon: <GoDashboard size={24} />,
-      name: "Trang chủ",
+      icon: <BiCategory size={24} />,
+      name: "Danh mục",
       path: "/"
     },
     {
-      icon: <GoDashboard size={24} />,
-      name: "Trang chủ",
+      icon: <BiBaguette size={24} />,
+      name: "Sản phẩm",
+      path: "/"
+    }
+  ]
+
+  const generalLinks = [
+    {
+      icon: <BiUser size={24} />,
+      name: "Người dùng",
+      path: "/"
+    },
+    {
+      icon: <BiKey size={24} />,
+      name: "Quyền",
+      path: "/"
+    },
+    {
+      icon: <BiCog size={24} />,
+      name: "Cài đặt",
       path: "/"
     }
   ]
   
   return (
     <div 
-      className='fixed h-full overscroll-y-auto transition-all bg-white border-r' 
+      className='fixed h-full transition-all bg-white border-r' 
       style={{width: isHover ? menu.width : (menu.open ? menu.width : menu.minWidth)}}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="flex flex-col space-y-2 px-1">
-        <div className="w-full h-14 flex items-center overflow-hidden border-b">
+      <div className="w-full h-full flex flex-col space-y-2 px-1">
+        <Link href={"/"} className="flex-none w-full h-16 flex items-center overflow-hidden border-b">
           <div className='flex-none grid place-items-center' style={{width: menu.minWidth}}>
             <Image
               src="/logo.png"
@@ -57,27 +76,51 @@ const MenuAdmin = () => {
             />
           </div>
           <span className='flex-none text-xl font-bold'>Việt Hùng IT</span>
-        </div>
+        </Link>
 
         
-        { menu.open 
-          ? <div className='whitespace-nowrap text-sm font-bold px-2 text-gray-500 !mt-4'>Content Manager</div>
-          : <div className="w-full h-[1px] !mt-4 bg-gray-300"></div>
-        }
-
-        {links.map(v => {
-          return (
-            <Link 
-              className="w-full flex items-center py-3 overflow-hidden hover:bg-blue-200 rounded"
-              href={v.path}
-            >
-              <div className='flex-none px-1 grid place-items-center' style={{width: "52px"}}>
-                {v.icon}
-              </div>
-              <span className='flex-none font-semibold'>{v.name}</span>
-            </Link>
-          )
-        })}
+        <div className="flex-grow min-h-0 flex flex-col space-y-2 px-1 overflow-y-auto">
+          <div className="w-full h-5 flex items-center px-2 text-gray-500 !mt-4">
+            { menu.open || isHover
+              ? <div className='whitespace-nowrap text-sm font-bold '>Quản lý nội dung</div>
+              : <div className="w-full h-[1px] bg-gray-300"></div>
+            }
+          </div>
+          {managerLinks.map((v,i) => {
+            return (
+              <Link
+                className="flex-none w-full flex items-center py-3 overflow-x-hidden hover:bg-blue-200 rounded"
+                href={v.path}
+                key={i}
+              >
+                <div className='flex-none px-1 grid place-items-center' style={{width: "52px"}}>
+                  {v.icon}
+                </div>
+                <span className='flex-none font-semibold'>{v.name}</span>
+              </Link>
+            )
+          })}
+          <div className="w-full h-5 flex items-center px-2 text-gray-500 !mt-4">
+            { menu.open || isHover
+              ? <div className='whitespace-nowrap text-sm font-bold '>Tổng quan</div>
+              : <div className="w-full h-[1px] bg-gray-300"></div>
+            }
+          </div>
+          {generalLinks.map((v,i) => {
+            return (
+              <Link
+                className="flex-none w-full flex items-center py-3 overflow-x-hidden hover:bg-blue-200 rounded"
+                href={v.path}
+                key={i}
+              >
+                <div className='flex-none px-1 grid place-items-center' style={{width: "52px"}}>
+                  {v.icon}
+                </div>
+                <span className='flex-none font-semibold'>{v.name}</span>
+              </Link>
+            )
+          })}
+        </div>
       </div>
     </div>
   )

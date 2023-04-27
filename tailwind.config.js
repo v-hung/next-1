@@ -9,6 +9,6 @@ module.exports = {
   ],
   theme: {},
   plugins: [
-    require("flowbite/plugin")
+    // require("flowbite/plugin")
   ],
 };
