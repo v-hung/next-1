@@ -2,10 +2,10 @@
 import React from 'react'
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { BiArrowToBottom, BiBell, BiDownArrow, BiMenu } from "react-icons/bi";
-import { toggle } from '@/redux/admin/menuSlide';
+import { toggle } from '@/redux/admin/adminMenu';
 
 const HeaderAdmin = () => {
-  const menu = useAppSelector((state) => state.menuSlide);
+  const menu = useAppSelector((state) => state.adminMenu);
   const dispatch = useAppDispatch();
 
   return (
@@ -13,9 +13,9 @@ const HeaderAdmin = () => {
       className='w-full h-16 transition-all bg-white border-b'
       style={{paddingLeft: menu.open ? menu.width : menu.minWidth}}
     >
-      <div className="w-full h-full px-6 flex items-center space-x-4">
+      <div className="w-full h-full px-4 flex items-center space-x-4">
         <span 
-          className="icon cursor-pointer"
+          className="icon cursor-pointer w-10 h-10 p-2 rounded-full hover:bg-gray-100"
           onClick={() => dispatch(toggle())}
         >
           <BiMenu />
@@ -24,9 +24,9 @@ const HeaderAdmin = () => {
         <span className='rounded-full bg-gray-100 px-4 py-2'>Bảng điều khiển</span>
 
         <div className="!ml-auto"></div>
-        <span className="icon relative w-6 h-6">
+        <span className="icon relative w-10 h-10 p-2 rounded-full hover:bg-gray-100">
           <BiBell/>
-          <div className="absolute w-2 h-2 rounded-full bg-orange-600 top-0 right-1"></div>
+          <div className="absolute w-2 h-2 rounded-full bg-orange-600 top-2 right-2"></div>
         </span>
 
         <div className="flex items-center space-x-2 rounded-full p-1 pr-2 bg-gray-100 hover:bg-blue-200">

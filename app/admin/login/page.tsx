@@ -1,17 +1,61 @@
 "use client"
 
 import Image from 'next/image'
-import React, { useState } from 'react'
+import React, { FormEvent, useState } from 'react'
 
 const page = () => {
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+
+  const login = async (e: FormEvent) => {
+    e.preventDefault()
+    if (loading) return
+
+    try {
+      setLoading(true)
+
+      const { email, password, remember } = Object.fromEntries(
+        new FormData(e.target as HTMLFormElement),
+      );
+      
+      const res = await fetch('/api/admin/auth/login', {
+        method: 'post',
+        body: JSON.stringify({
+          email,
+          password,
+          remember
+        }),
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8'
+        }
+      })
+      
+      if (!res.ok) {
+        throw await res.text()
+      }
+
+      const body = await res.json()
+
+      console.log(body)
+
+      setError("")
+    } 
+    catch (error) {
+      setError(error as any)
+      console.log({error}) 
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="w-full h-[1px] min-h-screen flex items-stretch">
       <div className="w-full flex min-h-full h-max">
         <div className="flex w-full items-stretch text-gray-600 overflow-x-hidden">
           <div className="flex w-5/12 items-center justify-center bg-gray-50 px-8 py-8">
-            <Image src="/bg-auth.png" alt="auth login" className="w-full" width={600} height={600} />
+            <div className="relative w-full h-full">
+              <Image src="/bg-auth.png" alt="auth login" className="absolute w-full h-full object-contain top-0 left-0" width={600} height={600} />
+            </div>
           </div>
 
           <div className="w-7/12 px-20 py-8">
@@ -21,7 +65,10 @@ const page = () => {
                 <h5 className="mt-4 text-4xl font-semibold text-gray-800">Welcome Back</h5>
                 <p className="mt-4">Please enter your account details</p>
 
-                <form className="mt-16 flex max-w-xl flex-col space-y-6" >
+                <form
+                  className="mt-16 flex max-w-xl flex-col space-y-6" 
+                  onSubmit={login}
+                >
                   <div className="flex flex-row-reverse items-center rounded-md border border-gray-200 bg-gray-100 px-4 py-2.5 focus-within:border-blue-500 focus-within:bg-white">
                     <input id="email" name="email" type="text" 
                       className="peer min-w-0 flex-grow focus:text-gray-800" placeholder="Email"
@@ -45,6 +92,17 @@ const page = () => {
                       </svg>
                     </label>
                   </div>
+
+                  <div className="flex space-x-2 items-center">
+                    <input type="checkbox" name='remember' id='remember' value="true" />
+                    <label htmlFor='remember' className='select-none cursor-pointer'>Remember me</label>
+                  </div>
+
+                  { error != ""
+                    ? <div className="border border-red-500 p-2 rounded bg-red-200">
+                      {error}
+                    </div> : null
+                  }
 
                   <button className="rounded-md bg-indigo-500 px-4 py-2.5 text-white hover:bg-indigo-400 relative overflow-hidden">
                     <span>Continue</span>

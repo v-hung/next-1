@@ -8,7 +8,7 @@ import { BiUser, BiKey, BiCog, BiCategory, BiBaguette } from "react-icons/bi";
 import Link from 'next/link';
 
 const MenuAdmin = () => {
-  const menu = useAppSelector((state) => state.menuSlide);
+  const menu = useAppSelector((state) => state.adminMenu);
   const dispatch = useAppDispatch();
 
   const [isHover, setIsHover] = useState(false);
@@ -60,13 +60,13 @@ const MenuAdmin = () => {
   return (
     <div 
       className='fixed h-full transition-all bg-white border-r' 
-      style={{width: isHover ? menu.width : (menu.open ? menu.width : menu.minWidth)}}
+      style={{width: isHover ? menu.width : (menu.open ? menu.width : "60px")}}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       <div className="w-full h-full flex flex-col space-y-2 px-1">
         <Link href={"/"} className="flex-none w-full h-16 flex items-center overflow-hidden border-b">
-          <div className='flex-none grid place-items-center' style={{width: menu.minWidth}}>
+          <div className='flex-none grid place-items-center' style={{width: "60px"}}>
             <Image
               src="/logo.png"
               alt="Picture of the author"
@@ -93,7 +93,7 @@ const MenuAdmin = () => {
                 href={v.path}
                 key={i}
               >
-                <div className='flex-none px-1 grid place-items-center' style={{width: "52px"}}>
+                <div className='flex-none px-1 grid place-items-center' style={{width: "44px"}}>
                   {v.icon}
                 </div>
                 <span className='flex-none font-semibold'>{v.name}</span>
@@ -113,7 +113,7 @@ const MenuAdmin = () => {
                 href={v.path}
                 key={i}
               >
-                <div className='flex-none px-1 grid place-items-center' style={{width: "52px"}}>
+                <div className='flex-none px-1 grid place-items-center' style={{width: "44px"}}>
                   {v.icon}
                 </div>
                 <span className='flex-none font-semibold'>{v.name}</span>

@@ -1,7 +1,8 @@
 {
   "private": true,
   "scripts": {
-    "dev": "next dev --turbo",
+    "dev": "next dev",
+    "dev2": "next dev --turbo",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -14,11 +15,15 @@
     "singleQuote": true
   },
   "dependencies": {
+    "@prisma/client": "4.13.0",
     "@reduxjs/toolkit": "1.9.5",
+    "bcrypt": "5.1.0",
     "clsx": "1.2.1",
+    "cookie": "0.5.0",
     "flowbite": "1.6.5",
     "flowbite-datepicker": "1.2.2",
     "flowbite-react": "0.4.4",
+    "jose": "4.14.3",
     "next": "latest",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -26,18 +31,23 @@
     "react-redux": "8.0.5",
     "styled-components": "6.0.0-beta.2",
     "styled-jsx": "5.1.0",
-    "use-count-up": "3.0.1"
+    "use-count-up": "3.0.1",
+    "validator": "13.9.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "5.0.0",
+    "@types/cookie": "0.5.1",
     "@types/node": "18.0.3",
     "@types/react": "18.0.15",
     "@types/react-dom": "18.0.6",
+    "@types/validator": "13.7.15",
     "autoprefixer": "^10.4.7",
     "eslint": "8.19.0",
     "eslint-config-next": "latest",
     "postcss": "^8.4.14",
     "prettier": "^2.7.1",
     "prettier-plugin-tailwindcss": "^0.1.12",
+    "prisma": "4.13.0",
     "tailwindcss": "^3.1.6",
     "typescript": "4.7.4"
   }

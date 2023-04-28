@@ -7,7 +7,7 @@ const initialState = {
 };
 
 export const menu = createSlice({
-  name: "menu",
+  name: "adminMenu",
   initialState,
   reducers: {
     toggle: (state) => {

@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import menuSlide from "./admin/menuSlide";
+import adminMenu from "./admin/adminMenu";
+import adminUser from "./admin/adminUser";
 
 export const store = configureStore({
   reducer: {
-    menuSlide
+    adminMenu,
+    adminUser
   },
   devTools: process.env.NODE_ENV !== "production",
 });

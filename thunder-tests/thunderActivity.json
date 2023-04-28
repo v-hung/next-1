@@ -54,5 +54,24 @@
       "bearer": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvZHVsaWNodGhvbmdtaW5odGhhaW5ndXllbi52blwvYXBpXC92MVwvYXV0aFwvbG9naW4iLCJpYXQiOjE2ODI1ODE2MzUsImV4cCI6MTY4MzE4NjQzNSwibmJmIjoxNjgyNTgxNjM1LCJqdGkiOiJWaUlNVVN6ZXlzaGZRaktKIiwic3ViIjoxNywicHJ2IjoiMWQwYTAyMGFjZjVjNGI2YzQ5Nzk4OWRmMWFiZjBmYmQ0ZThjOGQ2MyJ9.lChqMkMmA8Z3udPiZ_u8gL1BObBZU"
     },
     "tests": []
+  },
+  {
+    "_id": "3c76c21d-b033-4920-a966-52d64283b16e",
+    "colId": "history",
+    "containerId": "",
+    "name": "http://localhost:3000/api/auth/login",
+    "url": "http://localhost:3000/api/auth/login",
+    "method": "POST",
+    "sortNum": 0,
+    "created": "2023-04-28T08:07:49.751Z",
+    "modified": "2023-04-28T08:37:14.562Z",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{}",
+      "form": []
+    },
+    "tests": []
   }
 ]
