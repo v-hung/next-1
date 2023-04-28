@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { Admin as Admin2 } from '@prisma/client'
 
-type Admin = Omit<Admin2, "password"> | null
+export type AdminUser = Omit<Admin2, "password"> | null
 
 type TypeAdmin = {
-  user: Admin
+  user: AdminUser
 }
 
 const initialState: TypeAdmin = {
@@ -15,7 +15,7 @@ export const data = createSlice({
   name: "adminUser",
   initialState,
   reducers: {
-    save: (state, action: PayloadAction<Admin>) => {
+    save: (state, action: PayloadAction<AdminUser>) => {
       state.user = action.payload
     }
   },

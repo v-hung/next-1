@@ -1,9 +1,12 @@
 "use client"
 
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import React, { FormEvent, useState } from 'react'
 
 const page = () => {
+  const router = useRouter();
+
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
@@ -13,7 +16,7 @@ const page = () => {
 
     try {
       setLoading(true)
-
+      
       const { email, password, remember } = Object.fromEntries(
         new FormData(e.target as HTMLFormElement),
       );
@@ -36,9 +39,9 @@ const page = () => {
 
       const body = await res.json()
 
-      console.log(body)
-
       setError("")
+
+      router.push('/admin')
     } 
     catch (error) {
       setError(error as any)

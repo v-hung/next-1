@@ -1,6 +1,9 @@
+import db from '@/lib/prismadb';
 import '@/styles/globals.css';
 import MenuAdmin from '@/ui/admin/MenuAdmin';
-import React from 'react';
+import AdminLayout from '@/ui/admin/main-layout/AdminLayout';
+import { headers } from 'next/headers';
+import React, { Suspense } from 'react';
 
 export const metadata = {
   title: 'Admin Create Next App',
@@ -8,8 +11,24 @@ export const metadata = {
 }
 
 async function getData() {
-  const posts = await prisma.post.findMany();
-  return posts;
+  // await new Promise((res) => setTimeout(() => {
+  //   return res(true)
+  // }, 10000))
+  const adminId = headers().get('adminId') || 0
+
+  const user = await db.admin.findUnique({
+    where: {
+      id: +adminId
+    },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      image: true
+    }
+  })
+
+  return user;
 }
 
 export default async function RootLayout({
@@ -19,22 +38,8 @@ export default async function RootLayout({
 }) {
 
   const data = await getData();
-  console.log(data)
 
   return (
-    <div className='w-full min-h-screen bg-gray-100 text-[#333]'>
-      <MenuAdmin/>
-      <div>
-        {children}
-      </div>
-    </div>
-  );
-}
-
-
-"use client"
-const LayoutAdmin = () => {
-  return  {
-
-  }
+    <AdminLayout userData={data}>{children}</AdminLayout>
+  )
 }
