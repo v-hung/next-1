@@ -6,10 +6,10 @@ import Logo from "@/public/logo.png";
 import { GoDashboard } from "react-icons/go";
 import { BiUser, BiKey, BiCog, BiCategory, BiBaguette } from "react-icons/bi";
 import Link from 'next/link';
+import useAdminMenu from 'stores/admin/adminMenu';
 
 const MenuAdmin = () => {
-  const menu = useAppSelector((state) => state.adminMenu);
-  const dispatch = useAppDispatch();
+  const adminMenu = useAdminMenu()
 
   const [isHover, setIsHover] = useState(false);
 
@@ -60,7 +60,7 @@ const MenuAdmin = () => {
   return (
     <div 
       className='fixed h-full transition-all bg-white border-r' 
-      style={{width: isHover ? menu.width : (menu.open ? menu.width : "60px")}}
+      style={{width: isHover ? adminMenu.width : (adminMenu.open ? adminMenu.width : "60px")}}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -81,7 +81,7 @@ const MenuAdmin = () => {
         
         <div className="flex-grow min-h-0 flex flex-col space-y-2 px-1 overflow-y-auto">
           <div className="w-full h-5 flex items-center px-2 text-gray-500 !mt-4">
-            { menu.open || isHover
+            { adminMenu.open || isHover
               ? <div className='whitespace-nowrap text-sm font-bold '>Quản lý nội dung</div>
               : <div className="w-full h-[1px] bg-gray-300"></div>
             }
@@ -101,7 +101,7 @@ const MenuAdmin = () => {
             )
           })}
           <div className="w-full h-5 flex items-center px-2 text-gray-500 !mt-4">
-            { menu.open || isHover
+            { adminMenu.open || isHover
               ? <div className='whitespace-nowrap text-sm font-bold '>Tổng quan</div>
               : <div className="w-full h-[1px] bg-gray-300"></div>
             }

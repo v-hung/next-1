@@ -1,5 +1,5 @@
 import '@/styles/globals.css';
-import MenuAdmin from '@/ui/admin/MenuAdmin';
+import MenuAdmin from 'components/admin/MenuAdmin';
 import React from 'react';
 
 export const metadata = {

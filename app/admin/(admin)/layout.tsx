@@ -1,7 +1,7 @@
 import db from '@/lib/prismadb';
 import '@/styles/globals.css';
-import MenuAdmin from '@/ui/admin/MenuAdmin';
-import AdminLayout from '@/ui/admin/main-layout/AdminLayout';
+import MenuAdmin from 'components/admin/MenuAdmin';
+import AdminLayout from 'components/admin/main-layout/AdminLayout';
 import { headers } from 'next/headers';
 import React, { Suspense } from 'react';
 
