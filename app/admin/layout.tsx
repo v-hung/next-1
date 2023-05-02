@@ -1,4 +1,3 @@
-import '@/styles/globals.css';
 import MenuAdmin from 'components/admin/MenuAdmin';
 import React from 'react';
 

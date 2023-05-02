@@ -1,5 +1,4 @@
 import db from '@/lib/prismadb';
-import '@/styles/globals.css';
 import MenuAdmin from 'components/admin/MenuAdmin';
 import AdminLayout from 'components/admin/main-layout/AdminLayout';
 import { headers } from 'next/headers';
@@ -31,7 +30,7 @@ async function getData() {
   return user;
 }
 
-export default async function RootLayout({
+export default async function AdminRootLayout({
   children,
 }: {
   children: React.ReactNode;

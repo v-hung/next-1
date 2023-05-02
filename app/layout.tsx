@@ -1,6 +1,5 @@
-import '@/styles/globals.css';
+import './globals.css';
 import React from 'react';
-// import { ReduxProviders } from 'redux/provider';
 
 export const metadata = {
   title: 'Create Next App',
@@ -15,9 +14,7 @@ export default function RootLayout({
   return (
     <html lang='vi'>
       <body className="overflow-y-scroll">
-        {/* <ReduxProviders> */}
-          {children}
-        {/* </ReduxProviders> */}
+        {children}
       </body>
     </html>
   );

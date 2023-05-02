@@ -43,6 +43,7 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  password      String
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   accounts      Account[]
@@ -65,5 +66,18 @@ model Admin {
   email    String  @unique
   password String
   name     String
-  image String?
+  image    String?
+}
+
+model Image {
+  id            String @id @default(cuid())
+  name          String
+  type          String
+  caption       String?
+  url           String
+  width         Int?
+  height        Int?
+  naturalHeight Int
+  naturalWidth  Int
+  size          Float
 }

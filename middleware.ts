@@ -2,8 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { verifyToken } from './lib/utils/jwt'
 
-// This function can be marked `async` if using `await` inside
-export async function middleware(request: NextRequest) {
+const middlewareAdmin = async (request: NextRequest) => {
   let cookie = request.cookies.get('token-admin')?.value
   let adminId = null
   if (cookie) {
@@ -46,7 +45,12 @@ export async function middleware(request: NextRequest) {
   }
 }
 
-// See "Matching Paths" below to learn more
-export const config = {
-  matcher: '/admin/:path*',
+export async function middleware(request: NextRequest) {
+  if (request.nextUrl.pathname.startsWith('/')) {
+    // This logic is only applied to /dashboard
+  }
+
+  if (request.nextUrl.pathname.startsWith('/admin')) {
+    return middlewareAdmin(request)
+  }
 }

@@ -1,10 +1,10 @@
-import ClientOnly from "components/ClientOnly";
-import { Alert, Navbar } from "flowbite-react";
+import Banner from "@/components/web/Banner";
+import { useSession } from "next-auth/react";
 
 export default function Page() {
   return (
-    <div>
-      ghj
-    </div>
+    <>
+      <Banner />
+    </>
   );
 }

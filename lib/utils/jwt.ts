@@ -1,12 +1,12 @@
 import { SignJWT, jwtVerify } from 'jose'
-const AUTH_SECRET = new TextEncoder().encode(process.env.AUTH_SECRET || "");
+const NEXTAUTH_SECRET = new TextEncoder().encode(process.env.NEXTAUTH_SECRET || "");
 
 type User = {
   id: number
 }
 
 const verifyToken = async (token: string) => {
-  return await jwtVerify(token, AUTH_SECRET)
+  return await jwtVerify(token, NEXTAUTH_SECRET)
 };
 
 const signToken = async (data: User, time = '1h') => {
@@ -17,7 +17,7 @@ const signToken = async (data: User, time = '1h') => {
     .setSubject(data.id.toString())
 		.setIssuedAt()
 		.setExpirationTime(time)
-		.sign(AUTH_SECRET)
+		.sign(NEXTAUTH_SECRET)
 };
 
 export {

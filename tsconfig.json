@@ -16,12 +16,7 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@/ui/*": ["components/*"],
-      "@/lib/*": ["lib/*"],
-      "@/styles/*": ["styles/*"],
-      "@/public/*": ["public/*"],
-      "@/redux/*": ["redux/*"],
-      "@/stores/*": ["stores/*"],
+      "@/*": ["./*"]
     },
     "plugins": [
       {

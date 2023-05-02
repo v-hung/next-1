@@ -1,11 +1,15 @@
+import { compare } from "bcrypt"
 import NextAuth, { AuthOptions } from "next-auth"
-import Providers from "next-auth/providers"
-import { PrismaAdapter } from "@next-auth/prisma-adapter"
-import db from "@/lib/prismadb";
 import CredentialsProvider from "next-auth/providers/credentials"
-import bcrypt from "bcrypt";
+import GithubProvider from "next-auth/providers/github"
+import GoogleProvider from "next-auth/providers/google"
+import { PrismaAdapter } from "@next-auth/prisma-adapter"
+import db from "@/lib/prismadb"
 
 export const authOptions: AuthOptions = {
+  session: {
+    strategy: "jwt",
+  },
   adapter: PrismaAdapter(db),
   providers: [
     CredentialsProvider({
@@ -16,40 +20,62 @@ export const authOptions: AuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error('Invalid credentials');
+          throw new Error('Invalid credentials')
         }
 
         const user = await db.user.findUnique({
           where: {
             email: credentials.email
           }
-        });
+        })
 
-        if (!user || !user?.hashedPassword) {
-          throw new Error('Invalid credentials');
+        if (!user || !user?.password) {
+          throw new Error('Invalid credentials')
         }
 
-        const isCorrectPassword = await bcrypt.compare(
+        const isCorrectPassword = await compare(
           credentials.password,
-          user.hashedPassword
+          user.password
         );
 
         if (!isCorrectPassword) {
           throw new Error('Invalid credentials');
         }
 
-        return user;
+        return user
       }
     })
   ],
-  pages: {
-    signIn: '/',
-  },
-  debug: process.env.NODE_ENV === 'development',
-  session: {
-    strategy: "jwt",
-  },
-  secret: process.env.NEXTAUTH_SECRET,
+  // callbacks: {
+  //   session: ({ session, token }) => {
+  //     console.log("Session Callback", { session, token });
+  //     return {
+  //       ...session,
+  //       user: {
+  //         ...session.user,
+  //         id: token.id,
+  //         randomKey: token.randomKey,
+  //       },
+  //     };
+  //   },
+  //   jwt: ({ token, user }) => {
+  //     console.log("JWT Callback", { token, user });
+  //     if (user) {
+  //       const u = user as unknown as any;
+  //       return {
+  //         ...token,
+  //         id: u.id,
+  //         randomKey: u.randomKey,
+  //       };
+  //     }
+  //     return token;
+  //   },
+  // },
+  // pages: {
+  //   signIn: '/',
+  // },
+  // debug: process.env.NODE_ENV === 'development',
+  // secret: process.env.NEXTAUTH_SECRET,
 }
 
-export default NextAuth(authOptions)
+export default NextAuth(authOptions);
