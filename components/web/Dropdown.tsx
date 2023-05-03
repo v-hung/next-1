@@ -1,0 +1,38 @@
+"use client"
+import React from 'react'
+import Collapse from '../Collapse'
+
+const Dropdown = ({isShow, setIsShow, title, items}: any) => {
+
+  const toggleShow = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsShow((state) => state = !state)
+  }
+
+  return (
+    <div className="relative select-none">
+      <div
+        className="flex items-center space-x-2 rounded bg-white p-2 border active:bg-gray-100 cursor-pointer"
+        onClick={(e) => toggleShow(e)}
+      >
+        <span>{title}</span>
+        <span className='text-gray-500 font-semibold'>100.00.00d</span>
+        <span className="icon w-3 h-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M11.178 19.569a.998.998 0 0 0 1.644 0l9-13A.999.999 0 0 0 21 5H3a1.002 1.002 0 0 0-.822 1.569l9 13z"></path></svg>
+        </span>
+      </div>
+      <div className="absolute min-w-full w-max top-full left-0 shadow select-none">
+        <Collapse show={isShow} setShow={setIsShow}>
+          <div className="bg-white rounded py-2 border">
+            { items.map((v,i) =>
+              <div className="hover:bg-blue-200 px-4 py-2">Trang cá nhân</div>
+            )}
+          </div>
+        </Collapse>
+      </div>
+    </div>
+  )
+}
+
+export default Dropdown

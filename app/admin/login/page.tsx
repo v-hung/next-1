@@ -41,7 +41,9 @@ const page = () => {
 
       setError("")
 
-      router.push('/admin')
+      // router.push('/admin')
+      // router.replace('/admin')
+      router.refresh()
     } 
     catch (error) {
       setError(error as any)
@@ -74,7 +76,7 @@ const page = () => {
                 >
                   <div className="flex flex-row-reverse items-center rounded-md border border-gray-200 bg-gray-100 px-4 py-2.5 focus-within:border-blue-500 focus-within:bg-white">
                     <input id="email" name="email" type="text" 
-                      className="peer min-w-0 flex-grow focus:text-gray-800" placeholder="Email"
+                      className="peer min-w-0 flex-grow focus:text-gray-800 p-0 border-none focus:outline-none" placeholder="Email"
                     />
                     <label htmlFor="email" className="icon mr-3 w-6 flex-none text-gray-400 peer-focus:text-blue-500">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -86,7 +88,7 @@ const page = () => {
                   </div>
 
                   <div className="flex flex-row-reverse rounded-md border border-gray-200 bg-gray-100 px-4 py-2.5 focus-within:border-blue-500 focus-within:bg-white">
-                    <input id="password"type="password" name="password" className="peer min-w-0 flex-grow focus:text-gray-800" placeholder="Password"/>
+                    <input id="password"type="password" name="password" className="peer min-w-0 flex-grow focus:text-gray-800 p-0 border-none focus:outline-none" placeholder="Password"/>
                     <label htmlFor="password" className="icon mr-3 w-6 flex-none text-gray-400 peer-focus:text-blue-500">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                         <path

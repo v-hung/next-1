@@ -1,5 +1,6 @@
 import './globals.css';
 import React from 'react';
+import ProgressBar from '@/components/ProgressBar';
 
 export const metadata = {
   title: 'Create Next App',
@@ -14,6 +15,7 @@ export default function RootLayout({
   return (
     <html lang='vi'>
       <body className="overflow-y-scroll">
+        {/* <ProgressBar /> */}
         {children}
       </body>
     </html>

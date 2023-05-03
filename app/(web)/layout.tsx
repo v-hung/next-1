@@ -4,6 +4,7 @@ import { getCurrentUser } from '@/lib/getCurrentUser';
 import React from 'react';
 import { Roboto } from 'next/font/google'
 import Banner from '@/components/web/Banner';
+import Footer from '@/components/web/Footer';
 
 export const metadata = {
   title: 'Create Next App',
@@ -21,11 +22,14 @@ export default async function WebRootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const user = await getCurrentUser()
   return (
-    <div className={`text-[#333] min-h-screen bg-gray-100 ${roboto.className}`}>
+    <div className={`text-[#333] min-h-screen flex flex-col bg-gray-100 ${roboto.className}`}>
       <AuthProvider>
-        <Header />
+        <Header user={user} />
         {children}
+        <div className="mt-auto"></div>
+        <Footer />
       </AuthProvider>
     </div>
   )

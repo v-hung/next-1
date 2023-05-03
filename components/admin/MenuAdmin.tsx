@@ -1,6 +1,5 @@
 "use client"
 import React, { useState } from 'react'
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import Image from 'next/image'
 import Logo from "@/public/logo.png";
 import { GoDashboard } from "react-icons/go";

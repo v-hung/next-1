@@ -7,7 +7,7 @@ const middlewareAdmin = async (request: NextRequest) => {
   let adminId = null
   if (cookie) {
     let temp = await verifyToken(cookie)
-    if (temp.payload.sub) {
+    if (temp?.payload.sub) {
       adminId = temp.payload.sub
     }
   }

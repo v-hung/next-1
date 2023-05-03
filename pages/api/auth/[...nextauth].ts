@@ -20,7 +20,7 @@ export const authOptions: AuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error('Invalid credentials')
+          throw new Error('Tài khoản hoặc mật khẩu không được để trống')
         }
 
         const user = await db.user.findUnique({
@@ -30,7 +30,7 @@ export const authOptions: AuthOptions = {
         })
 
         if (!user || !user?.password) {
-          throw new Error('Invalid credentials')
+          throw new Error('Tài khoản không tồn tại')
         }
 
         const isCorrectPassword = await compare(
@@ -39,7 +39,7 @@ export const authOptions: AuthOptions = {
         );
 
         if (!isCorrectPassword) {
-          throw new Error('Invalid credentials');
+          throw new Error('Mật khẩu không đúng');
         }
 
         return user

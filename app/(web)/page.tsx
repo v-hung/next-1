@@ -2,8 +2,8 @@ import Banner from "@/components/web/Banner";
 import ListProduct, { ItemInListProductType } from "@/components/web/ListProduct";
 import { useSession } from "next-auth/react";
 
-export default function Page() {
-
+export default async function Page() {
+  await new Promise((res) => setTimeout(() => res(1), 5000))
   const items1: ItemInListProductType[] = new Array(8).fill(
   {
     image: "https://shopdangym.com/tep-tin/1680804533ACC_LIÊN_QUÂN_RẺ.gif",
@@ -44,9 +44,6 @@ export default function Page() {
       <ListProduct title="Sự kiện siêu hót" items={items2} />
       <ListProduct title="Danh mục game tốc chiến" items={items3} />
       <ListProduct title="Danh mục game FreeFire" items={items4} />
-
-      https://shopdangym.com/
-      https://www.shopacc44.com/#
     </>
   );
 }

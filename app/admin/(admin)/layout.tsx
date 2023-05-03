@@ -10,24 +10,12 @@ export const metadata = {
 }
 
 async function getData() {
-  // await new Promise((res) => setTimeout(() => {
-  //   return res(true)
-  // }, 10000))
-  const adminId = headers().get('adminId') || 0
+  const res = await fetch(process.env.NEXTAUTH_URL + '/api/admin/auth/me')
+  if (!res.ok) {
+    return {user: null}
+  }
 
-  const user = await db.admin.findUnique({
-    where: {
-      id: +adminId
-    },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      image: true
-    }
-  })
-
-  return user;
+  return res.json();
 }
 
 export default async function AdminRootLayout({
@@ -36,7 +24,7 @@ export default async function AdminRootLayout({
   children: React.ReactNode;
 }) {
 
-  const data = await getData();
+  const { user: data } = await getData();
 
   return (
     <AdminLayout userData={data}>{children}</AdminLayout>
