@@ -35,7 +35,7 @@ const page = () => {
       setLoading(false)
       setError("")
 
-      router.push("/")
+      router.refresh()
     } 
     catch (error) {
       setError(typeof error == "string" ? error : "Đã có lỗi xảy ra vui lòng thử lại sau")
