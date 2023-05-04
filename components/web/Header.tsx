@@ -15,7 +15,7 @@ const Header = ({className = "", user}: any) => {
 
   const links = [
     { name: "Trang chủ", path: "/"},
-    { name: "Hướng dẫn", path: "/guide"},
+    { name: "Hướng dẫn", path: "/pages/guide"},
     { name: "Vòng quay may mắn", path: "/luck"},
     { name: "Shop game", path: "/shop"},
     { name: "Nạp tiền", path: "/recharge"}
@@ -35,7 +35,7 @@ const Header = ({className = "", user}: any) => {
   return (
     <div className={`sticky top-0 border-b bg-white z-50 ${className}`}>
       <Container className="relative w-full flex justify-between items-center">
-        <img src="/logo2.png" alt="Logo" className='h-12 my-2' />
+        <Link href={"/"}><img src="/logo2.png" alt="Logo" className='h-12 my-2' /></Link>
 
         <span 
           className="icon rounded border w-8 h-8 p-1 hover:bg-gray-100 cursor-pointer lg:hidden"

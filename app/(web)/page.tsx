@@ -3,7 +3,7 @@ import ListProduct, { ItemInListProductType } from "@/components/web/ListProduct
 import { useSession } from "next-auth/react";
 
 export default async function Page() {
-  await new Promise((res) => setTimeout(() => res(1), 5000))
+  // await new Promise((res) => setTimeout(() => res(1), 50000))
   const items1: ItemInListProductType[] = new Array(8).fill(
   {
     image: "https://shopdangym.com/tep-tin/1680804533ACC_LIÊN_QUÂN_RẺ.gif",

@@ -5,3 +5,8 @@ export const removeAccents = (str: string) => {
 export const formatCurrency = (x: number) => {
   return x.toLocaleString('vi-VN', {style : 'currency', currency : 'VND'})
 }
+
+export const getPercent = (price: number, promotionalPrice?: number) => {
+  if (!promotionalPrice) return 0
+  return Math.ceil((promotionalPrice - price) / promotionalPrice * 100)
+}

@@ -19,16 +19,21 @@ const roboto = Roboto({
 
 export default async function WebRootLayout({
   children,
+  params
 }: {
   children: React.ReactNode;
+  params: any
 }) {
-  const user = await getCurrentUser()
+  const userData = await getCurrentUser()
+
   return (
     <div className={`text-[#333] min-h-screen flex flex-col bg-gray-100 ${roboto.className}`}>
       <AuthProvider>
-        <Header user={user} />
-        {children}
-        <div className="mt-auto"></div>
+        <Header user={userData} />
+        <div className="flex-grow flex items-stretch">
+          <div className='w-full'>{children}</div>
+        </div>
+        {/* <div className="mt-auto"></div> */}
         <Footer />
       </AuthProvider>
     </div>
