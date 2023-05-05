@@ -1,8 +1,10 @@
 import db from '@/lib/prismadb';
 import MenuAdmin from 'components/admin/MenuAdmin';
 import AdminLayout from 'components/admin/main-layout/AdminLayout';
-import { headers } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import React, { Suspense } from 'react';
+import { useCurrentUserAdmin } from '@/lib/server/helperServer';
+import HeaderAdmin from '@/components/admin/HeaderAdmin';
 
 export const metadata = {
   title: 'Admin Create Next App',
@@ -10,7 +12,14 @@ export const metadata = {
 }
 
 async function getData() {
-  const res = await fetch(process.env.NEXTAUTH_URL + '/api/admin/auth/me')
+  const nextCookies = cookies()
+  const token = nextCookies.get('token-admin')
+
+  const res = await fetch(process.env.NEXTAUTH_URL + '/api/admin/auth/me', {
+    headers: {
+      authorization: `bearer ${token?.value}`
+    }
+  })
   if (!res.ok) {
     return {user: null}
   }
@@ -24,9 +33,15 @@ export default async function AdminRootLayout({
   children: React.ReactNode;
 }) {
 
-  const { user: data } = await getData();
+  // const { user: data } = await getData()
+
+  // console.log(data)
+
+  const data = await useCurrentUserAdmin()
 
   return (
-    <AdminLayout userData={data}>{children}</AdminLayout>
+    <AdminLayout userData={data}>
+      {children}
+    </AdminLayout>
   )
 }

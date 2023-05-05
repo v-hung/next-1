@@ -103,7 +103,9 @@ const AvatarUser = ({user}: any) => {
         className="flex items-center space-x-2 rounded-full p-1 pr-2 bg-gray-100 hover:bg-blue-200 cursor-pointer select-none"
         onClick={(e) => toggleShow(e)}
       >
-        <div className="w-10 h-10 rounded-full bg-red-600"></div>
+        <div className="w-10 h-10 rounded-full overflow-hidden">
+          <img src={user.image} alt={user.name} className="img-full" />
+        </div>
         <div>
           <div className='font-semibold'>{user.name}</div>
           <div className='text-xs'>{formatCurrency(100000)}</div>

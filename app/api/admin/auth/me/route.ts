@@ -6,24 +6,11 @@ import { signToken, verifyToken } from '@/lib/utils/jwt'
 import { cookies } from "next/headers";
 import { serialize } from 'cookie';
 import db from '@/lib/prismadb';
+import { useCurrentUserAdmin } from '@/lib/server/helperServer';
 
 export async function GET(request: NextRequest) {
   try {
-    const adminId = request.headers.get('adminId') || 0
-
-    if (adminId == 0) return NextResponse.json("Error", {status: 400})
-
-    const user = await db.admin.findUnique({
-      where: {
-        id: +adminId
-      },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        image: true
-      }
-    })
+    const user = await useCurrentUserAdmin(request)
 
     return NextResponse.json({user});
   }

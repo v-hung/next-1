@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 
 type TableType = {
-  className: string
+  className?: string
   data: any[],
   titles: {[key: string]: string}
 }
