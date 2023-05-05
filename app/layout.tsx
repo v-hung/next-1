@@ -1,6 +1,7 @@
+import './default.css'
 import './globals.css';
 import React from 'react';
-import ProgressBar from '@/components/ProgressBar';
+import MuiProvider from '@/components/MuiProvider';
 
 export const metadata = {
   title: 'Create Next App',
@@ -14,9 +15,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang='vi'>
-      <body className="overflow-y-scroll">
-        {/* <ProgressBar /> */}
-        {children}
+      <head>
+        <meta name="viewport" content="initial-scale=1, width=device-width" />
+      </head>
+      <body id='__next' className="overflow-y-scroll">
+        <MuiProvider>
+          {children}
+        </MuiProvider>
       </body>
     </html>
   );

@@ -10,11 +10,11 @@ const ProductSlideImage = ({ images }: { images: string[] }) => {
     // listen for Swiper events using addEventListener
     swiperElRef.current.addEventListener('progress', (e: any) => {
       const [swiper, progress] = e.detail;
-      console.log(progress);
+      // console.log(progress);
     });
 
     swiperElRef.current.addEventListener('slidechange', (e: any) => {
-      console.log('slide changed');
+      // console.log('slide changed');
     });
   }, []);
   return (

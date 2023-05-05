@@ -48,6 +48,7 @@ const ShopFilter = () => {
           </div>
         )}
       </div>
+      <div className="mt-12"></div>
     </Container>
   )
 }

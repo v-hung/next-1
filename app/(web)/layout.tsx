@@ -5,6 +5,7 @@ import React from 'react';
 import { Roboto } from 'next/font/google'
 import Banner from '@/components/web/Banner';
 import Footer from '@/components/web/Footer';
+import Modal from '@/components/web/Modal';
 
 export const metadata = {
   title: 'Create Next App',
@@ -35,6 +36,7 @@ export default async function WebRootLayout({
         </div>
         {/* <div className="mt-auto"></div> */}
         <Footer />
+        <Modal />
       </AuthProvider>
     </div>
   )

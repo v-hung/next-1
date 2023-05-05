@@ -1,6 +1,8 @@
 import ClientOnly from '@/components/ClientOnly';
+import BtnBuyByEWallet from '@/components/web/BtnBuyByEWallet';
 import Container from '@/components/web/Container'
 import ProductSlideImage from '@/components/web/ProductSlideImage';
+import Link from 'next/link';
 import React from 'react'
 
 type PageType = {
@@ -58,8 +60,8 @@ const page = ({params}: PageType) => {
             <div className="flex-grow h-[1px] bg-gray-400"></div>
           </div>
           <div className="mt-8 flex flex-col space-y-2 items-center text-sm uppercase">
-            <button className="bg-sky-500 text-white px-6 py-2">Mua ngay</button>
-            <button className="bg-green-500 text-white px-6 py-2">Mua bằng ví điện tử</button>
+            <Link href="/recharge" className="bg-sky-500 text-white px-6 py-2">Mua ngay</Link>
+            <BtnBuyByEWallet title='Mua bằng ví điện tử' />
           </div>
         </div>
       </div>
@@ -113,6 +115,8 @@ const page = ({params}: PageType) => {
           <ProductSlideImage images={images} />
         </ClientOnly>
       </div>
+
+      <div className="mt-12"></div>
     </Container>
   )
 }

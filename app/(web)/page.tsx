@@ -44,6 +44,7 @@ export default async function Page() {
       <ListProduct title="Sự kiện siêu hót" items={items2} />
       <ListProduct title="Danh mục game tốc chiến" items={items3} />
       <ListProduct title="Danh mục game FreeFire" items={items4} />
+      <div className="mt-12"></div>
     </>
   );
 }

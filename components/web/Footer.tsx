@@ -11,7 +11,7 @@ const Footer = ({className}: any) => {
   useEffect(() => setHostname(window.location.hostname), [])
 
   return (
-    <div className={`mt-12 bg-slate-600 text-white ${className}`}>
+    <div className={`bg-slate-600 text-white ${className}`}>
       <Container className="pt-12">
         <div className="flex -mx-4">
           <div className="w-full md:w-1/2 mb-8 px-4">

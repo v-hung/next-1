@@ -11,10 +11,10 @@ const useClickOutside = (ref: any, cb: () => void) => {
       }
     }
     // Bind the event listener
-    document.addEventListener("click", handleClickOutside, false);
+    document.addEventListener("mousedown", handleClickOutside, false);
     return () => {
       // Unbind the event listener on clean up
-      document.removeEventListener("click", handleClickOutside, false);
+      document.removeEventListener("mousedown", handleClickOutside, false);
     };
   }, [ref]);
 }

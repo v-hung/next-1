@@ -1,4 +1,4 @@
-import ContentRecharge from "@/components/web/ContentRecharge";
+import ContentProfile from "@/components/web/ContentProfile";
 import { getCurrentUser } from "@/lib/getCurrentUser";
 import { redirect } from "next/navigation";
 
@@ -9,7 +9,7 @@ const page = async () => {
     redirect('/login')
   }
   return (
-    <ContentRecharge />
+    <ContentProfile userData={userData} />
   )
 }
 

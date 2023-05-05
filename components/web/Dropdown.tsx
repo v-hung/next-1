@@ -17,8 +17,8 @@ type DropdownType = {
 const Dropdown: React.FC<DropdownType> = ({isShow, setIsShow, title, items}) => {
 
   const toggleShow = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    e.preventDefault()
     e.stopPropagation()
+    e.nativeEvent.stopImmediatePropagation()
     setIsShow((state: boolean) => state = !state)
   }
 

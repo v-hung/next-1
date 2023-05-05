@@ -41,8 +41,8 @@ const Banner = () => {
 
   return (
     <Container className="mt-8">
-      <div className="w-full flex flex-col lg:flex-row lg:space-x-4 lg:rounded">
-        <div className="w-full order-last lg:w-1/3 flex-none bg-stone-600 p-4 text-white">
+      <div className="w-full flex flex-col lg:flex-row lg:space-x-4">
+        <div className="w-full order-last lg:w-1/3 flex-none bg-stone-600 p-4 text-white lg:rounded">
           <h4 className="text-xl uppercase">Top nạp thẻ tháng</h4>
           <div className="flex flex-col space-y-6 mt-4 py-2">
             {new Array(5).fill(0).map((v,i) =>
