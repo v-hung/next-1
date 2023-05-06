@@ -3,12 +3,11 @@ import * as fs from 'fs/promises';
 import { existsSync, mkdirSync, createReadStream } from "fs";
 
 export async function GET(request: Request, { params } : { params: {filename: string | string[]} }) {
-  console.log(1)
   try {
     
     const filepath = './storage/' + (Array.isArray(params.filename) ? (params.filename as string[]).join("/") : params.filename as string)
 
-    console.log({filepath})
+    // console.log({filepath})
 
     if (!existsSync(filepath)){
       throw 'Not found'

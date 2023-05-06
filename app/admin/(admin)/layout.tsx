@@ -1,10 +1,7 @@
-import db from '@/lib/prismadb';
-import MenuAdmin from 'components/admin/MenuAdmin';
 import AdminLayout from 'components/admin/main-layout/AdminLayout';
-import { cookies, headers } from 'next/headers';
-import React, { Suspense } from 'react';
+import { cookies } from 'next/headers';
+import React from 'react';
 import { useCurrentUserAdmin } from '@/lib/server/helperServer';
-import HeaderAdmin from '@/components/admin/HeaderAdmin';
 
 export const metadata = {
   title: 'Admin Create Next App',
@@ -43,5 +40,6 @@ export default async function AdminRootLayout({
     <AdminLayout userData={data}>
       {children}
     </AdminLayout>
+    // <div>{children}</div>
   )
 }

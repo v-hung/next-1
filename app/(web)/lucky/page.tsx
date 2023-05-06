@@ -1,5 +1,5 @@
-import ContentLucky from "@/components/web/ContentLucky";
-import ContentProfile from "@/components/web/ContentProfile";
+import ContentLucky from "@/components/web/content/ContentLucky";
+import ContentProfile from "@/components/web/content/ContentProfile";
 import { getCurrentUser } from "@/lib/getCurrentUser";
 import { redirect } from "next/navigation";
 

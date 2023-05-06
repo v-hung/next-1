@@ -17,20 +17,22 @@ const AdminLayout : React.FC<{
   const adminUser = useAdminUser()
   const adminMenu = useAdminMenu()
 
-  if (!setUser) {
-    setSetUser(true)
-    adminUser.save(userData)
-  }
+  useEffect(() => {
+    if (!setUser) {
+      setSetUser(true)
+      adminUser.save(userData)
+    }
+  }, [])
 
   return (
-    <div className='w-full min-h-screen bg-gray-100 text-[#333]'>
+    <div className='w-full min-h-screen bg-gray-100'>
       <MenuAdmin/>
       <div 
         className='w-full transition-all'
         style={{paddingLeft: adminMenu.open ? adminMenu.width : "60px"}}
       >
         <HeaderAdmin />
-        <div className="p-4">{children}</div>
+        <div className="px-8 py-4">{children}</div>
       </div>
     </div>
   )

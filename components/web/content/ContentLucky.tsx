@@ -1,7 +1,7 @@
 "use client"
 import { useSession } from 'next-auth/react'
 import React, { useRef, useState } from 'react'
-import Container from './Container'
+import Container from '../Container'
 
 let currentRotate = 0
 
@@ -81,16 +81,13 @@ const ContentLucky = () => {
             </div>
 
             <style jsx>{`
-              .anim-load .child{
-                display: none
-              }
               .anim-load.load .child{
-                display: block
+                display: block !important
               }
             `}</style>
 
             <div className="anim-load absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20">
-              <div className="child absolute w-full h-full border-4 border-white border-r-transparent z-10 rounded-full animate-spin"></div>
+              <div className="child hidden absolute w-full h-full border-4 border-white border-r-transparent z-10 rounded-full animate-spin"></div>
               <div
                 className="relative w-full h-full rounded-full bg-red-500 hover:cursor-pointer"
                 onClick={start}

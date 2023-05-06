@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from "@/lib/prismadb";
+import prisma from "@/lib/server/prismadb";
 import bcrypt from 'bcrypt'
 import { removeSpace } from '@/lib/utils/validator'
 import { signToken, verifyToken } from '@/lib/utils/jwt'
 import { cookies } from "next/headers";
 import { serialize } from 'cookie';
-import db from '@/lib/prismadb';
+import db from '@/lib/server/prismadb';
 import { useCurrentUserAdmin } from '@/lib/server/helperServer';
 
 export async function GET(request: NextRequest) {

@@ -1,5 +1,5 @@
 import Container from '@/components/web/Container'
-import ShopFilter from '@/components/web/ShopFilter'
+import ShopFilter from '@/components/web/content/ShopFilter'
 import React from 'react'
 
 const page = () => {

@@ -1,4 +1,4 @@
-import db from "@/lib/prismadb"
+import db from "@/lib/server/prismadb"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "./auth/[...nextauth]"
 

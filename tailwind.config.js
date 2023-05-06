@@ -14,6 +14,5 @@ module.exports = {
   theme: {},
   plugins: [
     // require('@tailwindcss/forms'),
-    // require("flowbite/plugin")
   ],
 };

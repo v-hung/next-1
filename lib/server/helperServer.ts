@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
-import db from "../prismadb";
+import db from "./prismadb";
 import { verifyToken } from "../utils/jwt";
 
 export const useCurrentUserAdmin = async (request?: NextRequest) => {

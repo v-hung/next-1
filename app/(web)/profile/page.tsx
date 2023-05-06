@@ -1,4 +1,4 @@
-import ContentProfile from "@/components/web/ContentProfile";
+import ContentProfile from "@/components/web/content/ContentProfile";
 import { getCurrentUser } from "@/lib/getCurrentUser";
 import { redirect } from "next/navigation";
 

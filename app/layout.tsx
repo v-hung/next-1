@@ -18,7 +18,7 @@ export default function RootLayout({
       <head>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </head>
-      <body id='__next' className="overflow-y-scroll">
+      <body id='__next' className="overflow-y-scroll text-[#444]">
         <MuiProvider>
           {children}
         </MuiProvider>

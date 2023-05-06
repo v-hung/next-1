@@ -1,9 +1,9 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import Collapse from '../Collapse'
-import Container from './Container'
-import Dropdown from './Dropdown'
-import ProductSingle, { ProductSingleType } from './ProductSingle'
+import Collapse from '../../Collapse'
+import Container from '../Container'
+import Dropdown from '../Dropdown'
+import ProductSingle, { ProductSingleType } from '../ProductSingle'
 
 const ShopFilter = () => {
   const [isShow, setIsShow] = useState(false)

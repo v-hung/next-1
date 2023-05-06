@@ -54,7 +54,7 @@ const AvatarUser = ({user}: any) => {
         onClick={(e) => toggleShow(e)}
       >
         <div className="w-10 h-10 rounded-full overflow-hidden">
-          <img src={user.image || '/storage/images/user/b1.png'} alt={user.name} className="img-full" />
+          <img src={user.image || '/storage/images/user/b1.png'} alt={user.name} className="w-full h-full object-contain" />
         </div>
         <div className='font-semibold'>{user.name}</div>
         <span className="icon w-3 h-3 ">

@@ -1,4 +1,4 @@
-import ContentRecharge from "@/components/web/ContentRecharge";
+import ContentRecharge from "@/components/web/content/ContentRecharge";
 import { getCurrentUser } from "@/lib/getCurrentUser";
 import { redirect } from "next/navigation";
 

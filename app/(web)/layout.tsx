@@ -28,7 +28,7 @@ export default async function WebRootLayout({
   const userData = await getCurrentUser()
 
   return (
-    <div className={`text-[#333] min-h-screen flex flex-col bg-gray-100 ${roboto.className}`}>
+    <div className={`min-h-screen flex flex-col bg-gray-100 ${roboto.className}`}>
       <AuthProvider>
         <Header user={userData} />
         <div className="flex-grow flex items-stretch">

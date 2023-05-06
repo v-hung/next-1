@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import prisma from "@/lib/prismadb";
+import prisma from "@/lib/server/prismadb";
 import bcrypt from 'bcrypt'
 import { removeSpace } from '@/lib/utils/validator'
 import { signToken } from '@/lib/utils/jwt'

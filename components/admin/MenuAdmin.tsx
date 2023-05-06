@@ -24,17 +24,17 @@ const MenuAdmin = () => {
     {
       icon: <GoDashboard size={24} />,
       name: "Bảng điều khiển",
-      path: "/"
+      path: "/admin"
     },
     {
       icon: <BiCategory size={24} />,
       name: "Danh mục",
-      path: "/"
+      path: "/admin/categories"
     },
     {
       icon: <BiBaguette size={24} />,
       name: "Sản phẩm",
-      path: "/"
+      path: "/admin/products"
     }
   ]
 

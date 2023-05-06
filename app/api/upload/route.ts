@@ -1,4 +1,4 @@
-import db from "@/lib/prismadb";
+import db from "@/lib/server/prismadb";
 import { existsSync, mkdirSync } from "fs";
 import * as fs from 'fs/promises';
 import { read } from "jimp";

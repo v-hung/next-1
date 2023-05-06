@@ -11,9 +11,9 @@ import { ButtonGroup, FormGroup, Tab, Tabs, TextField } from '@mui/material'
 import Button from '@mui/material/Button';
 import useModal from '@/stores/web/modal'
 import { User } from 'next-auth'
-import Table from './Table'
+import Table from '../Table'
 import useAppConfig from '@/stores/web/appConfig'
-import BtnBuyByEWallet from './BtnBuyByEWallet'
+import BtnBuyByEWallet from '../BtnBuyByEWallet'
 import { formatCurrency } from '@/lib/utils/helper'
 
 const ContentProfile = ({userData}: {userData: User}) => {
@@ -36,7 +36,9 @@ const ContentProfile = ({userData}: {userData: User}) => {
       <div className="relative w-full h-56 bg-red-400"></div>
       <Container className="-mt-10">
         <div className="flex items-end space-x-4 bg-white pb-2 px-4 rounded">
-          <div className="relative w-32 h-32 border-4 border-gray-100 rounded-full bg-green-400"></div>
+          <div className="relative w-32 h-32 border-4 border-gray-100 rounded-full bg-gray-100 overflow-hidden">
+            <img src={userData.image || ''} alt="" className="w-full h-full object-contain" />
+          </div>
           <div className='pb-6'>
             <h3 className="text-xl font-semibold">{userData.name}</h3>
             <p className="text-gray-600 mt-1 text-sm">Cập nhập thông tin tài khoản của bạn </p>
@@ -90,7 +92,8 @@ const ContentProfile = ({userData}: {userData: User}) => {
               </div>
               <div className='table-cell align-middle'>
                 <div className="my-5 flex space-x-4 items-start">
-                  <div className="w-16 h-16 rounded-full overflow-hidden bg-green-500 relative group cursor-pointer">
+                  <div className="w-16 h-16 rounded-full overflow-hidden relative group cursor-pointer bg-gray-100">
+                    <img src={userData.image || ''} alt="" className="w-full h-full object-contain" />
                     <div className="absolute w-full h-full top-0 left-0 bg-black/30 hidden group-hover:grid place-items-center">
                       <span className="icon text-white">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 9c-1.626 0-3 1.374-3 3s1.374 3 3 3 3-1.374 3-3-1.374-3-3-3z"></path><path d="M20 5h-2.586l-2.707-2.707A.996.996 0 0 0 14 2h-4a.996.996 0 0 0-.707.293L6.586 5H4c-1.103 0-2 .897-2 2v11c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2V7c0-1.103-.897-2-2-2zm-8 12c-2.71 0-5-2.29-5-5s2.29-5 5-5 5 2.29 5 5-2.29 5-5 5z"></path></svg>

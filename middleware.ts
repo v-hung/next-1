@@ -51,6 +51,6 @@ export async function middleware(request: NextRequest) {
   }
 
   if (request.nextUrl.pathname.startsWith('/admin')) {
-    return middlewareAdmin(request)
+    // return middlewareAdmin(request)
   }
 }

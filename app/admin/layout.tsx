@@ -1,4 +1,3 @@
-import MenuAdmin from 'components/admin/MenuAdmin';
 import React from 'react';
 
 export const metadata = {
