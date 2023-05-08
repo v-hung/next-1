@@ -70,7 +70,7 @@ model Admin {
 }
 
 model Image {
-  id            String @id @default(cuid())
+  id            String  @id @default(cuid())
   name          String
   type          String
   caption       String?
@@ -80,4 +80,29 @@ model Image {
   naturalHeight Int
   naturalWidth  Int
   size          Float
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  image    String
+  title    String
+  sold     Int?      @default(0)
+  type     String
+  products Product[]
+}
+
+model Product {
+  id               String  @id @default(cuid())
+  name             String
+  image            String
+  images           String?
+  price            Int
+  promotionalPrice Int?
+  heros            Int
+  skins            Int
+  rank             String
+  gem              Int
+
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String
 }

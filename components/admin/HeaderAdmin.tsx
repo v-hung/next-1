@@ -5,17 +5,19 @@ import useAdminMenu from 'stores/admin/adminMenu';
 import useAdminUser from '@/stores/admin/adminUser';
 import Link from 'next/link';
 import Collapse from '../Collapse';
+import { useStoreCustom } from '@/stores';
 
 const HeaderAdmin = () => {
   const adminUser = useAdminUser()
-  const adminMenu = useAdminMenu()
+  // const adminMenu = useAdminMenu()
+  const adminMenu = useStoreCustom(useAdminMenu, (state) => state)
 
   return (
-    <div className='sticky top-0 w-full h-16 bg-white border-b'>
+    <div className='sticky top-0 w-full h-16 bg-white border-b z-50'>
       <div className="w-full h-full px-4 flex items-center space-x-4">
         <span 
           className="icon cursor-pointer w-10 h-10 p-2 rounded-full hover:bg-gray-100"
-          onClick={() => adminMenu.toggle()}
+          onClick={() => adminMenu?.toggle()}
         >
           <BiMenu />
         </span>
