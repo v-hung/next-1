@@ -2,6 +2,7 @@
 import { Button } from '@mui/material'
 import { useRouter } from 'next/navigation'
 import React from 'react'
+import AdminFormFieldImage from '@/components/admin/form-field/AdminFormFieldImage'
 
 const AdminContentCategoriesCreate = () => {
   const router = useRouter()
@@ -37,7 +38,9 @@ const AdminContentCategoriesCreate = () => {
 
       <div className="mt-6 flex flex-wrap -mx-2">
         <div className="w-full lg:w-3/4 px-2 mb-4">
-          <div className="w-full p-4 bg-white rounded shadow"></div>
+          <div className="w-full p-4 bg-white rounded shadow">
+            <AdminFormFieldImage name='asdfsf' />
+          </div>
         </div>
         <div className="w-full lg:w-1/4 px-2 mb-4">
           <div className="w-full p-4 bg-blue-100 border border-blue-400 text-blue-600 rounded">

@@ -8,6 +8,7 @@ import useAdminUser from 'stores/admin/adminUser';
 import HeaderAdmin from '../HeaderAdmin';
 import MenuAdmin from '../MenuAdmin';
 import { useStoreCustom } from '@/stores';
+import AdminModal from '../modal/AdminModal';
 
 const AdminLayout : React.FC<{
   children: React.ReactNode,
@@ -17,12 +18,13 @@ const AdminLayout : React.FC<{
   const willMount = useRef(true)
   const adminUser = useAdminUser()
   const adminMenu = useStoreCustom(useAdminMenu, (state) => state)
+  // const adminMenu = useAdminMenu()
 
   // useEffect(() => {
     if (willMount.current && userData) {
       adminUser.save(userData)
+      willMount.current = false
     }
-    willMount.current = false
   // }, [])
 
   return (
@@ -35,6 +37,7 @@ const AdminLayout : React.FC<{
         <HeaderAdmin />
         <div className="px-8 py-4">{children}</div>
       </div>
+      {/* <AdminModal /> */}
     </div>
   )
 }

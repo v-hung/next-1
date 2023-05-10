@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo, useLayoutEffect } from 'react';
+// import { State } from 'react-use/lib/useMouse';
 
 // export const useStoreCustom = (cb: any) => {
 //   const store = cb()
@@ -19,7 +20,8 @@ export const useStoreCustom = <T, F>(
   const result = store(callback) as F
   const [data, setData] = useState<F>()
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    // console.log({result})
     setData(result)
   }, [result])
 

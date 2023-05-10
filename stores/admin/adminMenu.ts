@@ -26,9 +26,12 @@ const useAdminMenu = create(
       name: NAME,
       storage: createJSONStorage(() => sessionStorage),
       // getStorage: () => localStorage
-      // onRehydrateStorage: () => (state) => {
-      //   state?.toggle(true)
-      // }
+      onRehydrateStorage: () => (state) => {
+        // let data = JSON.parse(sessionStorage.getItem(NAME) as any)
+        // console.log(data)
+        // state?.toggle(false)
+        // setTimeout(() => state?.toggle(false))
+      }
     }
   )
 )

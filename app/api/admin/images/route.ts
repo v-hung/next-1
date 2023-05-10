@@ -1,0 +1,92 @@
+import { NextRequest, NextResponse } from 'next/server';
+import db from "@/lib/server/prismadb";
+import { existsSync, mkdirSync } from "fs";
+import sharp from "sharp";
+// import imagemin from "imagemin"
+// import imageminPngQuant from "imagemin-pngquant"
+// import imageminJpegtran from "imagemin-jpegtran"
+import { useCurrentUserAdmin } from '@/lib/server/helperServer';
+
+export async function GET(request: NextRequest) {
+  try {
+    const user = await useCurrentUserAdmin(request)
+
+    if (!user) return NextResponse.json("Unauthorized", {status: 401})
+
+    const images = await db.image.findMany({
+      orderBy: { id : 'desc' }
+    })
+
+    return NextResponse.json({data: images});
+  }
+  catch (e) {
+    console.log(e)
+    return NextResponse.json("Error", {status: 400})
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const data = await request.formData()
+    const files = data.getAll('images[]') as File[]
+        
+    if (!existsSync('./storage')){
+      mkdirSync('./storage', { recursive: true });
+    }
+
+    let res: any[] = []
+    for (let file of files) {
+      let name = crypto.randomUUID() + "." + file.name.split('.')[1]
+      
+      // const fileMin = await imagemin.buffer(Buffer.from(await file.arrayBuffer()), {
+      //   // destination: "compressed-images",
+      //   plugins: [
+      //     imageminJpegtran(),
+      //     imageminPngQuant({
+      //       quality: [0.2, 0.5]
+      //     })
+      //   ]
+      // })
+
+      // let fileData = sharp(fileMin)
+      let fileData = sharp(await file.arrayBuffer())
+      let fileUrl = `./storage/images/${name}`
+
+      let fileSave = await fileData.png({compressionLevel: 8, quality: 60}).toFile(fileUrl)
+        .then((data: any) => {
+          console.log(data)
+          return data
+        })
+
+      let { format, size, width, height } = fileSave
+
+      res.push({
+        name: file.name,
+        naturalWidth: width,
+        naturalHeight: height,
+        size: size,
+        type: file.type,
+        url: fileUrl.slice(1)
+      })
+    }
+
+    // // not support in sqlite
+    // let images = await db.image.create({
+    //   data: res
+    // })
+
+
+    let images: any[] = []
+    for(let img of res) {
+      let temp = await db.image.create({
+        data: img
+      })
+      images.push(temp)
+    }
+
+    return NextResponse.json({images})
+  } catch (e) {
+    console.log(e)
+    return NextResponse.json("Error", {status: 400})
+  }
+} 
