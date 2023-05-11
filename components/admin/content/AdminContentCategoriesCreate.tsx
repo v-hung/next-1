@@ -39,7 +39,7 @@ const AdminContentCategoriesCreate = () => {
       <div className="mt-6 flex flex-wrap -mx-2">
         <div className="w-full lg:w-3/4 px-2 mb-4">
           <div className="w-full p-4 bg-white rounded shadow">
-            <AdminFormFieldImage name='asdfsf' />
+            <AdminFormFieldImage name='asdfsf' multiple={true} />
           </div>
         </div>
         <div className="w-full lg:w-1/4 px-2 mb-4">

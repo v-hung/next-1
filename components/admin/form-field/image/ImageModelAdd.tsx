@@ -118,7 +118,7 @@ const AdminFormFieldImageAdd: React.FC<AddModalType> = ({show, setShow, setData}
             <div className="py-6 pt-0 border-y">
               { isAddFiles
                 ? <>
-                  <div className="px-6 flex items-center justify-between">
+                  <div className="px-6 pt-6 flex items-center justify-between">
                     <div>
                       <h5 className="font-semibold">{files.length} tài sản đã sẵn sàng để tải lên</h5>
                       <p className="text-sm mt-1 text-gray-600">Quản lý tài sản trước khi thêm chúng vào thư viện phương tiện</p>

@@ -53,6 +53,10 @@ const AdminFormFieldImageEdit: React.FC<EditModalType> = ({show, setShow, data, 
     navigator.clipboard.writeText(data.url);
   }
 
+  const deleteImage = () => {
+
+  }
+
   return (
     <div className={`fixed w-full h-full top-0 left-0 px-4 py-4 overflow-hidden flex flex-col items-center justify-center z-[200]
       ${!show ? "pointer-events-none" : 'bg-black/40'}`}>
@@ -69,10 +73,10 @@ const AdminFormFieldImageEdit: React.FC<EditModalType> = ({show, setShow, data, 
               </span>
             </div>
 
-            <div className="p-6 border-y overflow-y-auto max-h-[60vh] flex space-x-4 items-start">
+            <div className={`relative p-6 border-y overflow-y-auto max-h-[60vh] flex space-x-4 items-start ${deletePopup ? '!overflow-hidden': ''}`}>
               <div className="w-1/2 rounded border bg-gray-200">
                 <div className="p-2 flex justify-end space-x-2">
-                  {/* <Tooltip title="Xóa ảnh" placement="top">
+                  <Tooltip title="Xóa ảnh" placement="top">
                     <span className="icon w-8 h-8 rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer"
                       onClick={() => setDeletePopup(true)}
                     >
@@ -94,7 +98,7 @@ const AdminFormFieldImageEdit: React.FC<EditModalType> = ({show, setShow, data, 
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M8.465 11.293c1.133-1.133 3.109-1.133 4.242 0l.707.707 1.414-1.414-.707-.707c-.943-.944-2.199-1.465-3.535-1.465s-2.592.521-3.535 1.465L4.929 12a5.008 5.008 0 0 0 0 7.071 4.983 4.983 0 0 0 3.535 1.462A4.982 4.982 0 0 0 12 19.071l.707-.707-1.414-1.414-.707.707a3.007 3.007 0 0 1-4.243 0 3.005 3.005 0 0 1 0-4.243l2.122-2.121z"></path><path d="m12 4.929-.707.707 1.414 1.414.707-.707a3.007 3.007 0 0 1 4.243 0 3.005 3.005 0 0 1 0 4.243l-2.122 2.121c-1.133 1.133-3.109 1.133-4.242 0L10.586 12l-1.414 1.414.707.707c.943.944 2.199 1.465 3.535 1.465s2.592-.521 3.535-1.465L19.071 12a5.008 5.008 0 0 0 0-7.071 5.006 5.006 0 0 0-7.071 0z"></path></svg>
                     </span>
-                  </Tooltip> */}
+                  </Tooltip>
                 </div>
                 <div className="w-full h-36 bg-make-transparent">
                   <img src={data?.url} alt={data?.name} className='w-full h-full object-contain' />
@@ -129,22 +133,41 @@ const AdminFormFieldImageEdit: React.FC<EditModalType> = ({show, setShow, data, 
                 <div className="mt-6 flex flex-col space-y-4">
                   <div className='flex flex-col'>
                     <label className="font-semibold text-xs mb-1">Tên ảnh</label>
-                    <input type="text" className='rounded border px-4 py-2 bg-white focus:ring-2 ring-blue-500' value={data?.name} required />
+                    <input type="text" className='rounded border px-4 py-2 bg-white focus:ring-2 ring-blue-500' defaultValue={data?.name} required />
                   </div>
                   <div className='flex flex-col'>
                     <label className="font-semibold text-xs mb-1">Đầu đề</label>
-                    <input type="text" className='rounded border px-4 py-2 bg-white focus:ring-2 ring-blue-500' value={data?.caption || ""} />
+                    <input type="text" className='rounded border px-4 py-2 bg-white focus:ring-2 ring-blue-500' defaultValue={data?.caption || ""} />
                   </div>
                   <div className='flex flex-col'>
                     <label className="font-semibold text-xs mb-1">Độ dài ảnh hiện thị</label>
-                    <input type="text" className='rounded border px-4 py-2 bg-white focus:ring-2 ring-blue-500' value={data?.width || ""} />
+                    <input type="text" className='rounded border px-4 py-2 bg-white focus:ring-2 ring-blue-500' defaultValue={data?.width || ""} />
                   </div>
                   <div className='flex flex-col'>
                     <label className="font-semibold text-xs mb-1">Chiều cao ảnh hiện thị</label>
-                    <input type="text" className='rounded border px-4 py-2 bg-white focus:ring-2 ring-blue-500' value={data?.height || ""} />
+                    <input type="text" className='rounded border px-4 py-2 bg-white focus:ring-2 ring-blue-500' defaultValue={data?.height || ""} />
                   </div>
                 </div>
               </div>
+
+              { deletePopup ? 
+                <div className="fixed !ml-0 w-full h-full top-0 left-0 grid place-items-center bg-black/50">
+                  <div className="w-72 rounded bg-white overflow-hidden">
+                    <h5 className="font-semibold px-6 pt-6">
+                      Bạn chắc chắn xóa hình ảnh này
+                    </h5>
+                    <p className="mt-2 mb-4 px-6 text-sm">
+                      Việc hóa hình ảnh sẽ xóa vĩnh viễn chúng ra khỏi cơ sở dữ liệu và không thể khôi phục được.
+                    </p>
+                    <div className="p-4 bg-gray-200 flex space-x-4 justify-end">
+                      <Button color='inherit' size='small' variant='text' onClick={() => setDeletePopup(false)}>Hủy bỏ</Button>
+                      <Button variant="contained" size='small' color='error' onClick={deleteImage}>
+                        Xóa
+                      </Button>
+                    </div>
+                  </div>
+                </div> : null
+              }
             </div>
 
             <div className="p-6 bg-gray-100 flex items-center">

@@ -41,7 +41,7 @@ const AdminFormFieldImage: React.FC<AdminFormFieldImageType> = ({
         </div>
       </div>
 
-      <AdminFormFieldImageModel show={showModal} setShow={setShowModal} />
+      <AdminFormFieldImageModel show={showModal} setShow={setShowModal} multiple={multiple} />
     </>
   )
 }

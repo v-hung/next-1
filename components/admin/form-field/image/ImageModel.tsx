@@ -9,13 +9,23 @@ import AdminFormFieldImageEdit from './ImageModelEdit';
 
 type ModalType = {
   show: boolean,
-  setShow: (data: boolean) => void
+  setShow: (data: boolean) => void,
+  multiple?: boolean,
 }
 
-const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow}) => {
+type ImageType = Image & {
+  checked: boolean
+}
+
+const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow, multiple}) => {
   const rechargeRef = useRef<HTMLDivElement>(null)
   const [loading, setLoading] = useState(false)
-  const [images, setImages] = useState<Image[]>([])
+  const [images, setImages] = useState<ImageType[]>([])
+
+  const [selects, setSelects] = useState<ImageType[]>([])
+  const [checked, setChecked] = useState<string[]>([])
+
+  const [page, setPage] = useState(0)
 
   const [addModal, setAddModal] = useState(false)
   const [dataUpload, setDataUpload] = useState([])
@@ -44,7 +54,7 @@ const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow}) => {
       try {
         const res = await fetch('/api/admin/images')
         if (!res.ok) throw ""
-        setImages((await res.json())?.data || [])
+        setImages(((await res.json())?.data as any[]).map(v => ({...v, checked: false})) || [])
       } catch (error) {
         return {data: []}
       } finally {
@@ -55,13 +65,48 @@ const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow}) => {
   }, [])
 
   useEffect(() => {
-    setImages(state => [...dataUpload, ...state])
+    setSelects(state => [...state, ...dataUpload])
   }, [dataUpload])
 
   const editImage = (image: Image) => {
     setDataEdit(image)
     setEditModal(true)
   }
+
+  // Add/Remove checked item from list
+  const handleCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
+    var updatedList: string[] = []
+
+    if (multiple) {
+      updatedList = [...checked]
+      if (event.target.checked) {
+        updatedList = [...checked, event.target.value]
+      } else {
+        updatedList.splice(checked.indexOf(event.target.value), 1)
+      }
+    }
+    else {
+      if (event.target.checked) {
+        updatedList = [event.target.value]
+      } else {
+        updatedList = []
+      }
+    }
+    
+    var tempImages: ImageType[] = []
+
+    updatedList.forEach(v => {
+      let tmp = images.find(v2 => v2.id == v)
+      if (tmp) {
+        tempImages.push(tmp)
+      }
+    })
+
+    setChecked(updatedList)
+    setSelects(tempImages)
+  }
+
+  const isChecked = (item: string) => checked.includes(item)
 
   return (
     <div className={`fixed w-full h-full top-0 left-0 px-4 overflow-hidden flex flex-col items-center justify-center z-[200]
@@ -84,51 +129,100 @@ const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow}) => {
 
             <div className="py-6 pt-0 border-y">
               <div className="px-6 flex items-center border-b">
-                <div className="p-4 uppercase text-xs font-semibold text-blue-600 border-b border-blue-600">
-                  <span>Browse</span>
-                  <span className="px-1 py-0.5 bg-gray-100 rounded">7</span>
-                </div> 
+                <div 
+                  className={`p-4 uppercase text-xs font-semibold border-b hover:bg-blue-100 cursor-pointer border-transparent ${page == 0 ? 'text-blue-600 !border-blue-600' : ''}`}
+                  onClick={() => setPage(0)}
+                >
+                  <span>Danh sách</span>
+                  <span className="ml-1 px-1 py-0.5 bg-gray-100 rounded">{images.length}</span>
+                </div>
+                <div 
+                  className={`p-4 uppercase text-xs font-semibold border-b hover:bg-blue-100 cursor-pointer border-transparent ${page == 1 ? 'text-blue-600 !border-blue-600' : ''}`}
+                  onClick={() => setPage(1)}
+                >
+                  <span>Đã chọn</span>
+                  <span className="ml-1 px-1 py-0.5 bg-gray-100 rounded">{selects.length}</span>
+                </div>
                 <Button className='!ml-auto' variant="contained" size='small' color='primary'
                   onClick={() => setAddModal(true)}
                 >
                   Thêm ảnh
                 </Button>
               </div>
-              { loading 
-                ? <div className="w-full p-6 grid place-items-center">
-                  <span className="icon w-10 h-10 animate-spin">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="20" r="2"></circle><circle cx="12" cy="4" r="2"></circle><circle cx="6.343" cy="17.657" r="2"></circle><circle cx="17.657" cy="6.343" r="2"></circle><circle cx="4" cy="12" r="2.001"></circle><circle cx="20" cy="12" r="2"></circle><circle cx="6.343" cy="6.344" r="2"></circle><circle cx="17.657" cy="17.658" r="2"></circle></svg>
-                  </span>
-                </div>
-                : images.length > 0
-                ? <div className="mt-6 grid gap-4 px-6 overflow-y-auto max-h-[60vh]" style={{gridTemplateColumns: 'repeat(auto-fill, minmax(13rem, 1fr))'}}>
-                  { images.map((v,i) => 
-                    <div className="rounded border overflow-hidden" key={i}>
-                      <div className="relative w-full h-24 bg-make-transparent">
-                        <img src={v.url} alt="" className="w-full h-full object-contain" />
-                        <div className="absolute top-2 left-2">
-                          <input type="checkbox" name="file_selected" />
+
+              <div hidden={page != 0}>
+                { loading
+                  ? <div className="w-full p-6 grid place-items-center">
+                    <span className="icon w-10 h-10 animate-spin">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="20" r="2"></circle><circle cx="12" cy="4" r="2"></circle><circle cx="6.343" cy="17.657" r="2"></circle><circle cx="17.657" cy="6.343" r="2"></circle><circle cx="4" cy="12" r="2.001"></circle><circle cx="20" cy="12" r="2"></circle><circle cx="6.343" cy="6.344" r="2"></circle><circle cx="17.657" cy="17.658" r="2"></circle></svg>
+                    </span>
+                  </div>
+                  : images.length > 0
+                  ? <div className="mt-6 grid gap-4 px-6 overflow-y-auto max-h-[60vh]" style={{gridTemplateColumns: 'repeat(auto-fill, minmax(13rem, 1fr))'}}>
+                    { images.map((v,i) =>
+                      <div className="rounded border overflow-hidden" key={v.id}>
+                        <div className="relative w-full h-24 bg-make-transparent">
+                          <img src={v.url} alt="" className="w-full h-full object-contain" />
+                          <div className="absolute top-2 left-2">
+                            <input type="checkbox" value={v.id} checked={isChecked(v.id)} onChange={(e) => handleCheck(e)} />
+                          </div>
+                          <span
+                            className="absolute top-2 right-2 icon w-8 h-8 rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer"
+                            onClick={() => editImage(v)}
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M8.707 19.707 18 10.414 13.586 6l-9.293 9.293a1.003 1.003 0 0 0-.263.464L3 21l5.242-1.03c.176-.044.337-.135.465-.263zM21 7.414a2 2 0 0 0 0-2.828L19.414 3a2 2 0 0 0-2.828 0L15 4.586 19.414 9 21 7.414z"></path></svg>
+                          </span>
                         </div>
-                        <span 
-                          className="absolute top-2 right-2 icon w-8 h-8 rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer"
-                          onClick={() => editImage(v)}
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M8.707 19.707 18 10.414 13.586 6l-9.293 9.293a1.003 1.003 0 0 0-.263.464L3 21l5.242-1.03c.176-.044.337-.135.465-.263zM21 7.414a2 2 0 0 0 0-2.828L19.414 3a2 2 0 0 0-2.828 0L15 4.586 19.414 9 21 7.414z"></path></svg>
-                        </span>
-                      </div> 
-                      <div className="p-4 py-2 flex justify-between items-start border-t">
-                        <div className="text-xs">
-                          <p className="font-semibold">{v.name}</p>
-                          <p className="uppercase">{v.type}</p>
-                        </div> 
-                        <div className="text-[10px] p-1 py-0.5 font-semibold rounded bg-gray-100">IMAGE</div>
-                      </div> 
-                    </div>
-                  )}
-                </div>
-                : <div className='px-6 mt-6'>Không có ảnh nào</div>
-              }
+                        <div className="p-4 py-2 flex justify-between items-start border-t">
+                          <div className="text-xs">
+                            <p className="font-semibold">{v.name}</p>
+                            <p className="uppercase">{v.type}</p>
+                          </div>
+                          <div className="text-[10px] p-1 py-0.5 font-semibold rounded bg-gray-100">IMAGE</div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  : <div className='px-6 mt-6'>Không có ảnh nào</div>
+                }
+              </div>
               
+              <div hidden={page != 1}>
+                <div className="px-6 pt-6 flex items-center justify-between">
+                  <div>
+                    <h5 className="font-semibold">{selects.length} tài sản đã chọn</h5>
+                    <p className="text-sm mt-1 text-gray-600">Quản lý tài sản trước khi thêm chúng vào thư viện phương tiện</p>
+                  </div>
+                </div>
+                { selects.length > 0
+                  ? <div className="px-6 mt-6 grid gap-4 overflow-y-auto max-h-[60vh]" style={{gridTemplateColumns: 'repeat(auto-fill, minmax(13rem, 1fr))'}}>
+                    { selects.map((v,i) =>
+                      <div className="rounded border overflow-hidden" key={v.id}>
+                        <div className="relative w-full h-24 bg-make-transparent">
+                          <img src={v.url} alt="" className="w-full h-full object-contain" />
+                          <div className="absolute top-2 left-2">
+                            <input type="checkbox" value={v.id} checked={isChecked(v.id)} onChange={(e) => handleCheck(e)} />
+                          </div>
+                          <span
+                            className="absolute top-2 right-2 icon w-8 h-8 rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer"
+                            onClick={() => editImage(v)}
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M8.707 19.707 18 10.414 13.586 6l-9.293 9.293a1.003 1.003 0 0 0-.263.464L3 21l5.242-1.03c.176-.044.337-.135.465-.263zM21 7.414a2 2 0 0 0 0-2.828L19.414 3a2 2 0 0 0-2.828 0L15 4.586 19.414 9 21 7.414z"></path></svg>
+                          </span>
+                        </div>
+                        <div className="p-4 py-2 flex justify-between items-start border-t">
+                          <div className="text-xs">
+                            <p className="font-semibold">{v.name}</p>
+                            <p className="uppercase">{v.type}</p>
+                          </div>
+                          <div className="text-[10px] p-1 py-0.5 font-semibold rounded bg-gray-100">IMAGE</div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  : <div className='px-6 mt-6'>Không có ảnh nào được chọn</div>
+                }
+              </div>
             </div>
 
             <div className="p-6 bg-gray-100 flex items-center">
