@@ -33,12 +33,12 @@ export const authOptions: AuthOptions = {
           throw new Error('Tài khoản không tồn tại')
         }
 
-        // const isCorrectPassword = await compare(
-        //   credentials.password,
-        //   user.password
-        // );
+        const isCorrectPassword = await compare(
+          credentials.password,
+          user.password
+        );
 
-        const isCorrectPassword = true
+        // const isCorrectPassword = true
 
         if (!isCorrectPassword) {
           throw new Error('Mật khẩu không đúng');

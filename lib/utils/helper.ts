@@ -56,3 +56,20 @@ export const getScrollbarWidth = () => {
 
   return scrollbarWidth;
 }
+
+export const formatBytes = (bytes?: number, decimals = 2) => {
+  if (!bytes) return '0 Bytes'
+
+  const k = 1024
+  const dm = decimals < 0 ? 0 : decimals
+  const sizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+}
+
+export const formatDate = (date?: Date | string | null, options?: object) => {
+  if (!date) return "Trống"
+  return new Date(date).toLocaleDateString("en-US", options)
+}

@@ -67,6 +67,9 @@ model Admin {
   password String
   name     String
   image    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Image {
@@ -80,6 +83,9 @@ model Image {
   naturalHeight Int
   naturalWidth  Int
   size          Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Category {
@@ -89,6 +95,9 @@ model Category {
   sold     Int?      @default(0)
   type     String
   products Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Product {
@@ -105,4 +114,7 @@ model Product {
 
   category   Category @relation(fields: [categoryId], references: [id])
   categoryId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

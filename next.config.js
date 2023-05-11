@@ -5,6 +5,7 @@ const nextConfig = {
     // Required:
     appDir: true,
     // serverActions: true,
+    serverComponentsExternalPackages: ['bcrypt', 'sharp'],
   },
 };
 
