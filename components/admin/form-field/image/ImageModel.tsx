@@ -11,18 +11,16 @@ type ModalType = {
   show: boolean,
   setShow: (data: boolean) => void,
   multiple?: boolean,
+  data: Image[]
+  setData: (data: Image[]) => void,
 }
 
-type ImageType = Image & {
-  checked: boolean
-}
-
-const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow, multiple}) => {
+const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow, multiple, data, setData}) => {
   const rechargeRef = useRef<HTMLDivElement>(null)
   const [loading, setLoading] = useState(false)
-  const [images, setImages] = useState<ImageType[]>([])
+  const [images, setImages] = useState<Image[]>([])
 
-  const [selects, setSelects] = useState<ImageType[]>([])
+  const [selects, setSelects] = useState<Image[]>(data)
   const [checked, setChecked] = useState<string[]>([])
 
   const [page, setPage] = useState(0)
@@ -93,7 +91,7 @@ const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow, multiple}
       }
     }
     
-    var tempImages: ImageType[] = []
+    var tempImages: Image[] = []
 
     updatedList.forEach(v => {
       let tmp = images.find(v2 => v2.id == v)
@@ -107,6 +105,11 @@ const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow, multiple}
   }
 
   const isChecked = (item: string) => checked.includes(item)
+
+  const next = () => {
+    setData(selects)
+    setShow(false)
+  }
 
   return (
     <div className={`fixed w-full h-full top-0 left-0 px-4 overflow-hidden flex flex-col items-center justify-center z-[200]
@@ -230,7 +233,9 @@ const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow, multiple}
                 Hủy bỏ
               </Button>
 
-              <Button className='!ml-auto' variant="contained" size='small' color='primary'>
+              <Button className='!ml-auto' variant="contained" size='small' color='primary'
+                onClick={next}
+              >
                 Tiếp theo
               </Button>
             </div>
