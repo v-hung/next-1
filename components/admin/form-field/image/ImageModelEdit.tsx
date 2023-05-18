@@ -61,7 +61,7 @@ const AdminFormFieldImageEdit: React.FC<EditModalType> = ({show, setShow, data, 
     <div className={`fixed w-full h-full top-0 left-0 px-4 py-4 overflow-hidden flex flex-col items-center justify-center z-[200]
       ${!show ? "pointer-events-none" : 'bg-black/40'}`}>
       <div ref={rechargeRef} className='w-full max-w-3xl mx-auto'>
-        <Zoom in={show}>
+        <Zoom in={show} unmountOnExit>
           <div className='w-full bg-white rounded'>
             <div className="p-6 flex items-center justify-between">
               <span className='text-xl font-semibold'>Chi tiết hình ảnh</span>

@@ -21,7 +21,7 @@ export const useStoreCustom = <T, F>(
   const [data, setData] = useState<F>()
 
   useLayoutEffect(() => {
-    // console.log({result})
+    // console.log(1)
     setData(result)
   }, [result])
 

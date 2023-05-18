@@ -26,7 +26,7 @@ const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow, multiple,
   const [page, setPage] = useState(0)
 
   const [addModal, setAddModal] = useState(false)
-  const [dataUpload, setDataUpload] = useState([])
+  const [dataUpload, setDataUpload] = useState<Image[]>([])
 
   const [editModal, setEditModal] = useState(false)
   const [dataEdit, setDataEdit] = useState<Image | null>(null)
@@ -46,24 +46,40 @@ const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow, multiple,
     }
   }, [show]) 
 
-  useEffect(() => {
-    const fetchImages = async () => {
-      setLoading(true)
-      try {
-        const res = await fetch('/api/admin/images')
-        if (!res.ok) throw ""
-        setImages(((await res.json())?.data as any[]).map(v => ({...v, checked: false})) || [])
-      } catch (error) {
-        return {data: []}
-      } finally {
-        setLoading(false)
-      }
+  const fetchImages = async () => {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/admin/images')
+      if (!res.ok) throw ""
+      setImages(((await res.json())?.data as any[]).map(v => ({...v, checked: false})) || [])
+    } catch (error) {
+      return {data: []}
+    } finally {
+      setLoading(false)
     }
+  }
+
+  useEffect(() => {
     fetchImages()
   }, [])
 
   useEffect(() => {
+    if (dataUpload.length == 0) return
+
+    fetchImages()
     setSelects(state => [...state, ...dataUpload])
+
+    // checked
+    var updatedList: string[] = []
+    if (multiple) {
+      updatedList = [...checked, ...dataUpload.map(v => v.id)]
+    }
+    else {
+      updatedList = [dataUpload[0].id]
+    }
+
+    setChecked(updatedList)
+
   }, [dataUpload])
 
   const editImage = (image: Image) => {
@@ -118,7 +134,7 @@ const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow, multiple,
     >
       {/* <div className="flex-grow"></div> */}
       <div ref={rechargeRef} className='flex-none w-full max-w-3xl mx-auto'>
-        <Zoom in={show}>
+        <Zoom in={show} unmountOnExit>
           <div className='w-full bg-white rounded'>
             <div className="p-6 flex items-center justify-between">
               <span className='text-xl font-semibold'>Danh sách ảnh</span>

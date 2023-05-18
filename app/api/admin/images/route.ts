@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import db from "@/lib/server/prismadb";
 import { existsSync, mkdirSync } from "fs";
 import sharp from "sharp";
+import { v4 } from "uuid";
 // import imagemin from "imagemin"
 // import imageminPngQuant from "imagemin-pngquant"
 // import imageminJpegtran from "imagemin-jpegtran"
@@ -34,9 +35,15 @@ export async function POST(request: Request) {
       mkdirSync('./storage', { recursive: true });
     }
 
+    const compress = {
+      'png': {compressionLevel: 8, quality: 60},
+      'jpeg': { quality: 60 },
+      'webp': { quality: 60 },
+      'gif': { }
+    }
+
     let res: any[] = []
     for (let file of files) {
-      let name = crypto.randomUUID() + "." + file.name.split('.')[1]
       
       // const fileMin = await imagemin.buffer(Buffer.from(await file.arrayBuffer()), {
       //   // destination: "compressed-images",
@@ -49,10 +56,19 @@ export async function POST(request: Request) {
       // })
 
       // let fileData = sharp(fileMin)
-      let fileData = sharp(await file.arrayBuffer())
+      let fileData = sharp(await file.arrayBuffer(), { animated: true })
+      
+      let metadata = await fileData.metadata()
+      
+      let name = v4() + "." + metadata.format
       let fileUrl = `./storage/images/${name}`
 
-      let fileSave = await fileData.png({compressionLevel: 8, quality: 60}).toFile(fileUrl)
+      if (Object.keys(compress).findIndex(v => v == metadata.format) < 0) {
+        throw "Không phải định dạng ảnh"
+      }
+
+      //@ts-ignore
+      let fileSave = await fileData[metadata.format || "png"](compress[metadata.format || "png"]).toFile(fileUrl)
         .then((data: any) => {
           console.log(data)
           return data

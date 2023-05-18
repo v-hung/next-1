@@ -1,15 +1,63 @@
 "use client"
 import { Button } from '@mui/material'
 import { useRouter } from 'next/navigation'
-import React from 'react'
+import React, { useState, FormEvent } from 'react'
 import AdminFormFieldImage from '@/components/admin/form-field/AdminFormFieldImage'
 import AdminFormFieldText from '../form-field/AdminFormFieldText'
 import AdminFormFieldSelect from '../form-field/AdminFormFieldSelect'
+import { VariantType, useSnackbar } from 'notistack'
 
 const AdminContentCategoriesCreate = () => {
   const router = useRouter()
+  const { enqueueSnackbar } = useSnackbar()
+
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+
+  const save = async (e: FormEvent) => {
+    e.preventDefault()
+    if (loading) return
+
+    try {
+      setLoading(true)
+      
+      const { title, type, image } = Object.fromEntries(
+        new FormData(e.target as HTMLFormElement),
+      );
+
+      var formData: any = new FormData()
+      formData.append('title', title)
+      formData.append('type', type)
+      formData.append('image', image)
+      
+      const res = await fetch('/api/admin/categories/create', {
+        method: 'post',
+        body: formData
+      })
+      
+      if (!res.ok) throw ""
+
+      const body = await res.json()
+
+      setError("")
+
+      // router.push('/admin')
+      // router.replace('/admin')
+      let variant: VariantType = "success"
+      enqueueSnackbar('Thành công', { variant })
+    } 
+    catch (error) {
+      setError(error as any)
+      console.log({error})
+      let variant: VariantType = "error"
+      enqueueSnackbar('Có lỗi xảy ra, vui lòng thử lại sau', { variant })
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
-    <>
+    <form onSubmit={save}>
       <div className="flex items-center space-x-1 text-blue-500 hover:text-blue-600 bg-transparent cursor-pointer"
         onClick={() => router.back()}
       >
@@ -25,7 +73,7 @@ const AdminContentCategoriesCreate = () => {
           <p className="text-sm text-gray-600 mt-1">10 bản ghi</p>
         </div>
 
-        <Button className='!ml-auto' variant="contained" color='secondary' startIcon={(
+        <Button className='!ml-auto' disabled={true} variant="contained" color='secondary' startIcon={(
           <span className="icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="m10 15.586-3.293-3.293-1.414 1.414L10 18.414l9.707-9.707-1.414-1.414z"></path></svg>
           </span>
@@ -33,7 +81,7 @@ const AdminContentCategoriesCreate = () => {
           Xuất bản
         </Button>
 
-        <Button variant="contained">
+        <Button variant="contained" type='submit'>
           Lưu
         </Button>
       </section>
@@ -54,7 +102,7 @@ const AdminContentCategoriesCreate = () => {
                 ]} />
               </div>
               <div className="w-1/2 px-2 mb-4">
-                <AdminFormFieldImage name='image' multiple={true} required={true} />
+                <AdminFormFieldImage name='image' required={true} />
               </div>
             </div>
           </div>
@@ -83,7 +131,13 @@ const AdminContentCategoriesCreate = () => {
           </div>
         </div>
       </div>
-    </>
+
+      { loading ? <div className="fixed w-full h-screen top-0 left-0 grid place-items-center bg-white/60 z-[100]">
+        <span className="icon animate-spin w-12 h-12">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="20" r="2"></circle><circle cx="12" cy="4" r="2"></circle><circle cx="6.343" cy="17.657" r="2"></circle><circle cx="17.657" cy="6.343" r="2"></circle><circle cx="4" cy="12" r="2.001"></circle><circle cx="20" cy="12" r="2"></circle><circle cx="6.343" cy="6.344" r="2"></circle><circle cx="17.657" cy="17.658" r="2"></circle></svg>
+        </span>
+      </div> : null}
+    </form>
   )
 }
 

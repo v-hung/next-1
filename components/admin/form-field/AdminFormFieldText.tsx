@@ -18,7 +18,7 @@ const AdminFormFieldText: React.FC<State> = ({
     <div>
       <p className="text-sm font-semibold mb-1">{title} { required && <span className="text-red-500">*</span> }</p>
       <div className="border rounded focus-within:ring-2 ring-blue-600 bg-white">
-        <input type="text" name={name} className="w-full px-4 py-2" />
+        <input type="text" name={name} className="w-full px-4 py-2" required={required} />
       </div>
     </div>
   )

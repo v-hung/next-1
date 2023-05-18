@@ -19,12 +19,12 @@ const AdminFormFieldImage: React.FC<AdminFormFieldImageType> = ({
   name,
   required = false
 }) => {
-  const [value, setValue] = useState("")
+  const [value, setValue] = useState<string | undefined>(undefined)
   const [showModal, setShowModal] = useState(false)
   const [images, setImages] = useState<Image[]>([])
 
   useEffect(() => {
-    setValue(multiple ? JSON.stringify(images.map(v => v.id)) : images[0].id)
+    setValue(multiple ? JSON.stringify(images.map(v => v.id)) : images.length > 0 ? images[0].id : undefined)
   }, [images])
 
   return (

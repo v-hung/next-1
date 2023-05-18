@@ -2,6 +2,7 @@ import AdminLayout from 'components/admin/main-layout/AdminLayout';
 import { cookies } from 'next/headers';
 import React from 'react';
 import { useCurrentUserAdmin } from '@/lib/server/helperServer';
+import ClientOnly from '@/components/ClientOnly';
 
 export const metadata = {
   title: 'Admin Create Next App',
@@ -37,9 +38,10 @@ export default async function AdminRootLayout({
   const data = await useCurrentUserAdmin()
 
   return (
-    <AdminLayout userData={data}>
-      {children}
-    </AdminLayout>
-    // <div>{children}</div>
+    // <ClientOnly>
+      <AdminLayout userData={data}>
+        {children}
+      </AdminLayout>
+    // </ClientOnly>
   )
 }

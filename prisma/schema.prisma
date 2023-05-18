@@ -94,6 +94,7 @@ model Category {
   title    String
   sold     Int?      @default(0)
   type     String
+  status   String    @default("draft")
   products Product[]
 
   createdAt DateTime @default(now())
@@ -111,6 +112,7 @@ model Product {
   skins            Int
   rank             String
   gem              Int
+  status           String  @default("draft")
 
   category   Category @relation(fields: [categoryId], references: [id])
   categoryId String

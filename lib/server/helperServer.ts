@@ -34,7 +34,9 @@ export const useCurrentUserAdmin = async (request?: NextRequest) => {
       id: true,
       email: true,
       name: true,
-      image: true
+      image: true,
+      createdAt: true,
+      updatedAt: true
     }
   })
 
