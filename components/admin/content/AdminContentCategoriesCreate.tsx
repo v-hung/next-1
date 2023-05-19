@@ -39,12 +39,13 @@ const AdminContentCategoriesCreate = () => {
 
       const body = await res.json()
 
-      setError("")
+      console.log({body})
 
-      // router.push('/admin')
-      // router.replace('/admin')
+      setError("")
       let variant: VariantType = "success"
       enqueueSnackbar('Thành công', { variant })
+      
+      router.back()
     } 
     catch (error) {
       setError(error as any)

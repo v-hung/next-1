@@ -5,17 +5,22 @@ import Button from '@mui/material/Button';
 import React from 'react'
 import styled from '@emotion/styled';
 import Link from 'next/link';
+import { Category } from '@prisma/client';
 
-const AdminContentCategories = () => {
+type State = {
+  data: Category[]
+}
+
+const AdminContentCategories: React.FC<State> = ({data}) => {
 
   const columns = [
     { id: 'id', label: 'ID', width: "0px"},
-    { id: 'name', label: 'Tên'},
+    { id: 'title', label: 'Tên'},
     { id: 'age', label: 'Tuổi'},
     { id: 'gender', label: 'Giới tính'},
   ];
 
-  const data = new Array(30).fill(0).map((v,i) => ({ id: i, name: "Viet Hung", age: 25, gender: "Nam"}))
+  // const data = new Array(30).fill(0).map((v,i) => ({ id: i, name: "Viet Hung", age: 25, gender: "Nam"}))
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -106,9 +111,9 @@ const AdminContentCategories = () => {
                   <StyledTableRow key={row.id}>
                     <TableCell align="left"><input type="checkbox" /></TableCell>
                     <TableCell align="center">{row.id}</TableCell>
-                    <TableCell align="center">{row.name}</TableCell>
-                    <TableCell align="center">{row.age}</TableCell>
-                    <TableCell align="center">{row.gender}</TableCell>
+                    <TableCell align="center">{row.title}</TableCell>
+                    <TableCell align="center">{row.image}</TableCell>
+                    <TableCell align="center">{row.type}</TableCell>
                     <TableCell align="right">
                       <div className="flex space-x-1 items-center">
                         {/* <span className="icon w-10 h-10 p-1.5 text-yellow-500 rounded-full hover:bg-gray-100 cursor-pointer">

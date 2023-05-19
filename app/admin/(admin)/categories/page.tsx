@@ -1,7 +1,18 @@
 import AdminContentCategories from "@/components/admin/content/AdminContentCategories"
+import db from "@/lib/server/prismadb";
 
-export default () => {
+const getData = async () => {
+  const categories = await db.category.findMany()
+
+  return categories;
+}
+
+const a = 1
+
+export default async () => {
+  const data = await getData()
+
   return (
-    <AdminContentCategories />
+    <AdminContentCategories data={data} />
   )
 }

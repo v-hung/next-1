@@ -79,6 +79,7 @@ const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow, multiple,
     }
 
     setChecked(updatedList)
+    setPage(1)
 
   }, [dataUpload])
 

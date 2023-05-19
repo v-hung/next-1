@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/server/prismadb';
 import { useCurrentUserAdmin } from '@/lib/server/helperServer';
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     const user = await useCurrentUserAdmin(request)
 
