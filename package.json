@@ -41,7 +41,7 @@
     "use-count-up": "3.0.1",
     "uuid": "9.0.0",
     "validator": "13.9.0",
-    "zustand": "4.3.8"
+    "zustand": "4.4.0"
   },
   "devDependencies": {
     "@types/bcrypt": "5.0.0",
