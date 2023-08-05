@@ -24,17 +24,23 @@ const MenuAdmin = () => {
 
   const managerLinks = [
     {
-      icon: <GoDashboard size={24} />,
+      icon: (<span className="material-symbols-outlined icon-500">
+        dashboard
+      </span>),
       name: "Bảng điều khiển",
       path: "/admin"
     },
     {
-      icon: <BiCategory size={24} />,
+      icon: (<span className="material-symbols-outlined icon-500">
+        category
+      </span>),
       name: "Danh mục",
       path: "/admin/categories"
     },
     {
-      icon: <BiBaguette size={24} />,
+      icon: (<span className="material-symbols-outlined icon-500">
+        inventory_2
+      </span>),
       name: "Sản phẩm",
       path: "/admin/products"
     }
@@ -42,17 +48,23 @@ const MenuAdmin = () => {
 
   const generalLinks = [
     {
-      icon: <BiUser size={24} />,
+      icon: (<span className="material-symbols-outlined icon-500">
+        person
+      </span>),
       name: "Người dùng",
       path: "/"
     },
     {
-      icon: <BiKey size={24} />,
+      icon: (<span className="material-symbols-outlined icon-500">
+        key
+      </span>),
       name: "Quyền",
       path: "/"
     },
     {
-      icon: <BiCog size={24} />,
+      icon: (<span className="material-symbols-outlined icon-500">
+        settings
+      </span>),
       name: "Cài đặt",
       path: "/"
     }
@@ -83,7 +95,7 @@ const MenuAdmin = () => {
         <div className="flex-grow min-h-0 flex flex-col space-y-2 px-1 overflow-y-auto">
           <div className="w-full h-5 flex items-center px-2 text-gray-500 !mt-4">
             { adminMenu?.open || isHover
-              ? <div className='whitespace-nowrap text-sm font-bold '>Quản lý nội dung</div>
+              ? <div className='whitespace-nowrap text-sm font-semibold '>Quản lý nội dung</div>
               : <div className="w-full h-[1px] bg-gray-300"></div>
             }
           </div>
@@ -97,13 +109,13 @@ const MenuAdmin = () => {
                 <div className='flex-none px-1 grid place-items-center' style={{width: "44px"}}>
                   {v.icon}
                 </div>
-                <span className='flex-none font-semibold'>{v.name}</span>
+                <span className='flex-none font-medium'>{v.name}</span>
               </Link>
             )
           })}
           <div className="w-full h-5 flex items-center px-2 text-gray-500 !mt-4">
             { adminMenu?.open || isHover
-              ? <div className='whitespace-nowrap text-sm font-bold '>Tổng quan</div>
+              ? <div className='whitespace-nowrap text-sm font-semibold '>Tổng quan</div>
               : <div className="w-full h-[1px] bg-gray-300"></div>
             }
           </div>
@@ -117,7 +129,7 @@ const MenuAdmin = () => {
                 <div className='flex-none px-1 grid place-items-center' style={{width: "44px"}}>
                   {v.icon}
                 </div>
-                <span className='flex-none font-semibold'>{v.name}</span>
+                <span className='flex-none font-medium'>{v.name}</span>
               </Link>
             )
           })}

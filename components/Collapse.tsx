@@ -37,6 +37,7 @@ const Collapse = ({className = "", children, show = false, setShow}: any) => {
   },[show])
 
   useClickOutside(ref, () => {
+    console.log('click outside')
     if (typeof setShow === 'function')
       setShow(false)
   })

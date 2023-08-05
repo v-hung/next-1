@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import React from 'react';
 import { useCurrentUserAdmin } from '@/lib/server/helperServer';
 import ClientOnly from '@/components/ClientOnly';
+import { redirect } from 'next/navigation';
 
 export const metadata = {
   title: 'Admin Create Next App',
@@ -36,6 +37,10 @@ export default async function AdminRootLayout({
   // console.log(data)
 
   const data = await useCurrentUserAdmin()
+
+  if (data == null) {
+    redirect('/admin/login')
+  }
 
   return (
     // <ClientOnly>

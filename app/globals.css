@@ -11,6 +11,29 @@
     @apply border-[#dcdce4];
   }
 
+  .material-symbols-outlined {
+    font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 48
+  }
+
+  .icon-500 {
+    font-variation-settings:
+    'wght' 500;
+  }
+  
+  .icon-600 {
+    font-variation-settings:
+    'wght' 600;
+  }
+
+  .icon-fill {
+    font-variation-settings:
+    'FILL' 1;
+  }
+
   input, select, textarea {
     background: transparent !important;
   }

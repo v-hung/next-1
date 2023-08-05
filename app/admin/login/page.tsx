@@ -42,8 +42,8 @@ const page = () => {
       setError("")
 
       // router.push('/admin')
-      // router.replace('/admin')
-      router.refresh()
+      router.replace('/admin')
+      // router.refresh()
     } 
     catch (error) {
       setError(error as any)

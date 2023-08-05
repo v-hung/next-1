@@ -46,6 +46,7 @@ const AdminContentCategoriesCreate = () => {
       enqueueSnackbar('Thành công', { variant })
       
       router.back()
+      router.refresh()
     } 
     catch (error) {
       setError(error as any)
