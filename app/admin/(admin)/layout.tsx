@@ -1,4 +1,4 @@
-import AdminLayout from 'components/admin/main-layout/AdminLayout';
+import AdminLayout from 'components/admin/AdminLayout';
 import { cookies } from 'next/headers';
 import React from 'react';
 import { useCurrentUserAdmin } from '@/lib/server/helperServer';

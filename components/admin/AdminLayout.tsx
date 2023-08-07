@@ -5,10 +5,10 @@ import { AdminUser } from '@/stores/admin/adminUser';
 import ClientOnly from 'components/ClientOnly';
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import useAdminUser from 'stores/admin/adminUser';
-import HeaderAdmin from '../HeaderAdmin';
-import MenuAdmin from '../MenuAdmin';
+import HeaderAdmin from './HeaderAdmin';
+import MenuAdmin from './MenuAdmin';
 import { useStoreCustom } from '@/stores';
-import AdminModal from '../modal/AdminModal';
+import AdminModal from './modal/AdminModal';
 import { SnackbarProvider } from 'notistack';
 
 const AdminLayout : React.FC<{

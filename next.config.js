@@ -4,9 +4,9 @@ const nextConfig = {
   experimental: {
     // Required:
     appDir: true,
-    // serverActions: true,
+    serverActions: true,
     serverComponentsExternalPackages: ['bcrypt', 'sharp', 'crypto', "uuid"],
-  },
-};
+  }
+}
 
 module.exports = nextConfig;

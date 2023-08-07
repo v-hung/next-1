@@ -66,7 +66,9 @@ model Admin {
   email    String  @unique
   password String
   name     String
-  image    String?
+
+  imageId    String?
+  image Image? @relation(fields: [imageId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -84,18 +86,25 @@ model Image {
   naturalWidth  Int
   size          Float
 
+  category Category[]
+  admin Admin[]
+  product Product[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Category {
   id       String    @id @default(cuid())
-  image    String
   title    String
   sold     Int?      @default(0)
   type     String
   status   String    @default("draft")
+
   products Product[]
+
+  imageId  String
+  image Image @relation(fields: [imageId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -104,8 +113,6 @@ model Category {
 model Product {
   id               String  @id @default(cuid())
   name             String
-  image            String
-  images           String?
   price            Int
   promotionalPrice Int?
   heros            Int
@@ -114,8 +121,10 @@ model Product {
   gem              Int
   status           String  @default("draft")
 
-  category   Category @relation(fields: [categoryId], references: [id])
+  images Image[]
+
   categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

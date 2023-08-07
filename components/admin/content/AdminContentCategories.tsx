@@ -2,54 +2,64 @@
 import { Box, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TableRow, tableCellClasses } from '@mui/material'
 import TablePagination from '@mui/material/TablePagination';
 import Button from '@mui/material/Button';
-import React from 'react'
+import { useState } from 'react'
 import styled from '@emotion/styled';
 import Link from 'next/link';
 import { Category } from '@prisma/client';
 import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
-type State = {
-  data: any[]
+export type AdminContentStateType = {
+  data: any[],
+  name: string,
+  count: number,
+  ROWS_PER_PAGES: number[],
+  columns: {
+    key: string,
+    label: string,
+    type: 'string' | 'number' | 'date'
+    show: boolean
+  }[]
 }
 
-const AdminContentCategories: React.FC<State> = ({data}) => {
+const AdminContentCategories: React.FC<AdminContentStateType> = ({ data, name, count, ROWS_PER_PAGES = [10, 20, 50], columns }) => {
   const router = useRouter()
+  const searchParams = useSearchParams()
 
-  const columns = [
-    { id: 'id', label: 'ID', width: "0px"},
-    { id: 'title', label: 'Tên'},
-    { id: 'age', label: 'Tuổi'},
-    { id: 'gender', label: 'Giới tính'},
-  ]
+  const page = +(searchParams?.get('page') || 1)
+  const per_page = +(searchParams?.get('per_page') || ROWS_PER_PAGES[0])
 
-  // const data = new Array(30).fill(0).map((v,i) => ({ id: i, name: "Viet Hung", age: 25, gender: "Nam"}))
-
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [columnsShow, setColumnsShow] = useState(columns.filter(v => v.show))
 
   // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
 
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number,
   ) => {
-    setPage(newPage);
-  };
+    let query = new URLSearchParams(searchParams?.toString())
+
+    query.set('page', (newPage + 1).toString())
+        
+    router.push(`?${query.toString()}`)
+  }
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+    let query = new URLSearchParams(searchParams?.toString())
+
+    query.delete('page')
+    query.set('per_page', (event.target.value || ROWS_PER_PAGES[0].toString()))
+        
+    router.push(`?${query.toString()}`)
+  }
 
   return (
     <>
       <section className="flex items-center space-x-4">
         <div>
-          <h3 className="text-2xl font-semibold">Danh mục</h3>
+          <h3 className="text-2xl font-semibold">{name}</h3>
           <p className="text-sm text-gray-600 mt-1">10 bản ghi</p>
         </div>
 
@@ -88,12 +98,12 @@ const AdminContentCategories: React.FC<State> = ({data}) => {
               <TableHead>
                 <TableRow>
                   <StyledTableCell style={{width: '0px'}} align="left"><input type="checkbox" /></StyledTableCell>
-                  {columns.map((column) => (
+                  {columnsShow.map((column) => (
                     <StyledTableCell
-                      key={column.id}
+                      key={column.key}
                       align="center"
                       // width={column?.width || 'auto'}
-                      style={{width: column?.width || 'auto'}}
+                      style={{width: column.key == 'id' ? 0 : 'auto'}}
                     >
                       {column.label}
                     </StyledTableCell>
@@ -102,13 +112,12 @@ const AdminContentCategories: React.FC<State> = ({data}) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {(rowsPerPage > 0
-                  ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  : data
-                ).map((row) => (
+                {data.length > 0 ? data.map((row) => (
                   <StyledTableRow key={row.id}>
                     <TableCell align="left"><input type="checkbox" /></TableCell>
-                    <TableCell align="center">{row.id}</TableCell>
+                    {columnsShow.map(v => 
+                      <TableCell align="center">{row.id}</TableCell>
+                    )}
                     <TableCell align="center">{row.title}</TableCell>
                     <TableCell align="center">{row.image}</TableCell>
                     <TableCell align="center">{row.type}</TableCell>
@@ -132,24 +141,17 @@ const AdminContentCategories: React.FC<State> = ({data}) => {
                       </div>
                     </TableCell>
                   </StyledTableRow>
-                ))}
-                {/* {emptyRows > 0 && (
-                  <TableRow style={{ height: 53 * emptyRows }}>
-                    <TableCell colSpan={6} />
-                  </TableRow>
-                )} */}
-                { data.length == 0 
-                  ? <TableRow><TableCell colSpan={"100%" as any} className='text-center'>Không có bản ghi nào</TableCell></TableRow> : null
-                }
+                ))
+                : <TableRow><TableCell colSpan={"100%" as any} className='text-center'>Không có bản ghi nào</TableCell></TableRow> }
               </TableBody>
             </Table>
           </TableContainer>
           <TablePagination
-            rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+            rowsPerPageOptions={[...ROWS_PER_PAGES, { label: 'All', value: -1 }]}
             component="div"
-            count={data.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
+            count={count}
+            rowsPerPage={per_page}
+            page={page - 1}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
@@ -167,7 +169,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
   },
-}));
+}))
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(odd)': {
@@ -177,6 +179,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:last-child td, &:last-child th': {
     border: 0,
   },
-}));
+}))
 
 export default AdminContentCategories
