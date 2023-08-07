@@ -103,8 +103,8 @@ model Category {
 
   products Product[]
 
-  imageId  String
-  image Image @relation(fields: [imageId], references: [id])
+  imageId  String?
+  image Image? @relation(fields: [imageId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
