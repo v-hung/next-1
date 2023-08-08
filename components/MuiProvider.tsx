@@ -5,7 +5,7 @@ import { ThemeProvider, CssBaseline } from '@mui/material'
 import React from "react";
 import { Roboto } from 'next/font/google'
 
-const roboto = Roboto({
+const font = Roboto({
   weight: ['400', '500', '700'],
   style: ['normal', 'italic'],
   subsets: ['latin']
@@ -26,7 +26,7 @@ export const lightTheme = createTheme({
     }
   },
   typography: {
-    fontFamily: roboto.style.fontFamily
+    // fontFamily: font.style.fontFamily
   }
 })
 
@@ -41,11 +41,11 @@ const MuiProvider: React.FC<{
 }> = ({children}) => {
   return (
     <ThemeProvider theme={lightTheme}>
-      <style global jsx>
+      {/* <style global jsx>
         {`html {
-          font-family: ${roboto.style.fontFamily};
+          font-family: ${font.style.fontFamily};
         }`}
-      </style>
+      </style> */}
       <CssBaseline />
       {children}
     </ThemeProvider>

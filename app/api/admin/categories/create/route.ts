@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     const data = await db.category.create({
       data: {
         title,
-        image,
+        imageId: image,
         type,
       }
     })

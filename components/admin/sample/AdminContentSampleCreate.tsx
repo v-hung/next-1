@@ -22,7 +22,6 @@ const AdminContentSampleCreate: React.FC<SampleStateType> = ({
   const { enqueueSnackbar } = useSnackbar()
 
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
 
   const save = async (e: FormEvent) => {
     e.preventDefault()
@@ -35,9 +34,8 @@ const AdminContentSampleCreate: React.FC<SampleStateType> = ({
         new FormData(e.target as HTMLFormElement),
       );
 
-      addData(data)
+      await addData(data)
 
-      setError("")
       let variant: VariantType = "success"
       enqueueSnackbar('Thành công', { variant })
       
@@ -45,7 +43,6 @@ const AdminContentSampleCreate: React.FC<SampleStateType> = ({
       router.refresh()
     } 
     catch (error) {
-      setError(error as any)
       console.log({error})
       let variant: VariantType = "error"
       enqueueSnackbar('Có lỗi xảy ra, vui lòng thử lại sau', { variant })
@@ -88,7 +85,7 @@ const AdminContentSampleCreate: React.FC<SampleStateType> = ({
           <div className="w-full p-4 bg-white rounded shadow">
             <div className="flex -mx-2 flex-wrap">
               {columns.filter(v => !['id', 'createdAt', 'updatedAt', 'publish'].includes(v.key)).map(column =>
-                <div className="w-1/2 px-2 mb-4">
+                <div className="w-1/2 px-2 mb-4" key={column.key}>
                   { column.type == 'select'
                     ? <AdminFormFieldSelect name='type' required={true} title='Danh mục' list={column.details.list} />
                     : column.type == 'image' ? <AdminFormFieldImage name='image' required={true} />
@@ -112,11 +109,11 @@ const AdminContentSampleCreate: React.FC<SampleStateType> = ({
 
             <div className="flex flex-col space-y-4 mt-4 text-sm">
               <div className="flex justify-between">
-                <span className="font-semibold text-gray-600">CreatedAt</span>
+                <span className="font-medium text-gray-600">CreatedAt</span>
                 <span>now</span>
               </div>
               <div className="flex justify-between">
-                <span className="font-semibold text-gray-600">UpdatedAt</span>
+                <span className="font-medium text-gray-600">UpdatedAt</span>
                 <span>now</span>
               </div>
             </div>

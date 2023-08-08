@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import moment from 'moment';
 import FormIOSSwitch from '@/components/FormIOSSwitch';
+import { VariantType, enqueueSnackbar } from 'notistack';
 
 export type SampleColumnsType = {
   key: string,
@@ -144,19 +145,31 @@ const AdminContentSample: React.FC<SampleStateType> = ({
   }
 
   const handelDeleteData = async (e: React.MouseEvent<HTMLElement>) => {
-    if ((deleteId == null && checked.length == 0) || loading) return
-    setLoading(true)
-    
-    if (deleteId) {
-      await deleteData([deleteId])
-    }
-    else if (checked.length > 0) {
-      await deleteData(checked)
-    }
+    try {
+      if ((deleteId == null && checked.length == 0) || loading) return
+      setLoading(true)
 
-    router.refresh()
-    setLoading(false)
-    setIsDelete(false)
+      if (deleteId) {
+        await deleteData([deleteId])
+      }
+      else if (checked.length > 0) {
+        await deleteData(checked)
+      }
+
+      let variant: VariantType = "success"
+      enqueueSnackbar('Thành công', { variant })
+
+      router.refresh()
+    } 
+    catch (error) {
+      console.log({error})
+      let variant: VariantType = "error"
+      enqueueSnackbar('Có lỗi xảy ra, vui lòng thử lại sau', { variant })
+    } 
+    finally {
+      setLoading(false)
+      setIsDelete(false)
+    }
   }
 
   return (
