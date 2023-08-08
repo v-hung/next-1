@@ -16,22 +16,22 @@ export type SampleColumnsType = {
   label: string,
   show: boolean
 } & (
-  SampleColumnStatusType | 
+  SampleColumnSelectType | 
   SampleColumnReactionType |
   {
-    type: 'string' | 'date' | 'status' | 'image',
+    type: 'string' | 'date' | 'publish' | 'image',
     details?: undefined;
   }
 )
 
-type SampleColumnStatusType = {
+export type SampleColumnSelectType = {
   type: 'select',
   details: {
     list: { title: string, value: string}[]
   }
 }
 
-type SampleColumnReactionType = {
+export type SampleColumnReactionType = {
   type: 'reaction',
   details: {
     
@@ -85,10 +85,22 @@ const AdminContentSample: React.FC<SampleStateType> = ({
   const openShowField = Boolean(anchorElShowField)
   const handleClickShowField = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorElShowField(event.currentTarget)
-  };
+  }
   const handleCloseShowField = () => {
     setAnchorElShowField(null)
-  };
+  }
+
+  const [columnShowFields, setColumnShowFields] = useState<string[]>(columns.map(e => e.key))
+  const handelChangeColumnShowField = (e: React.FormEvent<HTMLInputElement>, key: string) => {
+    const { checked: isChecked } = e.target as HTMLInputElement
+
+    if (isChecked) {
+      setColumnShowFields([...columnShowFields, key])
+    }
+    else {
+      setColumnShowFields(columnShowFields.filter(item => item !== key))
+    }
+  }
 
   // checked
   const [checked, setChecked] = useState<string[]>([])
@@ -155,11 +167,14 @@ const AdminContentSample: React.FC<SampleStateType> = ({
           <p className="text-sm text-gray-600 mt-1">10 bản ghi</p>
         </div>
 
-        <Button variant="contained" color='error' disabled={checked.length == 0} startIcon={(
-          <span className="material-symbols-outlined">
-            delete
-          </span>
-        )}>
+        <Button variant="contained" color='error' disabled={checked.length == 0} 
+          onClick={() => showDeleteModel()}
+          startIcon={(
+            <span className="material-symbols-outlined">
+              delete
+            </span>
+          )}
+        >
           Xóa bản ghi
         </Button>
 
@@ -195,7 +210,9 @@ const AdminContentSample: React.FC<SampleStateType> = ({
           >
             {columnsShow.map(column =>
               <MenuItem key={column.key}>
-                <FormIOSSwitch label={column.label} className='block w-full'/>
+                <FormIOSSwitch label={column.label} 
+                  onChange={(e) => handelChangeColumnShowField(e, column.key)} 
+                  checked={columnShowFields.includes(column.key)} className='block w-full'/>
               </MenuItem>
             )}
           </Menu>
@@ -211,7 +228,7 @@ const AdminContentSample: React.FC<SampleStateType> = ({
                   <StyledTableCell style={{width: '0px'}} align="left">
                     <input type="checkbox" checked={checked.length == data.length} onChange={handleSelectAll} />
                   </StyledTableCell>
-                  {columnsShow.map((column) => (
+                  {columnsShow.filter(v => columnShowFields.includes(v.key)).map((column) => (
                     <StyledTableCell
                       key={column.key}
                       align="center"
@@ -230,18 +247,19 @@ const AdminContentSample: React.FC<SampleStateType> = ({
                     <TableCell align="left">
                       <input type="checkbox" id={row.id} checked={checked.includes(row.id)} onChange={handleSelect} />
                     </TableCell>
-                    {columnsShow.map(column => 
+                    {columnsShow.filter(v => columnShowFields.includes(v.key)).map(column => 
                       <TableCell align="center" key={`${row.id}-${column.key}`}>
                         { column.type == 'date'
                           ? ViewDateField(row[column.key])
-                          : column.type == 'status' ? ViewStatusField(row[column.key])
+                          : column.type == 'publish' ? ViewPublishField(row[column.key])
                           : column.type == 'select' ? ViewSelectField(row[column.key], column.details.list)
+                          : column.type == 'image' ? ViewImageField(row[column.key])
                           : <span>{row[column.key] || ''}</span>
                         }
                       </TableCell>
                     )}
                     <TableCell align="right">
-                      <div className="flex space-x-1 items-center">
+                      <div className="flex space-x-1 items-center justify-end">
                         <Button color='warning' variant='contained' size='small' startIcon={(
                           <span className="material-symbols-outlined">
                             visibility
@@ -304,7 +322,8 @@ const AdminContentSample: React.FC<SampleStateType> = ({
               </button>
             </div>
             <div className="p-4 border-y bg-gray-100">
-              fads
+              Are you sure you want to delete 
+              <span className="text-red-600"> {deleteId ? `"${deleteId}"` : checked.join(', ')}</span>
             </div>
             <div className="flex items-center justify-end p-4 space-x-4">
               <Button variant="outlined" color='black' onClick={handleCloseModalDelete}>Cancel</Button>
@@ -355,9 +374,15 @@ const ViewDateField = (value: Date) => {
   </div>
 }
 
-const ViewStatusField = (value: string) => {
+const ViewPublishField = (value: string) => {
   return <div className={`inline-block px-4 py-1.5 rounded text-white ${value == 'dart' ? 'bg-gray-500' : 'bg-blue-500'}`}>
     { value == 'dart' ? 'Nháp' : 'Xuất bản'}
+  </div>
+}
+
+const ViewImageField = (image: any) => {
+  console.log(image)
+  return <div className="">
   </div>
 }
 
