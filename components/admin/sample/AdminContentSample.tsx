@@ -11,43 +11,7 @@ import { useSearchParams } from 'next/navigation';
 import moment from 'moment';
 import FormIOSSwitch from '@/components/FormIOSSwitch';
 import { VariantType, enqueueSnackbar } from 'notistack';
-
-export type SampleColumnsType = {
-  key: string,
-  label: string,
-  show: boolean,
-  required?: boolean
-} & (
-  SampleColumnSelectType | 
-  SampleColumnReactionType |
-  SampleColumnImageType |
-  {
-    type: 'string' | 'date' | 'publish' | 'int',
-    details?: undefined;
-  }
-)
-
-export type SampleColumnSelectType = {
-  type: 'select',
-  details: {
-    list: { title: string, value: string}[]
-  }
-}
-
-export type SampleColumnImageType = {
-  type: 'image',
-  details: {
-    multiple: boolean
-  }
-}
-
-export type SampleColumnReactionType = {
-  type: 'relation',
-  details: {
-    type: 'one-to-one' | 'one-to-many' | 'many-to-one' | 'many-to-many',
-    api: string
-  }
-}
+import { DeleteDataSampleState, SampleColumnsType } from '@/lib/server/sample';
 
 export type SampleStateType = {
   data: any[],
@@ -55,7 +19,7 @@ export type SampleStateType = {
   count: number,
   ROWS_PER_PAGES: number[],
   columns: SampleColumnsType[],
-  deleteData: (ids: any[]) => Promise<void>
+  deleteData: (data: DeleteDataSampleState) => Promise<void>
 }
 const AdminContentSample: React.FC<SampleStateType> = ({ 
   data, name, count, ROWS_PER_PAGES = [10, 20, 50], columns, deleteData 
@@ -161,10 +125,10 @@ const AdminContentSample: React.FC<SampleStateType> = ({
       setLoading(true)
 
       if (deleteId) {
-        await deleteData([deleteId])
+        await deleteData({ ids: [deleteId]})
       }
       else if (checked.length > 0) {
-        await deleteData(checked)
+        await deleteData({ids: checked})
       }
 
       let variant: VariantType = "success"

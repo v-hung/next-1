@@ -6,15 +6,15 @@ import AdminFormFieldImage from '@/components/admin/form-field/AdminFormFieldIma
 import AdminFormFieldText from '../form-field/AdminFormFieldText'
 import AdminFormFieldSelect from '../form-field/AdminFormFieldSelect'
 import { VariantType, useSnackbar } from 'notistack'
-import { SampleColumnsType } from './AdminContentSample'
 import moment from 'moment'
 import AdminFormFieldRelation from '../form-field/AdminFormFieldRelation'
+import { AddEditDataSampleState, SampleColumnsType } from '@/lib/server/sample'
 
 export type SampleStateType = {
   data?: any | undefined,
   name: string,
   columns: SampleColumnsType[],
-  addEditData: (data: any, edit: boolean) => Promise<void>
+  addEditData: (data: Omit<AddEditDataSampleState, 'columns'>) => Promise<void>
 }
 
 const AdminContentSampleCreateEdit: React.FC<SampleStateType> = ({
@@ -36,7 +36,7 @@ const AdminContentSampleCreateEdit: React.FC<SampleStateType> = ({
         new FormData(e.target as HTMLFormElement),
       );
 
-      await addEditData(data, data != undefined)
+      await addEditData({data: data, edit: data != undefined})
 
       let variant: VariantType = "success"
       enqueueSnackbar('Thành công', { variant })
@@ -55,7 +55,10 @@ const AdminContentSampleCreateEdit: React.FC<SampleStateType> = ({
 
   return (
     <form onSubmit={save}>
-      <input type="hidden" name="id" value={data.id || ''} />
+      { data
+        ? <input type={columns.find(v => v.key == "id")?.type == "int" ? 'number': 'string'} className='sr-only' name="id" value={data.id || ''} />
+        : null
+      }
 
       <div className="flex items-center space-x-1 text-blue-500 hover:text-blue-600 bg-transparent cursor-pointer"
         onClick={() => router.back()}

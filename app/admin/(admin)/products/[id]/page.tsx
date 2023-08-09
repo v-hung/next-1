@@ -9,7 +9,7 @@ type PageState = {
 }
 
 export default async ({ params: { id } } : PageState) => {
-  const data = await getItemData(id)
+  const data = await getItemData({id})
 
   if (data == null) {
     return <div className="">Không tìm thấy bản ghi</div>

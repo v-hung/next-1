@@ -1,7 +1,9 @@
-import AdminContentSample, { SampleColumnsType } from "@/components/admin/sample/AdminContentSample";
-import db from "@/lib/server/prismadb";
+import AdminContentSample from "@/components/admin/sample/AdminContentSample";
+import { AddEditDataSampleState, DeleteDataSampleState, GetDataSampleState, GetItemDataSampleState, SampleColumnsType, addEditDataSample, deleteDataSample, getDataSample, getItemDataSample } from "@/lib/server/sample";
 
 const NAME = 'Danh mục'
+const TABLE_NAME = 'category'
+const ROWS_PER_PAGES = [10, 20, 50]
 const COLUMNS: SampleColumnsType[] = [
   { key: 'id', label: 'ID', type: 'string', show: true},
 
@@ -21,86 +23,18 @@ const COLUMNS: SampleColumnsType[] = [
   { key: 'publish', label: 'Xuất bản', type: 'publish', show: true},
 ]
 
-const ROWS_PER_PAGES = [10, 20, 50]
+const getData = async (data: Omit<GetDataSampleState, 'columns'>) => getDataSample({...data, table: TABLE_NAME, columns: COLUMNS})
 
-const getData = async (page: number, per_page: number) => {
-  if (page < 1) page = 1
+const getItemData = async (data: Omit<GetItemDataSampleState, 'columns'>) => getItemDataSample({...data, table: TABLE_NAME, columns: COLUMNS})
 
-  const start = (page - 1) * per_page
-
-  const [data, count] = await db.$transaction([
-    db.category.findMany({
-      take: per_page,
-      skip: start,
-      include: {
-        image: true
-      }
-    }),
-    db.category.count(),
-  ])
-
-  if (!data) {
-    return { data: [], count: 0 }
-  }
-
-  return { data, count }
+const deleteData = async (data: DeleteDataSampleState) => {
+  "use server"
+  return await deleteDataSample({...data, table: TABLE_NAME})
 }
 
-const getItemData = async (id: string) => {
-  const data = await db.category.findUnique({
-    where: {
-      id: id,
-    },
-    include: {
-      image: true
-    }
-  })
-
-  return data
-}
-
-const deleteData = async (ids: string[]) => {
-  'use server'
-  await db.category.deleteMany({
-    where: {
-      id: {
-        in: ids
-      }
-    }
-  })
-}
-
-const addEditData = async (data: any) => {
-  'use server'
-
-  try {
-    const dataCreate: any = COLUMNS.filter(v => !['id', 'createdAt', 'updatedAt', 'publish']
-      .includes(v.key)).reduce((cur, pre) => {
-        if (pre.type == "date") {
-          return { ...cur, [pre.key]: new Date(data[pre.key]) }
-        }
-        else if (pre.type == "int") {
-          return { ...cur, [pre.key]: +(data[pre.key]) }
-        }
-        else if (pre.type == "image" || pre.type == "relation") {
-          if (data[pre.key])
-            return { ...cur, [pre.key]: { connect: { id: data[pre.key] } } }
-          else
-            return cur
-        }
-        else {
-          return { ...cur, [pre.key]: data[pre.key] }
-        }
-      }, {})
-
-    await db.category.create({
-      data: dataCreate
-    })
-  }
-  catch (error) {
-    console.log({error})
-    throw "Server Error"
-  }
+const addEditData = async (data: Omit<AddEditDataSampleState, 'columns'>) => {
+  "use server"
+  return await addEditDataSample({...data, table: TABLE_NAME, columns: COLUMNS})
 }
 
 export default async ({
@@ -111,7 +45,7 @@ export default async ({
   const page = +(searchParams['page'] || 1)
   const per_page = +(searchParams['per_page'] || ROWS_PER_PAGES[0])
  
-  const { data, count } = await getData(page, per_page)
+  const { data, count } = await getData({page, per_page})
 
   return (
     <AdminContentSample name={NAME} data={data} count={count} ROWS_PER_PAGES={ROWS_PER_PAGES} columns={COLUMNS}

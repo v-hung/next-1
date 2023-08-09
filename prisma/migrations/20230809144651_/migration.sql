@@ -77,30 +77,39 @@ CREATE TABLE "Image" (
 -- CreateTable
 CREATE TABLE "Category" (
     "id" TEXT NOT NULL PRIMARY KEY,
-    "image" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "sold" INTEGER DEFAULT 0,
     "type" TEXT NOT NULL,
+    "imageId" TEXT,
+    "publish" TEXT NOT NULL DEFAULT 'publish',
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL
+    "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "Category_imageId_fkey" FOREIGN KEY ("imageId") REFERENCES "Image" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "Product" (
-    "id" TEXT NOT NULL PRIMARY KEY,
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "name" TEXT NOT NULL,
-    "image" TEXT NOT NULL,
-    "images" TEXT,
     "price" INTEGER NOT NULL,
     "promotionalPrice" INTEGER,
     "heros" INTEGER NOT NULL,
     "skins" INTEGER NOT NULL,
     "rank" TEXT NOT NULL,
     "gem" INTEGER NOT NULL,
+    "publish" TEXT NOT NULL DEFAULT 'publish',
     "categoryId" TEXT NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     CONSTRAINT "Product_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "_ImageToProduct" (
+    "A" TEXT NOT NULL,
+    "B" INTEGER NOT NULL,
+    CONSTRAINT "_ImageToProduct_A_fkey" FOREIGN KEY ("A") REFERENCES "Image" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "_ImageToProduct_B_fkey" FOREIGN KEY ("B") REFERENCES "Product" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateIndex
@@ -123,3 +132,9 @@ CREATE UNIQUE INDEX "VerificationRequest_identifier_token_key" ON "VerificationR
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Admin_email_key" ON "Admin"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_ImageToProduct_AB_unique" ON "_ImageToProduct"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_ImageToProduct_B_index" ON "_ImageToProduct"("B");
