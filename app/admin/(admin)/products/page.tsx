@@ -1,20 +1,22 @@
 import AdminContentSample, { SampleColumnsType } from "@/components/admin/sample/AdminContentSample";
 import db from "@/lib/server/prismadb";
 
-const NAME = 'Danh mục'
+const NAME = 'Sản phẩm'
 const COLUMNS: SampleColumnsType[] = [
   { key: 'id', label: 'ID', type: 'string', show: true},
 
-  { key: 'title', label: 'Tên', type: 'string', show: true, required: true},
-  { key: 'type', label: 'Loại', type: 'select', details: {
-    list: [
-      { title: 'Game liên quân', value: "lien-quan"},
-      { title: 'Game tốc chiến', value: "toc-chien"},
-      { title: 'Game FREE FIRE', value: "free-fire"},
-      { title: 'Vòng quay may mắn', value: "vong-quay"}
-    ]
-  }, show: true, required: true, },
-  { key: 'image', label: 'Ảnh', type: 'image', show: true, details: { multiple: false }},
+  { key: 'name', label: 'Tên', type: 'string', show: true, required: true},
+  { key: 'price', label: 'Giá', type: 'int', show: true, required: true},
+  { key: 'promotionalPrice', label: 'Giá khuyến mãi', type: 'int', show: true},
+  { key: 'heros', label: 'Số tướng', type: 'int', show: false, required: true},
+  { key: 'skins', label: 'Số skin', type: 'int', show: false, required: true},
+  { key: 'rank', label: 'Rank', type: 'string', show: false, required: true},
+  { key: 'gem', label: 'Kim cương', type: 'int', show: true, required: true},
+  { key: 'category', label: 'Danh mục', type: 'relation', show: true, required: true, details: {
+    type: 'many-to-one',
+    api: '/api/admin/categories'
+  }},
+  { key: 'images', label: 'Ảnh', type: 'image', show: true, details: { multiple: true }},
 
   { key: 'createdAt', label: 'Ngày tạo', type: 'date', show: true},
   { key: 'updatedAt', label: 'Ngày cập nhập', type: 'date', show: true},
@@ -29,14 +31,14 @@ const getData = async (page: number, per_page: number) => {
   const start = (page - 1) * per_page
 
   const [data, count] = await db.$transaction([
-    db.category.findMany({
+    db.product.findMany({
       take: per_page,
       skip: start,
       include: {
-        image: true
+        images: true
       }
     }),
-    db.category.count(),
+    db.product.count(),
   ])
 
   if (!data) {
@@ -47,12 +49,13 @@ const getData = async (page: number, per_page: number) => {
 }
 
 const getItemData = async (id: string) => {
-  const data = await db.category.findUnique({
+  const data = await db.product.findUnique({
     where: {
       id: id,
     },
     include: {
-      image: true
+      images: true,
+      category: true
     }
   })
 
@@ -61,7 +64,7 @@ const getItemData = async (id: string) => {
 
 const deleteData = async (ids: string[]) => {
   'use server'
-  await db.category.deleteMany({
+  await db.product.deleteMany({
     where: {
       id: {
         in: ids
@@ -70,7 +73,7 @@ const deleteData = async (ids: string[]) => {
   })
 }
 
-const addEditData = async (data: any) => {
+const addEditData = async (data: any, edit = false) => {
   'use server'
 
   try {
@@ -82,9 +85,29 @@ const addEditData = async (data: any) => {
         else if (pre.type == "int") {
           return { ...cur, [pre.key]: +(data[pre.key]) }
         }
-        else if (pre.type == "image" || pre.type == "relation") {
-          if (data[pre.key])
-            return { ...cur, [pre.key]: { connect: { id: data[pre.key] } } }
+        else if (pre.type == "image") {
+          if (data[pre.key]) {
+            let tempConnect = { id: data[pre.key] }
+            if (pre.details.multiple) {
+              tempConnect = JSON.parse(data[pre.key]).map((v: string) => ({
+                id: v
+              }))
+            }
+            return { ...cur, [pre.key]: { connect: tempConnect } }
+          }
+          else
+            return cur
+        }
+        else if (pre.type == "relation") {
+          if (data[pre.key]) {
+            let tempConnect = { id: data[pre.key] }
+            if (pre.details.type == 'one-to-many' || pre.details.type == 'many-to-many') {
+              tempConnect = JSON.parse(data[pre.key]).map((v: string) => ({
+                id: v
+              }))
+            }
+            return { ...cur, [pre.key]: { connect: tempConnect } }
+          }
           else
             return cur
         }
@@ -93,9 +116,17 @@ const addEditData = async (data: any) => {
         }
       }, {})
 
-    await db.category.create({
-      data: dataCreate
-    })
+    if (edit) {
+      await db.product.update({
+        where: {
+          id: data.id
+        },
+        data: dataCreate
+      })
+    }
+    else {
+
+    }
   }
   catch (error) {
     console.log({error})

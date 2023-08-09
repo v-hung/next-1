@@ -129,7 +129,7 @@ const AdminFormFieldImageAdd: React.FC<AddModalType> = ({show, setShow, setData}
                     { files.map((v,i) =>
                       <div className="rounded border overflow-hidden" key={i}>
                         <div className="relative w-full h-24 bg-make-transparent">
-                          <img src={v.preview} alt="" className="w-full h-full object-contain" />
+                          <img src={v.preview} alt="" className="w-full h-full object-contain" loading='lazy' />
                           <span
                             className="absolute top-2 right-2 icon w-8 h-8 rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer"
                             onClick={() => {removeFileChange(i)}}

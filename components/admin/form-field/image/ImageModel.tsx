@@ -21,7 +21,7 @@ const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow, multiple,
   const [images, setImages] = useState<Image[]>([])
 
   const [selects, setSelects] = useState<Image[]>(data)
-  const [checked, setChecked] = useState<string[]>([])
+  const [checked, setChecked] = useState<string[]>(data.map(v => v.id))
 
   const [page, setPage] = useState(0)
 
@@ -182,7 +182,7 @@ const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow, multiple,
                     { images.map((v,i) =>
                       <div className="rounded border overflow-hidden" key={v.id}>
                         <div className="relative w-full h-24 bg-make-transparent">
-                          <img src={v.url} alt="" className="w-full h-full object-contain" />
+                          <img src={v.url} alt="" className="w-full h-full object-contain" loading='lazy' />
                           <div className="absolute top-2 left-2">
                             <input type="checkbox" value={v.id} checked={isChecked(v.id)} onChange={(e) => handleCheck(e)} />
                           </div>
@@ -219,7 +219,7 @@ const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow, multiple,
                     { selects.map((v,i) =>
                       <div className="rounded border overflow-hidden" key={v.id}>
                         <div className="relative w-full h-24 bg-make-transparent">
-                          <img src={v.url} alt="" className="w-full h-full object-contain" />
+                          <img src={v.url} alt="" className="w-full h-full object-contain" loading='lazy' />
                           <div className="absolute top-2 left-2">
                             <input type="checkbox" value={v.id} checked={isChecked(v.id)} onChange={(e) => handleCheck(e)} />
                           </div>

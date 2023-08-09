@@ -7,9 +7,11 @@ import { BiUser, BiKey, BiCog, BiCategory, BiBaguette } from "react-icons/bi";
 import Link from 'next/link';
 import useAdminMenu from 'stores/admin/adminMenu';
 import { useStoreCustom } from '@/stores';
+import { usePathname } from 'next/navigation';
 
 const MenuAdmin = () => {
   // const adminMenu = useAdminMenu()
+  const pathname = usePathname()
   const adminMenu = useStoreCustom(useAdminMenu, (state) => state)
 
   const [isHover, setIsHover] = useState(false);
@@ -109,7 +111,7 @@ const MenuAdmin = () => {
                 <div className='flex-none px-1 grid place-items-center' style={{width: "44px"}}>
                   {v.icon}
                 </div>
-                <span className='flex-none font-medium'>{v.name}</span>
+                <span className={`flex-none ${(v.path == "/admin" ? pathname == v.path : pathname?.includes(v.path)) ? 'font-semibold' : 'font-medium'}`}>{v.name}</span>
               </Link>
             )
           })}
@@ -129,7 +131,7 @@ const MenuAdmin = () => {
                 <div className='flex-none px-1 grid place-items-center' style={{width: "44px"}}>
                   {v.icon}
                 </div>
-                <span className='flex-none font-medium'>{v.name}</span>
+                <span className={`flex-none ${pathname?.includes(v.path) ? 'font-semibold' : 'font-medium'}`}>{v.name}</span>
               </Link>
             )
           })}

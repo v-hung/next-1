@@ -7,16 +7,18 @@ import AdminFormFieldText from '../form-field/AdminFormFieldText'
 import AdminFormFieldSelect from '../form-field/AdminFormFieldSelect'
 import { VariantType, useSnackbar } from 'notistack'
 import { SampleColumnsType } from './AdminContentSample'
+import moment from 'moment'
+import AdminFormFieldRelation from '../form-field/AdminFormFieldRelation'
 
 export type SampleStateType = {
   data?: any | undefined,
   name: string,
   columns: SampleColumnsType[],
-  addData: (data: any) => Promise<void>
+  addEditData: (data: any, edit: boolean) => Promise<void>
 }
 
-const AdminContentSampleCreate: React.FC<SampleStateType> = ({
-  data, name, columns, addData
+const AdminContentSampleCreateEdit: React.FC<SampleStateType> = ({
+  data, name, columns, addEditData
 }) => {
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
@@ -34,7 +36,7 @@ const AdminContentSampleCreate: React.FC<SampleStateType> = ({
         new FormData(e.target as HTMLFormElement),
       );
 
-      await addData(data)
+      await addEditData(data, data != undefined)
 
       let variant: VariantType = "success"
       enqueueSnackbar('Thành công', { variant })
@@ -53,6 +55,8 @@ const AdminContentSampleCreate: React.FC<SampleStateType> = ({
 
   return (
     <form onSubmit={save}>
+      <input type="hidden" name="id" value={data.id || ''} />
+
       <div className="flex items-center space-x-1 text-blue-500 hover:text-blue-600 bg-transparent cursor-pointer"
         onClick={() => router.back()}
       >
@@ -67,12 +71,12 @@ const AdminContentSampleCreate: React.FC<SampleStateType> = ({
           <h3 className="text-2xl font-semibold">{name}</h3>
         </div>
 
-        <Button className='!ml-auto' disabled={true} variant="contained" color='secondary' startIcon={(
-          <span className="icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="m10 15.586-3.293-3.293-1.414 1.414L10 18.414l9.707-9.707-1.414-1.414z"></path></svg>
+        <Button className='!ml-auto' disabled={!data} variant="contained" color={(data ? data.publish == 'publish' : false) ? 'black' : 'secondary'} startIcon={(
+          <span className="material-symbols-outlined">
+            {(data ? data.publish == 'publish' : false) ? 'remove' : 'check'}
           </span>
         )}>
-          Xuất bản
+          {(data ? data.publish == 'publish' : false) ? 'Nháp' : 'Xuất bản'}
         </Button>
 
         <Button variant="contained" type='submit'>
@@ -87,9 +91,42 @@ const AdminContentSampleCreate: React.FC<SampleStateType> = ({
               {columns.filter(v => !['id', 'createdAt', 'updatedAt', 'publish'].includes(v.key)).map(column =>
                 <div className="w-1/2 px-2 mb-4" key={column.key}>
                   { column.type == 'select'
-                    ? <AdminFormFieldSelect name='type' required={true} title='Danh mục' list={column.details.list} />
-                    : column.type == 'image' ? <AdminFormFieldImage name='image' required={true} />
-                    : <AdminFormFieldText name={column.key} required={true} title={column.label} />
+                    ? <AdminFormFieldSelect 
+                        defaultValue={data ? data[column.key] : undefined} 
+                        name={column.key} 
+                        required={column.required} 
+                        title='Danh mục' 
+                        list={column.details.list} 
+                      />
+                    : column.type == 'image' ? 
+                      <AdminFormFieldImage 
+                        defaultValue={data ? data[column.key] : undefined} 
+                        multiple={column.details.multiple}
+                        name={column.key} 
+                        required={column.required} 
+                      />
+                    : column.type == 'int' ? 
+                      <AdminFormFieldText 
+                        number={true} 
+                        defaultValue={data ? data[column.key] : undefined} 
+                        name={column.key} 
+                        required={column.required} 
+                        title={column.label} 
+                      />
+                    : column.type == 'relation' ? 
+                      <AdminFormFieldRelation
+                        defaultValue={data ? data[column.key] : undefined} 
+                        api={column.details.api}
+                        name={column.key} 
+                        required={column.required} 
+                        title={column.label} 
+                      />
+                    : <AdminFormFieldText 
+                        defaultValue={data ? data[column.key] : undefined} 
+                        name={column.key} 
+                        required={column.required} 
+                        title={column.label} 
+                      />
                   }
                 </div>
               )}
@@ -98,10 +135,12 @@ const AdminContentSampleCreate: React.FC<SampleStateType> = ({
         </div>
 
         <div className="w-full lg:w-1/4 px-2 mb-4 flex flex-col space-y-4">
-          <div className="w-full p-4 bg-blue-100 border border-blue-400 text-blue-600 rounded flex space-x-2 items-center text-sm">
+          <div className={`w-full p-4 border rounded flex space-x-2 items-center text-sm
+            ${(data ? data.publish == 'publish' : false) ? 'bg-purple-100 border-purple-400 text-purple-600' : 'bg-blue-100 border-blue-400 text-blue-600'}
+          `}>
             <span className="w-2 h-2 rounded-full bg-current"></span>
-            <span className="font-semibold">Tạo mới</span>
-            <span>phiên bản nháp</span>
+            <span className="font-semibold">{data ? 'Chỉnh sửa' : 'Tạo mới'}</span>
+            <span>phiên bản {(data ? data.publish == 'publish' : false) ? 'xuất bản' : 'nháp'}</span>
           </div>
 
           <div className="w-full p-4 bg-white rounded shadow">
@@ -110,11 +149,11 @@ const AdminContentSampleCreate: React.FC<SampleStateType> = ({
             <div className="flex flex-col space-y-4 mt-4 text-sm">
               <div className="flex justify-between">
                 <span className="font-medium text-gray-600">CreatedAt</span>
-                <span>now</span>
+                <span>{data ? moment(data.createdAt).format('YYYY-MM-DD HH:mm:ss') : 'now'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="font-medium text-gray-600">UpdatedAt</span>
-                <span>now</span>
+                <span>{data ? moment(data.updatedAt).format('YYYY-MM-DD HH:mm:ss') : 'now'}</span>
               </div>
             </div>
           </div>
@@ -131,4 +170,4 @@ const AdminContentSampleCreate: React.FC<SampleStateType> = ({
   )
 }
 
-export default AdminContentSampleCreate
+export default AdminContentSampleCreateEdit

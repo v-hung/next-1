@@ -5,6 +5,7 @@ import React, { useState } from 'react'
 type State = {
   label?: boolean,
   title: string,
+  defaultValue?: string,
   name: string
   required?: boolean,
   list: Item[]
@@ -17,17 +18,18 @@ type Item = {
 
 const AdminFormFieldSelect: React.FC<State> = ({
   label,
+  defaultValue,
   title,
   name,
   required = false,
   list
 }) => {
 
-  const [value, setValue] = useState("")
+  const [value, setValue] = useState(defaultValue)
 
   const handleChange = (event: SelectChangeEvent) => {
     setValue(event.target.value);
-  };
+  }
 
   return (
     // <div>AdminFormFieldSelect</div>

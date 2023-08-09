@@ -5,8 +5,8 @@ import Button from '@mui/material/Button';
 import { useState } from 'react'
 import styled from '@emotion/styled';
 import Link from 'next/link';
-import { Category } from '@prisma/client';
-import { useRouter } from 'next/navigation';
+import { Category, Image } from '@prisma/client';
+import { usePathname, useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import moment from 'moment';
 import FormIOSSwitch from '@/components/FormIOSSwitch';
@@ -15,12 +15,14 @@ import { VariantType, enqueueSnackbar } from 'notistack';
 export type SampleColumnsType = {
   key: string,
   label: string,
-  show: boolean
+  show: boolean,
+  required?: boolean
 } & (
   SampleColumnSelectType | 
   SampleColumnReactionType |
+  SampleColumnImageType |
   {
-    type: 'string' | 'date' | 'publish' | 'image',
+    type: 'string' | 'date' | 'publish' | 'int',
     details?: undefined;
   }
 )
@@ -32,10 +34,18 @@ export type SampleColumnSelectType = {
   }
 }
 
-export type SampleColumnReactionType = {
-  type: 'reaction',
+export type SampleColumnImageType = {
+  type: 'image',
   details: {
-    
+    multiple: boolean
+  }
+}
+
+export type SampleColumnReactionType = {
+  type: 'relation',
+  details: {
+    type: 'one-to-one' | 'one-to-many' | 'many-to-one' | 'many-to-many',
+    api: string
   }
 }
 
@@ -51,12 +61,13 @@ const AdminContentSample: React.FC<SampleStateType> = ({
   data, name, count, ROWS_PER_PAGES = [10, 20, 50], columns, deleteData 
 }) => {
   const router = useRouter()
+  const pathname = usePathname()
   const searchParams = useSearchParams()
 
   const page = +(searchParams?.get('page') || 1)
   const per_page = +(searchParams?.get('per_page') || ROWS_PER_PAGES[0])
 
-  const [columnsShow, setColumnsShow] = useState<SampleColumnsType[]>(columns.filter(v => v.show))
+  // const [columnsShow, setColumnsShow] = useState<SampleColumnsType[]>(columns.filter(v => v.show))
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const handleChangePage = (
@@ -91,7 +102,7 @@ const AdminContentSample: React.FC<SampleStateType> = ({
     setAnchorElShowField(null)
   }
 
-  const [columnShowFields, setColumnShowFields] = useState<string[]>(columns.map(e => e.key))
+  const [columnShowFields, setColumnShowFields] = useState<string[]>(columns.filter(v => v.show).map(e => e.key))
   const handelChangeColumnShowField = (e: React.FormEvent<HTMLInputElement>, key: string) => {
     const { checked: isChecked } = e.target as HTMLInputElement
 
@@ -191,7 +202,7 @@ const AdminContentSample: React.FC<SampleStateType> = ({
           Xóa bản ghi
         </Button>
 
-        <Button href='/admin/categories/create' LinkComponent={Link} className='!ml-auto' variant="contained" startIcon={(
+        <Button href={`${pathname}/create`} LinkComponent={Link} className='!ml-auto' variant="contained" startIcon={(
           <span className="material-symbols-outlined">
             add
           </span>
@@ -221,7 +232,7 @@ const AdminContentSample: React.FC<SampleStateType> = ({
               horizontal: 'right',
             }}
           >
-            {columnsShow.map(column =>
+            {columns.map(column =>
               <MenuItem key={column.key}>
                 <FormIOSSwitch label={column.label} 
                   onChange={(e) => handelChangeColumnShowField(e, column.key)} 
@@ -241,7 +252,7 @@ const AdminContentSample: React.FC<SampleStateType> = ({
                   <StyledTableCell style={{width: '0px'}} align="left">
                     <input type="checkbox" checked={checked.length == data.length} onChange={handleSelectAll} />
                   </StyledTableCell>
-                  {columnsShow.filter(v => columnShowFields.includes(v.key)).map((column) => (
+                  {columns.filter(v => columnShowFields.includes(v.key)).map((column) => (
                     <StyledTableCell
                       key={column.key}
                       align="center"
@@ -260,7 +271,7 @@ const AdminContentSample: React.FC<SampleStateType> = ({
                     <TableCell align="left">
                       <input type="checkbox" id={row.id} checked={checked.includes(row.id)} onChange={handleSelect} />
                     </TableCell>
-                    {columnsShow.filter(v => columnShowFields.includes(v.key)).map(column => 
+                    {columns.filter(v => columnShowFields.includes(v.key)).map(column => 
                       <TableCell align="center" key={`${row.id}-${column.key}`}>
                         { column.type == 'date'
                           ? ViewDateField(row[column.key])
@@ -273,12 +284,12 @@ const AdminContentSample: React.FC<SampleStateType> = ({
                     )}
                     <TableCell align="right">
                       <div className="flex space-x-1 items-center justify-end">
-                        <Button color='warning' variant='contained' size='small' startIcon={(
+                        {/* <Button color='warning' variant='contained' size='small' startIcon={(
                           <span className="material-symbols-outlined">
                             visibility
                           </span>
-                        )}>Xem</Button>
-                        <Button color='primary' variant='contained' size='small' startIcon={(
+                        )}>Xem</Button> */}
+                        <Button LinkComponent={Link} href={`${pathname}/${row.id}`} color='primary' variant='contained' size='small' startIcon={(
                           <span className="material-symbols-outlined">
                             edit
                           </span>
@@ -295,7 +306,7 @@ const AdminContentSample: React.FC<SampleStateType> = ({
                     </TableCell>
                   </StyledTableRow>
                 ))
-                : <TableRow><TableCell colSpan={"100%" as any} className='text-center'>Không có bản ghi nào</TableCell></TableRow> }
+                : <TableRow><TableCell colSpan={"100%" as any} className='!text-center'>Không có bản ghi nào</TableCell></TableRow> }
               </TableBody>
             </Table>
           </TableContainer>
@@ -388,15 +399,31 @@ const ViewDateField = (value: Date) => {
 }
 
 const ViewPublishField = (value: string) => {
-  return <div className={`inline-block px-4 py-1.5 rounded text-white ${value == 'dart' ? 'bg-gray-500' : 'bg-blue-500'}`}>
-    { value == 'dart' ? 'Nháp' : 'Xuất bản'}
+  return <div className={`inline-block px-4 py-1.5 rounded text-white ${value == 'draft' ? 'bg-gray-500' : 'bg-purple-500'}`}>
+    { value == 'draft' ? 'Nháp' : 'Xuất bản'}
   </div>
 }
 
-const ViewImageField = (image: any) => {
-  console.log(image)
-  return <div className="">
-  </div>
+const ViewImageField = (data: Image | Image[] | null) => {
+  if (data == null) {
+    return null
+  }
+
+  const images = Array.isArray(data) ? data : [data]
+  const length = images.length > 2 ? 2 : images.length
+
+  return (
+    <div className="flex -space-x-10 justify-center">
+      {images.slice(0, length).map((image,i) =>
+        <img key={image.id} src={image.url} alt={image.caption || image.name} loading='lazy' 
+          className='w-20 h-16 rounded-lg object-cover ring-2 ring-white' />
+      )}
+      {images.length > length 
+        ? <div className="h-16 rounded-lg object-cover ring-2 ring-white bg-gray-300/90 flex items-center px-2 font-semibold">+{images.length - length} more</div>
+        : null
+      }
+    </div>
+  )
 }
 
 const ViewSelectField = (value: string, list: { title: string, value: string}[]) => {

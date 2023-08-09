@@ -101,7 +101,7 @@ const AdminFormFieldImageEdit: React.FC<EditModalType> = ({show, setShow, data, 
                   </Tooltip>
                 </div>
                 <div className="w-full h-36 bg-make-transparent">
-                  <img src={data?.url} alt={data?.name} className='w-full h-full object-contain' />
+                  <img src={data?.url} alt={data?.name} className='w-full h-full object-contain' loading='lazy' />
                 </div>
                 <div className="p-6"></div>
               </div>

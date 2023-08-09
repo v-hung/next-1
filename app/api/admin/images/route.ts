@@ -70,7 +70,6 @@ export async function POST(request: Request) {
       //@ts-ignore
       let fileSave = await fileData[metadata.format || "png"](compress[metadata.format || "png"]).toFile(fileUrl)
         .then((data: any) => {
-          console.log(data)
           return data
         })
 
