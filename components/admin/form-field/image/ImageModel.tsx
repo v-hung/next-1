@@ -67,15 +67,16 @@ const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow, multiple,
     if (dataUpload.length == 0) return
 
     fetchImages()
-    setSelects(state => [...state, ...dataUpload])
-
+    
     // checked
     var updatedList: string[] = []
     if (multiple) {
       updatedList = [...checked, ...dataUpload.map(v => v.id)]
+      setSelects(state => [...state, ...dataUpload])
     }
     else {
       updatedList = [dataUpload[0].id]
+      setSelects([dataUpload[0]])
     }
 
     setChecked(updatedList)

@@ -32,11 +32,10 @@ const AdminContentSampleCreateEdit: React.FC<SampleStateType> = ({
     try {
       setLoading(true)
       
-      const data = Object.fromEntries(
+      const formData = Object.fromEntries(
         new FormData(e.target as HTMLFormElement),
       );
-
-      await addEditData({data: data, edit: data != undefined})
+      await addEditData({data: formData, edit: data != undefined})
 
       let variant: VariantType = "success"
       enqueueSnackbar('Thành công', { variant })

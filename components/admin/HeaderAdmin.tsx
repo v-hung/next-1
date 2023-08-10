@@ -1,14 +1,15 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useState, useTransition } from 'react'
 import useAdminMenu from 'stores/admin/adminMenu';
 import useAdminUser from '@/stores/admin/adminUser';
 import Link from 'next/link';
 import Collapse from '../Collapse';
 import { useStoreCustom } from '@/stores';
 import { Avatar, Divider, Menu, MenuItem } from '@mui/material';
+import { logoutUserAdmin } from '@/lib/server/helperServer';
 
 const HeaderAdmin = () => {
-  const adminUser = useAdminUser()
+  const adminUser = useAdminUser(state => state.user)
   // const adminMenu = useAdminMenu()
   const adminMenu = useStoreCustom(useAdminMenu, (state) => state)
 
@@ -34,8 +35,8 @@ const HeaderAdmin = () => {
           <div className="absolute w-2 h-2 rounded-full bg-orange-600 top-2 right-3"></div>
         </button>
 
-        { adminUser.user != null
-          ? <AvatarUser user={adminUser.user} />
+        { adminUser != null
+          ? <AvatarUser user={adminUser} />
           : null
         }
       </div>
@@ -44,7 +45,7 @@ const HeaderAdmin = () => {
 }
 
 const AvatarUser = ({user}: any) => {
-
+  let [isPending, startTransition] = useTransition()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
 
@@ -103,11 +104,13 @@ const AvatarUser = ({user}: any) => {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <MenuItem onClick={handleClose}>
-          <Avatar /> Trang cá nhân
+        <MenuItem>
+          <Link href="/admin/profile" className='flex items-center'>
+            <Avatar /> Trang cá nhân
+          </Link>
         </MenuItem>
         <Divider />
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={() => startTransition(() => logoutUserAdmin())}>
           <span className="material-symbols-outlined icon-fill text-red-600">
             logout
           </span>

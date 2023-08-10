@@ -16,7 +16,8 @@ const COLUMNS: SampleColumnsType[] = [
   { key: 'gem', label: 'Kim cương', type: 'int', show: true, required: true},
   { key: 'category', label: 'Danh mục', type: 'relation', show: true, required: true, details: {
     type: 'many-to-one',
-    api: '/api/admin/categories'
+    api: '/api/admin/categories',
+    title: 'title'
   }},
   { key: 'images', label: 'Ảnh', type: 'image', show: true, details: { multiple: true }},
 

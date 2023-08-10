@@ -25,7 +25,7 @@ const AdminFormFieldSelect: React.FC<State> = ({
   list
 }) => {
 
-  const [value, setValue] = useState(defaultValue)
+  const [value, setValue] = useState<string>(defaultValue || '')
 
   const handleChange = (event: SelectChangeEvent) => {
     setValue(event.target.value);

@@ -175,7 +175,7 @@ const AdminContentSample: React.FC<SampleStateType> = ({
         </Button>
 
         <div className="relative">
-          <button className="flex space-x-2 p-2 pr-2 bg-white border rounded" onClick={handleClickShowField}>
+          <button className="flex space-x-2 p-2 pr-2 bg-white border rounded shadow" onClick={handleClickShowField}>
             <span className="material-symbols-outlined icon-fill">
               settings
             </span>
@@ -242,6 +242,7 @@ const AdminContentSample: React.FC<SampleStateType> = ({
                           : column.type == 'publish' ? ViewPublishField(row[column.key])
                           : column.type == 'select' ? ViewSelectField(row[column.key], column.details.list)
                           : column.type == 'image' ? ViewImageField(row[column.key])
+                          : column.type == 'relation' ? ViewRelationField(row[column.key], column.details.title)
                           : <span>{row[column.key] || ''}</span>
                         }
                       </TableCell>
@@ -383,7 +384,30 @@ const ViewImageField = (data: Image | Image[] | null) => {
           className='w-20 h-16 rounded-lg object-cover ring-2 ring-white' />
       )}
       {images.length > length 
-        ? <div className="h-16 rounded-lg object-cover ring-2 ring-white bg-gray-300/90 flex items-center px-2 font-semibold">+{images.length - length} more</div>
+        ? <div className="h-16 rounded-lg ring-2 ring-white bg-gray-300/90 flex items-center px-2 font-semibold">+{images.length - length} more</div>
+        : null
+      }
+    </div>
+  )
+}
+
+const ViewRelationField = (data: any | any[] | null, title: string) => {
+  if (data == null) {
+    return null
+  }
+
+  const list = Array.isArray(data) ? data : [data]
+  const length = list.length > 3 ? 3 : list.length
+
+  return (
+    <div className="flex flex-wrap items-center -mx-1">
+      {list.slice(0, length).map((item,i) =>
+        <div className="px-1 mb-2" key={item.id}>
+          <div key={item.id} className='rounded-full bg-gray-200 px-2 py-1.5'>{item[title] || ''}</div>
+        </div>
+      )}
+      {list.length > length 
+        ? <div className="rounded-lg bg-gray-300/90 flex items-center p-2 font-semibold">+{list.length - length} more</div>
         : null
       }
     </div>

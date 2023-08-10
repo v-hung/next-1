@@ -2,7 +2,6 @@
 import React from 'react'
 
 type State = {
-  label?: boolean,
   title: string,
   name: string
   required?: boolean,
@@ -11,7 +10,6 @@ type State = {
 }
 
 const AdminFormFieldText: React.FC<State> = ({
-  label,
   title,
   name,
   required = false,

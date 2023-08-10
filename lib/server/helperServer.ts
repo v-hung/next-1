@@ -1,7 +1,10 @@
+'use server'
+
 import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
 import db from "./prismadb";
 import { verifyToken } from "../utils/jwt";
+import { redirect } from "next/navigation";
 
 export const useCurrentUserAdmin = async (request?: NextRequest) => {
   let cookie = null
@@ -41,6 +44,12 @@ export const useCurrentUserAdmin = async (request?: NextRequest) => {
   })
 
   return user
+}
+
+export const logoutUserAdmin = async () => {
+  'use server'
+  cookies().delete('token-admin')
+  redirect('/admin')
 }
 
 // export

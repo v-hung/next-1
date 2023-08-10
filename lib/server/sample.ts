@@ -34,7 +34,8 @@ export type SampleColumnReactionType = {
   type: 'relation',
   details: {
     type: 'one-to-one' | 'one-to-many' | 'many-to-one' | 'many-to-many',
-    api: string
+    api: string,
+    title: string
   }
 }
 
@@ -105,7 +106,7 @@ const getItemDataSample = async ({
 
   const data = await (db as any)[table].findUnique({
     where: {
-      id: id,
+      id: columns.find(v => v.key == "id")?.type == "int" ? (+id || 0) : id,
     },
     include: include
   })
@@ -188,7 +189,9 @@ const addEditDataSample = async ({
       })
     }
     else {
-
+      await (db as any)[table].create({
+        data: dataCreate
+      })
     }
   }
   catch (error) {
