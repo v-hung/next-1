@@ -23,7 +23,7 @@ export type SampleStateType = {
   columns: SampleColumnsType[],
 }
 const AdminContentSample: React.FC<SampleStateType> = ({ 
-  data, name, table_name, count, ROWS_PER_PAGES = [10, 20, 50], columns 
+  data, name, table_name, count, ROWS_PER_PAGES, columns 
 }) => {
   const router = useRouter()
   const pathname = usePathname()
