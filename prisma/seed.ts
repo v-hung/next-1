@@ -11,7 +11,6 @@ const bcrypt = require('bcrypt');
       data: {
         name: 'Admin',
         email: 'admin@admin.com',
-        image: 'storage/images/user/b3.png',
         password
       }
     })

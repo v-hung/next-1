@@ -1,17 +1,16 @@
-import { Admin } from "@prisma/client";
+import { AdminUserType } from "@/lib/server/helperServer";
+import { Admin, Image } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { create } from "zustand";
 
-export type AdminUser = Omit<Admin, "password"> | null
-
 type UserType = {
-  user: AdminUser
-  save: (data: AdminUser) => void
+  user: AdminUserType
+  save: (data: AdminUserType) => void
 }
 
 const useAdminUser = create<UserType>(set => ({
   user: null,
-  save: (data: AdminUser) => set(state => ({
+  save: (data: AdminUserType) => set(state => ({
     user: data
   }))
 }))

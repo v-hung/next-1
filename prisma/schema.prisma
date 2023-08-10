@@ -66,10 +66,24 @@ model Admin {
   email    String  @unique
   password String
   name     String
-  image    String?
 
+  imageId String?
+  image   Image?  @relation(fields: [imageId], references: [id])
+
+  publish   String   @default("publish") // or draft
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model FolderImage {
+  id            String  @id @default(cuid())
+  name String
+
+  parentId String?
+  parent FolderImage? @relation("children", fields: [parentId], references: [id])
+  children FolderImage[] @relation("children")
+
+  images Image[]
 }
 
 model Image {
@@ -83,9 +97,14 @@ model Image {
   naturalHeight Int
   naturalWidth  Int
   size          Float
+  table String?
 
-  category Category[]
-  product  Product[]
+  folderImageId String?
+  folderImage FolderImage? @relation(fields: [folderImageId], references: [id])
+
+  categories Category[]
+  products  Product[]
+  admins  Admin[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

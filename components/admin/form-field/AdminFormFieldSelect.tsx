@@ -3,8 +3,7 @@ import { FormControl, FormHelperText, MenuItem, Select, SelectChangeEvent } from
 import React, { useState } from 'react'
 
 type State = {
-  label?: boolean,
-  title: string,
+  label: string,
   defaultValue?: string,
   name: string
   required?: boolean,
@@ -19,7 +18,6 @@ type Item = {
 const AdminFormFieldSelect: React.FC<State> = ({
   label,
   defaultValue,
-  title,
   name,
   required = false,
   list
@@ -34,7 +32,7 @@ const AdminFormFieldSelect: React.FC<State> = ({
   return (
     // <div>AdminFormFieldSelect</div>
     <div>
-      <p className="text-sm font-semibold mb-1">{title} { required && <span className="text-red-500">*</span> }</p>
+      <p className="text-sm font-semibold mb-1">{label} { required && <span className="text-red-500">*</span> }</p>
       <FormControl className='w-full'>
         <Select
           value={value}

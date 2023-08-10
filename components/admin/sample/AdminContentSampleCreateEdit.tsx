@@ -8,17 +8,17 @@ import AdminFormFieldSelect from '../form-field/AdminFormFieldSelect'
 import { VariantType, useSnackbar } from 'notistack'
 import moment from 'moment'
 import AdminFormFieldRelation from '../form-field/AdminFormFieldRelation'
-import { AddEditDataSampleState, SampleColumnsType } from '@/lib/server/sample'
+import { AddEditDataSampleState, SampleColumnsType, addEditDataSample } from '@/lib/server/sample'
 
 export type SampleStateType = {
   data?: any | undefined,
   name: string,
+  table_name: string,
   columns: SampleColumnsType[],
-  addEditData: (data: Omit<AddEditDataSampleState, 'columns'>) => Promise<void>
 }
 
 const AdminContentSampleCreateEdit: React.FC<SampleStateType> = ({
-  data, name, columns, addEditData
+  data, name, columns, table_name
 }) => {
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
@@ -35,7 +35,7 @@ const AdminContentSampleCreateEdit: React.FC<SampleStateType> = ({
       const formData = Object.fromEntries(
         new FormData(e.target as HTMLFormElement),
       );
-      await addEditData({data: formData, edit: data != undefined})
+      await addEditDataSample({data: formData, edit: data != undefined, table: table_name, columns})
 
       let variant: VariantType = "success"
       enqueueSnackbar('Thành công', { variant })
@@ -55,7 +55,7 @@ const AdminContentSampleCreateEdit: React.FC<SampleStateType> = ({
   return (
     <form onSubmit={save}>
       { data
-        ? <input type={columns.find(v => v.key == "id")?.type == "int" ? 'number': 'string'} className='sr-only' name="id" value={data.id || ''} />
+        ? <input type={columns.find(v => v.key == "id")?.type == "int" ? 'number': 'string'} readOnly={true} className='sr-only' name="id" value={data.id || ''} />
         : null
       }
 
@@ -97,14 +97,15 @@ const AdminContentSampleCreateEdit: React.FC<SampleStateType> = ({
                         defaultValue={data ? data[column.key] : undefined} 
                         name={column.key} 
                         required={column.required} 
-                        title='Danh mục' 
+                        label={column.label}
                         list={column.details.list} 
                       />
                     : column.type == 'image' ? 
                       <AdminFormFieldImage 
                         defaultValue={data ? data[column.key] : undefined} 
                         multiple={column.details.multiple}
-                        name={column.key} 
+                        name={column.key}
+                        label={column.label}
                         required={column.required} 
                       />
                     : column.type == 'int' ? 
@@ -113,7 +114,7 @@ const AdminContentSampleCreateEdit: React.FC<SampleStateType> = ({
                         defaultValue={data ? data[column.key] : undefined} 
                         name={column.key} 
                         required={column.required} 
-                        title={column.label} 
+                        label={column.label} 
                       />
                     : column.type == 'relation' ? 
                       <AdminFormFieldRelation
@@ -121,13 +122,13 @@ const AdminContentSampleCreateEdit: React.FC<SampleStateType> = ({
                         api={column.details.api}
                         name={column.key} 
                         required={column.required} 
-                        title={column.label} 
+                        label={column.label} 
                       />
                     : <AdminFormFieldText 
                         defaultValue={data ? data[column.key] : undefined} 
                         name={column.key} 
                         required={column.required} 
-                        title={column.label} 
+                        label={column.label} 
                       />
                   }
                 </div>
@@ -150,11 +151,11 @@ const AdminContentSampleCreateEdit: React.FC<SampleStateType> = ({
 
             <div className="flex flex-col space-y-4 mt-4 text-sm">
               <div className="flex justify-between">
-                <span className="font-medium text-gray-600">CreatedAt</span>
+                <span className="font-medium text-gray-600">Thời gian tạo</span>
                 <span>{data ? moment(data.createdAt).format('YYYY-MM-DD HH:mm:ss') : 'now'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="font-medium text-gray-600">UpdatedAt</span>
+                <span className="font-medium text-gray-600">Thời gian cập nhập</span>
                 <span>{data ? moment(data.updatedAt).format('YYYY-MM-DD HH:mm:ss') : 'now'}</span>
               </div>
             </div>

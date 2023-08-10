@@ -5,6 +5,12 @@ import { NextRequest } from "next/server";
 import db from "./prismadb";
 import { verifyToken } from "../utils/jwt";
 import { redirect } from "next/navigation";
+import { Admin, Image } from "@prisma/client";
+import { exclude } from "../utils/helper";
+
+export type AdminUserType = Omit<Admin, "password"> & {
+  image: Image | null
+} | null
 
 export const useCurrentUserAdmin = async (request?: NextRequest) => {
   let cookie = null
@@ -33,17 +39,14 @@ export const useCurrentUserAdmin = async (request?: NextRequest) => {
     where: {
       id: +adminId
     },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      image: true,
-      createdAt: true,
-      updatedAt: true
+    include: {
+      image: true
     }
   })
 
-  return user
+  const userWithoutPassword: AdminUserType = exclude(user, ['password'])
+
+  return userWithoutPassword
 }
 
 export const logoutUserAdmin = async () => {

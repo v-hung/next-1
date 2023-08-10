@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Collapse from '../Collapse';
 import { useStoreCustom } from '@/stores';
 import { Avatar, Divider, Menu, MenuItem } from '@mui/material';
-import { logoutUserAdmin } from '@/lib/server/helperServer';
+import { AdminUserType, logoutUserAdmin } from '@/lib/server/helperServer';
 
 const HeaderAdmin = () => {
   const adminUser = useAdminUser(state => state.user)
@@ -44,7 +44,7 @@ const HeaderAdmin = () => {
   )
 }
 
-const AvatarUser = ({user}: any) => {
+const AvatarUser = ({ user }: { user: NonNullable<AdminUserType>}) => {
   let [isPending, startTransition] = useTransition()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
@@ -59,11 +59,16 @@ const AvatarUser = ({user}: any) => {
   return (
     <div>
       <div 
-        className="flex items-center space-x-2 rounded-full p-1 pr-2 bg-gray-100 hover:bg-blue-200 cursor-pointer select-none"
+        className="flex items-center space-x-2 rounded-full p-1 pr-2 bg-gray-100 hover:bg-gray-200 cursor-pointer select-none"
         onClick={handleClick}
       >
-        <div className="w-10 h-10 rounded-full overflow-hidden">
-          <img src={user.image || '/storage/images/user/b1.png'} alt={user.name} className="w-full h-full object-contain" />
+        <div className="w-10 h-10 rounded-full overflow-hidden bg-blue-500 grid place-items-center">
+          { user.image
+            ? <img src={user.image.url} alt="" className='w-full h-full object-cover' loading='lazy' />
+            : <span className="material-symbols-outlined icon-fill !text-white !text-2xl">
+              person
+            </span>
+          }
         </div>
         <div className='font-semibold'>{user.name}</div>
         <span className="material-symbols-outlined icon-fill">

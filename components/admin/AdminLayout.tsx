@@ -1,7 +1,6 @@
 "use client"
 
 import useAdminMenu from '@/stores/admin/adminMenu';
-import { AdminUser } from '@/stores/admin/adminUser';
 import ClientOnly from 'components/ClientOnly';
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import useAdminUser from 'stores/admin/adminUser';
@@ -10,10 +9,11 @@ import MenuAdmin from './MenuAdmin';
 import { useStoreCustom } from '@/stores';
 import AdminModal from './modal/AdminModal';
 import { SnackbarProvider } from 'notistack';
+import { AdminUserType } from '@/lib/server/helperServer';
 
 const AdminLayout : React.FC<{
   children: React.ReactNode,
-  userData?: AdminUser
+  userData: NonNullable<AdminUserType>
 }> = ({children, userData}) => {
 
   const willMount = useRef(true)

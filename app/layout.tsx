@@ -1,7 +1,8 @@
 import './default.css'
 import './globals.css';
-import React from 'react';
+import React, { Suspense } from 'react';
 import MuiProvider from '@/components/MuiProvider';
+import { AfterNavigationEvents, NavigationEvents } from '@/components/ProgressBar';
 
 export const metadata = {
   title: 'Việt Hùng Shop',
@@ -22,6 +23,10 @@ export default function RootLayout({
       <body id='__next' className={`overflow-y-scroll text-[#222]`}>
         <MuiProvider>
           {children}
+
+          {/* <Suspense fallback={<AfterNavigationEvents/>}>
+            <NavigationEvents />
+          </Suspense> */}
         </MuiProvider>
       </body>
     </html>

@@ -3,8 +3,7 @@ import { VariantType, enqueueSnackbar } from 'notistack'
 import React, { useEffect, useState, useRef } from 'react'
 
 type State = {
-  label?: boolean,
-  title: string,
+  label: string,
   name: string
   required?: boolean,
   defaultValue?: any,
@@ -13,7 +12,6 @@ type State = {
 
 const AdminFormFieldRelation: React.FC<State> = ({
   label,
-  title,
   name,
   required = false,
   defaultValue,
@@ -61,7 +59,7 @@ const AdminFormFieldRelation: React.FC<State> = ({
 
   return (
     <div>
-      <p className="text-sm font-semibold mb-1">{title} { required && <span className="text-red-500">*</span> }</p>
+      <p className="text-sm font-semibold mb-1">{label} { required && <span className="text-red-500">*</span> }</p>
       <input type="hidden" name={name} value={value} />
       <Autocomplete
         open={open}

@@ -11,22 +11,24 @@ import { useSearchParams } from 'next/navigation';
 import moment from 'moment';
 import FormIOSSwitch from '@/components/FormIOSSwitch';
 import { VariantType, enqueueSnackbar } from 'notistack';
-import { DeleteDataSampleState, SampleColumnsType } from '@/lib/server/sample';
+import { DeleteDataSampleState, SampleColumnsType, deleteDataSample } from '@/lib/server/sample';
+import { useTransition } from "react";
 
 export type SampleStateType = {
   data: any[],
   name: string,
+  table_name: string,
   count: number,
   ROWS_PER_PAGES: number[],
   columns: SampleColumnsType[],
-  deleteData: (data: DeleteDataSampleState) => Promise<void>
 }
 const AdminContentSample: React.FC<SampleStateType> = ({ 
-  data, name, count, ROWS_PER_PAGES = [10, 20, 50], columns, deleteData 
+  data, name, table_name, count, ROWS_PER_PAGES = [10, 20, 50], columns 
 }) => {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const [isPending, startTransition] = useTransition()
 
   const page = +(searchParams?.get('page') || 1)
   const per_page = +(searchParams?.get('per_page') || ROWS_PER_PAGES[0])
@@ -125,10 +127,10 @@ const AdminContentSample: React.FC<SampleStateType> = ({
       setLoading(true)
 
       if (deleteId) {
-        await deleteData({ ids: [deleteId]})
+        await startTransition(() => deleteDataSample({ ids: [deleteId], table: table_name}))
       }
       else if (checked.length > 0) {
-        await deleteData({ids: checked})
+        await startTransition(() => deleteDataSample({ ids: checked, table: table_name}))
       }
 
       let variant: VariantType = "success"
@@ -152,7 +154,7 @@ const AdminContentSample: React.FC<SampleStateType> = ({
       <section className="flex items-center space-x-4">
         <div>
           <h3 className="text-2xl font-semibold">{name}</h3>
-          <p className="text-sm text-gray-600 mt-1">10 bản ghi</p>
+          {/* <p className="text-sm text-gray-600 mt-1">{count} bản ghi</p> */}
         </div>
 
         <Button variant="contained" color='error' disabled={checked.length == 0} 
@@ -384,7 +386,7 @@ const ViewImageField = (data: Image | Image[] | null) => {
           className='w-20 h-16 rounded-lg object-cover ring-2 ring-white' />
       )}
       {images.length > length 
-        ? <div className="h-16 rounded-lg ring-2 ring-white bg-gray-300/90 flex items-center px-2 font-semibold">+{images.length - length} more</div>
+        ? <div className="h-16 rounded-lg ring-2 ring-white bg-gray-300/90 flex items-center px-2 font-semibold text-xs">+{images.length - length} more</div>
         : null
       }
     </div>
@@ -403,11 +405,11 @@ const ViewRelationField = (data: any | any[] | null, title: string) => {
     <div className="flex flex-wrap items-center -mx-1">
       {list.slice(0, length).map((item,i) =>
         <div className="px-1 mb-2" key={item.id}>
-          <div key={item.id} className='rounded-full bg-gray-200 px-2 py-1.5'>{item[title] || ''}</div>
+          <div key={item.id} className='rounded-full bg-gray-200 px-2 py-1.5 font-semibold text-xs'>{item[title] || ''}</div>
         </div>
       )}
       {list.length > length 
-        ? <div className="rounded-lg bg-gray-300/90 flex items-center p-2 font-semibold">+{list.length - length} more</div>
+        ? <div className="rounded-lg bg-gray-300/90 flex items-center p-2 font-semibold text-xs">+{list.length - length} more</div>
         : null
       }
     </div>

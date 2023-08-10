@@ -6,16 +6,21 @@ import ImageSlide from './image/ImageSlide';
 
 type AdminFormFieldImageType = {
   multiple?: boolean,
-  name: string
+  name: string,
+  label?: string,
   required?: boolean,
+  className?: string,
+
   defaultValue?: Image[] | Image
 }
 
 const AdminFormFieldImage: React.FC<AdminFormFieldImageType> = ({
   multiple = false,
   name,
+  label,
   required = false,
-  defaultValue
+  defaultValue,
+  className
 }) => {
   const [value, setValue] = useState<string>("")
   const [showModal, setShowModal] = useState(false)
@@ -32,8 +37,11 @@ const AdminFormFieldImage: React.FC<AdminFormFieldImageType> = ({
 
   return (
     <>
-      <p className="text-sm font-semibold mb-1">Ảnh { required && <span className="text-red-500">*</span> }</p>
-      <div className='h-40 border rounded bg-white'>
+      { label
+        ? <p className="text-sm font-semibold mb-1">{label} { required && <span className="text-red-500">*</span> }</p>
+        : null
+      }
+      <div className={`h-40 border rounded bg-white ${className}`}>
         <input type="hidden" name={name} value={value} className='sr-only' required={required} />
         <div className="w-full h-full flex flex-col justify-center items-center cursor-pointer"
           onClick={handelShowModal}
@@ -44,7 +52,7 @@ const AdminFormFieldImage: React.FC<AdminFormFieldImageType> = ({
               <span className="icon w-10 h-10 text-orange-600">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M4 5h13v7h2V5c0-1.103-.897-2-2-2H4c-1.103 0-2 .897-2 2v12c0 1.103.897 2 2 2h8v-2H4V5z"></path><path d="m8 11-3 4h11l-4-6-3 4z"></path><path d="M19 14h-2v3h-3v2h3v3h2v-3h3v-2h-3z"></path></svg>
               </span>
-              <span className="mt-2 text-xs font-semibold">Bấm để thêm một tài sản</span>
+              <span className="mt-2 text-xs font-semibold">Chọn để thêm một tài sản</span>
             </>
           }
         </div>

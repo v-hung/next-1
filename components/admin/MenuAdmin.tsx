@@ -54,21 +54,21 @@ const MenuAdmin = () => {
         person
       </span>),
       name: "Người dùng",
-      path: "/"
+      path: "/admin/users"
     },
     {
       icon: (<span className="material-symbols-outlined icon-500">
         key
       </span>),
       name: "Quyền",
-      path: "/"
+      path: "/admin/roles"
     },
     {
       icon: (<span className="material-symbols-outlined icon-500">
         settings
       </span>),
       name: "Cài đặt",
-      path: "/"
+      path: "/admin/settings"
     }
   ]
   

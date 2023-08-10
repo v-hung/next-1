@@ -73,3 +73,12 @@ export const formatDate = (date?: Date | string | null, options?: object) => {
   if (!date) return "Trống"
   return new Date(date).toLocaleDateString("en-US", options)
 }
+
+export function exclude(data: any, ...keys: any) {
+  if (data == null) return null
+
+  for (let key of keys) {
+    delete data[key]
+  }
+  return data
+}

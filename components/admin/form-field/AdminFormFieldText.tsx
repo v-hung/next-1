@@ -2,7 +2,7 @@
 import React from 'react'
 
 type State = {
-  title: string,
+  label: string,
   name: string
   required?: boolean,
   defaultValue?: string,
@@ -10,7 +10,7 @@ type State = {
 }
 
 const AdminFormFieldText: React.FC<State> = ({
-  title,
+  label,
   name,
   required = false,
   defaultValue,
@@ -18,7 +18,7 @@ const AdminFormFieldText: React.FC<State> = ({
 }) => {
   return (
     <div>
-      <p className="text-sm font-semibold mb-1">{title} { required && <span className="text-red-500">*</span> }</p>
+      <p className="text-sm font-semibold mb-1">{label} { required && <span className="text-red-500">*</span> }</p>
       <div className="border rounded focus-within:ring-2 ring-blue-600 bg-white">
         <input type={number ? 'number' : 'text'} name={name} defaultValue={defaultValue} className="w-full px-4 py-2" required={required} />
       </div>

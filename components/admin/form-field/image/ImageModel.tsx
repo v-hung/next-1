@@ -130,7 +130,7 @@ const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow, multiple,
   }
 
   return (
-    <div className={`fixed w-full h-full top-0 left-0 px-4 overflow-hidden flex flex-col items-center justify-center z-[200]
+    <div className={`fixed w-full h-full top-0 left-0 px-4 !m-0 overflow-hidden flex flex-col items-center justify-center z-[200]
       ${!show ? "pointer-events-none" : 'bg-black/40'}`}
       onClick={() => {}}
     >
