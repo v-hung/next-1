@@ -49,13 +49,44 @@ CREATE TABLE "VerificationRequest" (
 
 -- CreateTable
 CREATE TABLE "Admin" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "id" TEXT NOT NULL PRIMARY KEY,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "image" TEXT,
+    "imageId" TEXT,
+    "roleId" TEXT NOT NULL,
+    "publish" TEXT NOT NULL DEFAULT 'publish',
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "Admin_imageId_fkey" FOREIGN KEY ("imageId") REFERENCES "Image" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT "Admin_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Role" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "Role" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "Permission" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "key" TEXT NOT NULL,
+    "tableName" TEXT NOT NULL,
+    "roleId" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "Permission_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Role" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "FolderImage" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL,
+    "parentId" TEXT,
+    CONSTRAINT "FolderImage_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "FolderImage" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -70,8 +101,13 @@ CREATE TABLE "Image" (
     "naturalHeight" INTEGER NOT NULL,
     "naturalWidth" INTEGER NOT NULL,
     "size" REAL NOT NULL,
+    "tableName" TEXT NOT NULL,
+    "adminId" TEXT NOT NULL,
+    "folderImageId" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL
+    "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "Image_adminId_fkey" FOREIGN KEY ("adminId") REFERENCES "Admin" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "Image_folderImageId_fkey" FOREIGN KEY ("folderImageId") REFERENCES "FolderImage" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable

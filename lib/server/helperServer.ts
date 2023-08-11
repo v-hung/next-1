@@ -37,7 +37,7 @@ export const useCurrentUserAdmin = async (request?: NextRequest) => {
 
   const user = await db.admin.findUnique({
     where: {
-      id: +adminId
+      id: adminId
     },
     include: {
       image: true

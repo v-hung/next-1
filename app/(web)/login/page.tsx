@@ -1,5 +1,5 @@
 import ContentLogin from "@/components/web/content/ContentLogin"
-import { getCurrentUser } from "@/lib/getCurrentUser"
+import { getCurrentUser } from "@/lib/client/getCurrentUser"
 import { redirect } from "next/navigation"
 
 const page = async () => {

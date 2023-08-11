@@ -1,6 +1,6 @@
 import { AuthProvider } from '@/components/web/AuthProviders';
 import Header from '@/components/web/Header';
-import { getCurrentUser } from '@/lib/getCurrentUser';
+import { getCurrentUser } from '@/lib/client/getCurrentUser';
 import React from 'react';
 import Footer from '@/components/web/Footer';
 import Modal from '@/components/web/Modal';

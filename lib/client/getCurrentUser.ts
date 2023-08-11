@@ -1,8 +1,8 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
-import db from "./server/prismadb";
+import db from "../server/prismadb";
 import { User } from "@prisma/client";
-import { exclude } from "./utils/helper";
+import { exclude } from "../utils/helper";
 
 export type UserType = Omit<User, "password">| null
 

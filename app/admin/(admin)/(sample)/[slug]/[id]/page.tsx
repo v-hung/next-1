@@ -12,6 +12,7 @@ type PageState = {
 
 export default async ({ params: { id, slug } } : PageState) => {
   const table = TABLES_SAMPLE.find(v => v.slug == slug)
+  const tablesName = TABLES_SAMPLE.map(v => v.table_name)
 
   if (table == undefined)
     return <div>Trang không tồn tại</div>
@@ -23,6 +24,6 @@ export default async ({ params: { id, slug } } : PageState) => {
   }
 
   return (
-    <AdminContentSampleCreateEdit data={data} name={table.name} table_name={table.table_name} columns={table.columns} />
+    <AdminContentSampleCreateEdit data={data} name={table.name} table_name={table.table_name} columns={table.columns} tablesName={tablesName} />
   )
 }

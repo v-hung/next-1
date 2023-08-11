@@ -62,25 +62,53 @@ model VerificationRequest {
 }
 
 model Admin {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
+  id       String @id @default(cuid())
+  email    String @unique
   password String
   name     String
 
   imageId String?
   image   Image?  @relation(fields: [imageId], references: [id])
 
+  images Image[] @relation("images")
+
+  roleId String
+  role   Role   @relation(fields: [roleId], references: [id])
+
   publish   String   @default("publish") // or draft
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
+model Role {
+  id   String @id @default(cuid())
+  name String
+
+  admins Admin[]
+
+  permissions Permission[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Permission {
+  id        String @id @default(cuid())
+  key       String // 'browse' | 'create' | 'edit' | 'delete' | 'image' 
+  tableName String
+
+  roles   Role[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model FolderImage {
-  id            String  @id @default(cuid())
+  id   String @id @default(cuid())
   name String
 
   parentId String?
-  parent FolderImage? @relation("children", fields: [parentId], references: [id])
+  parent   FolderImage?  @relation("children", fields: [parentId], references: [id])
   children FolderImage[] @relation("children")
 
   images Image[]
@@ -97,14 +125,17 @@ model Image {
   naturalHeight Int
   naturalWidth  Int
   size          Float
-  table String?
+  tableName     String
+
+  adminId String
+  admin   Admin  @relation("images", fields: [adminId], references: [id])
 
   folderImageId String?
-  folderImage FolderImage? @relation(fields: [folderImageId], references: [id])
+  folderImage   FolderImage? @relation(fields: [folderImageId], references: [id])
 
   categories Category[]
-  products  Product[]
-  admins  Admin[]
+  products   Product[]
+  admins     Admin[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

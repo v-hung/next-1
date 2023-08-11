@@ -9,16 +9,18 @@ import { VariantType, useSnackbar } from 'notistack'
 import moment from 'moment'
 import AdminFormFieldRelation from '../form-field/AdminFormFieldRelation'
 import { AddEditDataSampleState, SampleColumnsType, addEditDataSample } from '@/lib/server/sample'
+import AdminFormFieldPermissions from '../form-field/AdminFormFieldPermissions'
 
 export type SampleStateType = {
   data?: any | undefined,
   name: string,
   table_name: string,
+  tablesName: string[],
   columns: SampleColumnsType[],
 }
 
 const AdminContentSampleCreateEdit: React.FC<SampleStateType> = ({
-  data, name, columns, table_name
+  data, name, columns, table_name, tablesName
 }) => {
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
@@ -69,17 +71,20 @@ const AdminContentSampleCreateEdit: React.FC<SampleStateType> = ({
       </div>
 
       <section className="flex items-center space-x-4 mt-2">
-        <div>
+        <div className='mr-auto'>
           <h3 className="text-2xl font-semibold">{name}</h3>
         </div>
 
-        <Button className='!ml-auto' disabled={!data} variant="contained" color={(data ? data.publish == 'publish' : false) ? 'black' : 'secondary'} startIcon={(
-          <span className="material-symbols-outlined">
-            {(data ? data.publish == 'publish' : false) ? 'remove' : 'check'}
-          </span>
-        )}>
-          {(data ? data.publish == 'publish' : false) ? 'Nháp' : 'Xuất bản'}
-        </Button>
+        { data && typeof data.publish !== 'undefined'
+          ? <Button disabled={!data} variant="contained" color={(data ? data.publish == 'publish' : false) ? 'black' : 'secondary'} startIcon={(
+            <span className="material-symbols-outlined">
+              {(data ? data.publish == 'publish' : false) ? 'remove' : 'check'}
+            </span>
+          )}>
+            {(data ? data.publish == 'publish' : false) ? 'Nháp' : 'Xuất bản'}
+          </Button>
+          : null
+        }
 
         <Button variant="contained" type='submit'>
           Lưu
@@ -91,7 +96,7 @@ const AdminContentSampleCreateEdit: React.FC<SampleStateType> = ({
           <div className="w-full p-4 bg-white rounded shadow">
             <div className="flex -mx-2 flex-wrap">
               {columns.filter(v => !['id', 'createdAt', 'updatedAt', 'publish'].includes(v.key)).map(column =>
-                <div className="w-1/2 px-2 mb-4" key={column.key}>
+                <div className="px-2 mb-4" key={column.key} style={{ width: column.col ? `${(12 / column.col) * 100}%` : '50%' }}>
                   { column.type == 'select'
                     ? <AdminFormFieldSelect 
                         defaultValue={data ? data[column.key] : undefined} 
@@ -124,6 +129,13 @@ const AdminContentSampleCreateEdit: React.FC<SampleStateType> = ({
                         required={column.required} 
                         label={column.label} 
                       />
+                    : column.type == 'permissions' ? 
+                      <AdminFormFieldPermissions
+                        defaultValue={data ? data[column.key] : undefined} 
+                        name={column.key}
+                        tablesName={tablesName}
+                        label={column.label} 
+                      />
                     : <AdminFormFieldText 
                         defaultValue={data ? data[column.key] : undefined} 
                         name={column.key} 
@@ -138,13 +150,16 @@ const AdminContentSampleCreateEdit: React.FC<SampleStateType> = ({
         </div>
 
         <div className="w-full lg:w-1/4 px-2 mb-4 flex flex-col space-y-4">
-          <div className={`w-full p-4 border rounded flex space-x-2 items-center text-sm
-            ${(data ? data.publish == 'publish' : false) ? 'bg-purple-100 border-purple-400 text-purple-600' : 'bg-blue-100 border-blue-400 text-blue-600'}
-          `}>
-            <span className="w-2 h-2 rounded-full bg-current"></span>
-            <span className="font-semibold">{data ? 'Chỉnh sửa' : 'Tạo mới'}</span>
-            <span>phiên bản {(data ? data.publish == 'publish' : false) ? 'xuất bản' : 'nháp'}</span>
-          </div>
+          { data && typeof data.publish !== 'undefined'
+            ? <div className={`w-full p-4 border rounded flex space-x-2 items-center text-sm
+              ${(data ? data.publish == 'publish' : false) ? 'bg-purple-100 border-purple-400 text-purple-600' : 'bg-blue-100 border-blue-400 text-blue-600'}
+            `}>
+              <span className="w-2 h-2 rounded-full bg-current"></span>
+              <span className="font-semibold">{data ? 'Chỉnh sửa' : 'Tạo mới'}</span>
+              <span>phiên bản {(data ? data.publish == 'publish' : false) ? 'xuất bản' : 'nháp'}</span>
+            </div>
+            : null
+          }
 
           <div className="w-full p-4 bg-white rounded shadow">
             <h5 className="uppercase text-sm border-b pb-2">Thông tin</h5>

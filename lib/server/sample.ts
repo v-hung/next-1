@@ -5,11 +5,13 @@ export type SampleColumnsType = {
   key: string,
   label: string,
   show: boolean,
-  required?: boolean
+  required?: boolean,
+  col?: number
 } & (
   SampleColumnSelectType | 
   SampleColumnReactionType |
   SampleColumnImageType |
+  SampleColumnPermissionsType |
   {
     type: 'string' | 'date' | 'publish' | 'int',
     details?: undefined;
@@ -37,6 +39,10 @@ export type SampleColumnReactionType = {
     api: string,
     title: string
   }
+}
+
+export type SampleColumnPermissionsType = {
+  type: 'permissions',
 }
 
 export type GetDataSampleState = {
@@ -96,7 +102,7 @@ const getItemDataSample = async ({
 }: GetItemDataSampleState & { table: string }) => {
 
   const include = columns.reduce((pre, cur) => {
-    if (cur.type == "image" || cur.type == "relation") {
+    if (cur.type == "image" || cur.type == "relation" || cur.type == "permissions") {
       return {...pre, [cur.key]: true}
     }
     else {

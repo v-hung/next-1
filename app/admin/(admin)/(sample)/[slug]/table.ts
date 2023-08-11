@@ -66,7 +66,7 @@ export const TABLES_SAMPLE: TableType[] = [
     slug: 'users',
     rows_per_pages: [10, 20, 50],
     columns: [
-      { key: 'id', label: 'ID', type: 'int', show: true},
+      { key: 'id', label: 'ID', type: 'string', show: true},
     
       { key: 'name', label: 'Tên', type: 'string', show: true, required: true},
       { key: 'email', label: 'Email', type: 'string', show: true, required: true},
@@ -75,6 +75,21 @@ export const TABLES_SAMPLE: TableType[] = [
       { key: 'createdAt', label: 'Ngày tạo', type: 'date', show: true},
       { key: 'updatedAt', label: 'Ngày cập nhập', type: 'date', show: true},
       { key: 'publish', label: 'Xuất bản', type: 'publish', show: true},
+    ]
+  },
+  {
+    name: 'Quyền',
+    table_name: 'role',
+    slug: 'roles',
+    rows_per_pages: [10, 20, 50],
+    columns: [
+      { key: 'id', label: 'ID', type: 'string', show: true},
+    
+      { key: 'name', label: 'Tên', type: 'string', show: true, required: true},
+      { key: 'permissions', label: 'Quyền', type: 'permissions', show: false, required: true, col: 12},
+    
+      { key: 'createdAt', label: 'Ngày tạo', type: 'date', show: true},
+      { key: 'updatedAt', label: 'Ngày cập nhập', type: 'date', show: true},
     ]
   }
 ]
