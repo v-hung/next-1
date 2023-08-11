@@ -72,13 +72,25 @@ CREATE TABLE "Role" (
 
 -- CreateTable
 CREATE TABLE "Permission" (
-    "id" TEXT NOT NULL PRIMARY KEY,
     "key" TEXT NOT NULL,
     "tableName" TEXT NOT NULL,
-    "roleId" TEXT NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
-    CONSTRAINT "Permission_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Role" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+
+    PRIMARY KEY ("key", "tableName")
+);
+
+-- CreateTable
+CREATE TABLE "PermissionsOnRoles" (
+    "roleId" TEXT NOT NULL,
+    "permissionKey" TEXT NOT NULL,
+    "permissionTableName" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+
+    PRIMARY KEY ("roleId", "permissionKey", "permissionTableName"),
+    CONSTRAINT "PermissionsOnRoles_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Role" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "PermissionsOnRoles_permissionKey_permissionTableName_fkey" FOREIGN KEY ("permissionKey", "permissionTableName") REFERENCES "Permission" ("key", "tableName") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable

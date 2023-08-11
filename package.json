@@ -7,7 +7,8 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write \"**/*.{js,ts,tsx,md}\"",
-    "seed": "npx ts-node ./prisma/seed.ts"
+    "seed": "ts-node-esm ./prisma/seed.ts",
+    "_comment": "npm i -g ts-node"
   },
   "prettier": {
     "arrowParens": "always",

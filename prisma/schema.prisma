@@ -86,21 +86,37 @@ model Role {
 
   admins Admin[]
 
-  permissions Permission[]
+  permissions PermissionsOnRoles[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Permission {
-  id        String @id @default(cuid())
   key       String // 'browse' | 'create' | 'edit' | 'delete' | 'image' 
   tableName String
 
-  roles   Role[]
+  roles PermissionsOnRoles[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // id        String @id @default(cuid())
+  @@id([key, tableName])
+}
+
+model PermissionsOnRoles {
+  roleId              String
+  permissionKey       String
+  permissionTableName String
+
+  role       Role       @relation(fields: [roleId], references: [id])
+  permission Permission @relation(fields: [permissionKey, permissionTableName], references: [key, tableName])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([roleId, permissionKey, permissionTableName])
 }
 
 model FolderImage {
