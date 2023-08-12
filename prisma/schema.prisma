@@ -68,7 +68,7 @@ model Admin {
   name     String
 
   imageId String?
-  image   Image?  @relation(fields: [imageId], references: [id])
+  image   Image?  @relation("avatar",fields: [imageId], references: [id])
 
   images Image[] @relation("images")
 
@@ -110,8 +110,8 @@ model PermissionsOnRoles {
   permissionKey       String
   permissionTableName String
 
-  role       Role       @relation(fields: [roleId], references: [id])
-  permission Permission @relation(fields: [permissionKey, permissionTableName], references: [key, tableName])
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  permission Permission @relation(fields: [permissionKey, permissionTableName], references: [key, tableName], onDelete: Cascade, onUpdate: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -151,10 +151,34 @@ model Image {
 
   categories Category[]
   products   Product[]
-  admins     Admin[]
+  admins     Admin[] @relation("avatar")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model GroupSetting {
+  id        String @id @default(uuid())
+  name      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  settings Setting[]
+}
+
+model Setting {
+  id String @id @default(uuid())
+  name    String @unique
+  field   String
+  details String?
+  value String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  groupId String
+  group   GroupSetting  @relation(fields: [groupId], references: [id])
 }
 
 model Category {

@@ -104,14 +104,16 @@ const MenuAdmin = () => {
           {managerLinks.map((v,i) => {
             return (
               <Link
-                className="flex-none w-full flex items-center py-3 overflow-x-hidden hover:bg-blue-200 rounded"
+                className={`flex-none w-full flex items-center py-3 overflow-x-hidden hover:bg-blue-200 rounded text-gray-800
+                  ${(v.path == "/admin" ? pathname == v.path : pathname?.includes(v.path)) ? 'font-semibold !text-blue-800' : 'font-medium'}
+                `}
                 href={v.path}
                 key={i}
               >
                 <div className='flex-none px-1 grid place-items-center' style={{width: "44px"}}>
                   {v.icon}
                 </div>
-                <span className={`flex-none ${(v.path == "/admin" ? pathname == v.path : pathname?.includes(v.path)) ? 'font-semibold' : 'font-medium'}`}>{v.name}</span>
+                <span className="flex-none">{v.name}</span>
               </Link>
             )
           })}
@@ -124,14 +126,16 @@ const MenuAdmin = () => {
           {generalLinks.map((v,i) => {
             return (
               <Link
-                className="flex-none w-full flex items-center py-3 overflow-x-hidden hover:bg-blue-200 rounded"
+                className={`flex-none w-full flex items-center py-3 overflow-x-hidden hover:bg-blue-200 rounded text-gray-800
+                  ${pathname?.includes(v.path) ? 'font-semibold !text-blue-800' : 'font-medium'}
+                `}
                 href={v.path}
                 key={i}
               >
                 <div className='flex-none px-1 grid place-items-center' style={{width: "44px"}}>
                   {v.icon}
                 </div>
-                <span className={`flex-none ${pathname?.includes(v.path) ? 'font-semibold' : 'font-medium'}`}>{v.name}</span>
+                <span className="flex-none">{v.name}</span>
               </Link>
             )
           })}

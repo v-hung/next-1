@@ -127,10 +127,10 @@ const AdminContentSample: React.FC<SampleStateType> = ({
       setLoading(true)
 
       if (deleteId) {
-        await startTransition(() => deleteDataSample({ ids: [deleteId], table: table_name}))
+        await deleteDataSample({ ids: [deleteId], table: table_name})
       }
       else if (checked.length > 0) {
-        await startTransition(() => deleteDataSample({ ids: checked, table: table_name}))
+        await deleteDataSample({ ids: checked, table: table_name})
       }
 
       let variant: VariantType = "success"

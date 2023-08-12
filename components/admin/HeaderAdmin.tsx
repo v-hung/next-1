@@ -28,12 +28,7 @@ const HeaderAdmin = () => {
         <span className='rounded-full bg-gray-100 px-4 py-2'>Bảng điều khiển</span>
 
         <div className="!ml-auto"></div>
-        <button className="relative w-10 h-10 p-2 rounded-full hover:bg-gray-100">
-          <span className="material-symbols-outlined">
-            notifications
-          </span>
-          <div className="absolute w-2 h-2 rounded-full bg-orange-600 top-2 right-3"></div>
-        </button>
+        <Notification user={adminUser} />
 
         { adminUser != null
           ? <AvatarUser user={adminUser} />
@@ -44,8 +39,73 @@ const HeaderAdmin = () => {
   )
 }
 
+const Notification = ({ user }: { user: AdminUserType}) => {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const open = Boolean(anchorEl)
+
+  const handleClick = (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault()
+
+    setAnchorEl(e.currentTarget);
+  }
+  const handleClose = () => {
+    setAnchorEl(null);
+  }
+
+  return (
+    <>
+      <button className="relative w-10 h-10 p-2 rounded-full hover:bg-gray-100"
+        onClick={handleClick}
+      >
+        <span className="material-symbols-outlined">
+          notifications
+        </span>
+        <div className="absolute w-2 h-2 rounded-full bg-orange-600 top-2 right-3"></div>
+      </button>
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        sx={{mt: 1.5}}
+        transformOrigin={{ horizontal: 'center', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}
+        PaperProps={{
+          sx: {
+            '& ul': {
+              py: 0
+            }
+          },
+        }}
+      >
+        <div className="w-96 max-w-[100vw]">
+          <div className="flex justify-between px-4 py-2 space-x-4 items-center border-b">
+            <p className="font-medium">Thông báo</p>
+            <span className="text-sm text-gray-600">Đánh dấu đã đọc</span>
+          </div>
+          <div className="flex flex-col divide-y">
+            <div className="p-4 flex space-x-3 hover:bg-blue-100">
+              <div className="w-10 h-10 rounded-full overflow-hidden bg-blue-500 flex items-center justify-center">
+                { user?.image
+                  ? <img src={user?.image.url} alt="" className='w-full h-full object-cover' loading='lazy' />
+                  : <span className="material-symbols-outlined icon-fill !text-white !text-2xl">
+                    person
+                  </span>
+                }
+              </div>
+
+              <div className="flex flex-col space-y-1">
+                <p><span className="font-medium">{user?.name}</span> chào mừng quay trở lại</p>
+                <p className="text-sm text-gray-600">11:12</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Menu>
+    </>
+  )
+}
+
 const AvatarUser = ({ user }: { user: NonNullable<AdminUserType>}) => {
-  let [isPending, startTransition] = useTransition()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
 
@@ -115,7 +175,7 @@ const AvatarUser = ({ user }: { user: NonNullable<AdminUserType>}) => {
           </Link>
         </MenuItem>
         <Divider />
-        <MenuItem onClick={() => startTransition(() => logoutUserAdmin())}>
+        <MenuItem onClick={() => logoutUserAdmin()}>
           <span className="material-symbols-outlined icon-fill text-red-600">
             logout
           </span>

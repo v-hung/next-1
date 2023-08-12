@@ -1,12 +1,12 @@
 import { Autocomplete, CircularProgress, TextField } from '@mui/material'
-import { Permission } from '@prisma/client'
+import { PermissionsOnRoles } from '@prisma/client'
 import { VariantType, enqueueSnackbar } from 'notistack'
 import React, { useEffect, useState, useRef, forwardRef, useImperativeHandle } from 'react'
 
 type State = {
   label: string,
   name: string
-  defaultValue?: Permission[],
+  defaultValue?: PermissionsOnRoles[],
   tablesName: string[]
 }
 
@@ -16,9 +16,13 @@ const AdminFormFieldPermissions: React.FC<State> = ({
   defaultValue,
   tablesName
 }) => {
-  const [value, setValue] = useState<Permission[]>(defaultValue || [])
-
-  console.log(value)
+  const [value, setValue] = useState<{
+    key: string,
+    tableName: string,
+  }[]>(defaultValue ? defaultValue.map(v => ({
+    key: v.permissionKey,
+    tableName: v.permissionTableName
+  })) :[])
   
   const childs = useRef<any[]>([])
 
@@ -31,7 +35,7 @@ const AdminFormFieldPermissions: React.FC<State> = ({
   return (
     <div>
       <p className="text-sm font-semibold mb-1">{label}</p>
-      {/* <input type="hidden" name={name} value={value} /> */}
+      <input type="hidden" name={name} value={JSON.stringify(value)} />
       <div className="flex space-x-2 text-sm">
         <button className='text-blue-500' onClick={(e) => setChecked(e, true)}>Chọn tất cả</button>
         <span>/</span>
@@ -44,8 +48,9 @@ const AdminFormFieldPermissions: React.FC<State> = ({
             key={table_name} 
             ref={child => childs.current[index] = child} 
             table_name={table_name} 
-            value={value.filter(v => v.tableName == table_name).map(v => v.key)}
+            value={(defaultValue || []).filter(v => v.permissionTableName == table_name).map(v => v.permissionKey)}
             edit={defaultValue != undefined}
+            setValue={setValue}
           />
         )}
       </div>
@@ -54,9 +59,12 @@ const AdminFormFieldPermissions: React.FC<State> = ({
 }
 
 const RoleItems = forwardRef(({
-  table_name, value, edit = false
+  table_name, value, edit = false, setValue
 }: {
-  table_name: string, value: string[], edit: boolean
+  table_name: string, value: string[], edit: boolean, setValue: React.Dispatch<React.SetStateAction<{
+    tableName: string,
+    key: string
+}[]>>
 }, ref) => {
   const data = ['browse', 'create', 'edit', 'delete', 'image']
   const [checked, setChecked] = useState(edit ? value: data)
@@ -81,6 +89,20 @@ const RoleItems = forwardRef(({
     }
   }
 
+  useEffect(() => {
+    setValue(state => {
+      let arOri = state.slice().filter(v => 
+        !data.some(v2 => v2 == v.key && v.tableName == table_name))
+
+      let arrAdd = checked.map(v => ({
+        key: v,
+        tableName: table_name
+      }))
+
+      return [...arOri, ...arrAdd]
+    })
+  }, [checked])
+
   useImperativeHandle(ref, () => ({
 
     forwardSetChecked(check: boolean) {
@@ -96,7 +118,6 @@ const RoleItems = forwardRef(({
 
   return (
     <div className='flex flex-col space-y-2'>
-      <input type="hidden" name='permissions[]' value={checked} />
       <label htmlFor={table_name} className="inline-flex items-center space-x-2 select-none cursor-pointer">
         <input type="checkbox" id={table_name} checked={checked.length == data.length} onChange={handleSelectAll} />
         <span>{table_name}</span>

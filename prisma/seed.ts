@@ -74,13 +74,18 @@ import bcrypt from 'bcrypt'
           create: permissions.map(v =>
             ({
               permission: {
-                connect: 
-                  {
+                connectOrCreate: {
+                  where: {
                     key_tableName: {
                       key: v.key,
                       tableName: v.tableName
-                   }
+                    }
+                  },
+                  create: {
+                    key: v.key,
+                    tableName: v.tableName
                   }
+                }
               }
             })
           )

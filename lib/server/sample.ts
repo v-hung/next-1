@@ -133,7 +133,7 @@ const deleteDataSample = async ({
       id: {
         in: ids
       }
-    }
+    },
   })
 }
 
@@ -177,6 +177,57 @@ const addEditDataSample = async ({
               }))
             }
             return { ...cur, [pre.key]: { connect: tempConnect } }
+          }
+          else
+            return cur
+        }
+        else if (pre.type == "permissions") {
+          if (data[pre.key]) {
+            let tempCreate = {}
+
+            if (!edit) {
+              tempCreate = {
+                create: JSON.parse(data[pre.key]).map((v: any) =>
+                  ({
+                    permission: {
+                      connectOrCreate: {
+                        where: {
+                          key_tableName: {
+                            key: v.key,
+                            tableName: v.tableName
+                          }
+                        },
+                        create: {
+                          key: v.key,
+                          tableName: v.tableName
+                        }
+                      }
+                    }
+                  })
+                )
+              }
+            }
+            else {
+              tempCreate = {
+                connectOrCreate: JSON.parse(data[pre.key]).map((v: any) =>
+                  ({
+                    where: {
+                      roleId_permissionKey_permissionTableName: {
+                        permissionKey: v.key,
+                        permissionTableName: v.tableName,
+                        roleId: data.id
+                      }
+                    },
+                    create: {
+                      permissionKey: v.key,
+                      permissionTableName: v.tableName
+                    }
+                  })
+                )
+              }
+            }
+
+            return { ...cur, [pre.key]: tempCreate }
           }
           else
             return cur

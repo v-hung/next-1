@@ -36,7 +36,8 @@ const AdminContentSampleCreateEdit: React.FC<SampleStateType> = ({
       
       const formData = Object.fromEntries(
         new FormData(e.target as HTMLFormElement),
-      );
+      )
+
       await addEditDataSample({data: formData, edit: data != undefined, table: table_name, columns})
 
       let variant: VariantType = "success"

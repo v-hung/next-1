@@ -26,7 +26,7 @@ export const lightTheme = createTheme({
     }
   },
   typography: {
-    // fontFamily: font.style.fontFamily
+    fontFamily: font.style.fontFamily
   }
 })
 
@@ -41,11 +41,11 @@ const MuiProvider: React.FC<{
 }> = ({children}) => {
   return (
     <ThemeProvider theme={lightTheme}>
-      {/* <style global jsx>
+      <style global jsx>
         {`html {
           font-family: ${font.style.fontFamily};
         }`}
-      </style> */}
+      </style>
       <CssBaseline />
       {children}
     </ThemeProvider>
