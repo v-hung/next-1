@@ -1,4 +1,5 @@
 'use server'
+import { useCurrentUserAdmin } from "./helperServer";
 import db from "./prismadb"
 
 export type SampleColumnsType = {
@@ -36,7 +37,7 @@ export type SampleColumnReactionType = {
   type: 'relation',
   details: {
     type: 'one-to-one' | 'one-to-many' | 'many-to-one' | 'many-to-many',
-    api: string,
+    tableNameRelation: string,
     title: string
   }
 }
@@ -51,7 +52,7 @@ export type GetDataSampleState = {
   columns: SampleColumnsType[]
 }
 
-const getDataSample = async ({
+export const getDataSample = async ({
   page, 
   per_page,
   table,
@@ -96,7 +97,7 @@ export type GetItemDataSampleState = {
   columns: SampleColumnsType[]
 }
 
-const getItemDataSample = async ({
+export const getItemDataSample = async ({
   id,
   table, columns
 }: GetItemDataSampleState & { table: string }) => {
@@ -124,7 +125,7 @@ export type DeleteDataSampleState = {
   ids: any[],
 }
 
-const deleteDataSample = async ({
+export const deleteDataSample = async ({
   ids,
   table
 }: DeleteDataSampleState & { table: string }) => {
@@ -143,7 +144,7 @@ export type AddEditDataSampleState = {
   columns: SampleColumnsType[],
 }
 
-const addEditDataSample = async ({
+export const addEditDataSample = async ({
   data, edit = false, columns, table
 }: AddEditDataSampleState & { table: string }) => {
   try {
@@ -257,9 +258,20 @@ const addEditDataSample = async ({
   }
 }
 
-export {
-  getDataSample,
-  getItemDataSample,
-  deleteDataSample,
-  addEditDataSample
+export const getListDataOfRelation = async ({
+  tableName
+}: { tableName: string }) => {
+  try {
+    const user = await useCurrentUserAdmin()
+
+    if (!user) throw "Unauthorized"
+
+    const data = await (db as any)[tableName].findMany()
+
+    return {data}
+  }
+  catch (e) {
+    console.log(e)
+    throw (typeof e === "string") ? e : "Server Error"
+  }
 }

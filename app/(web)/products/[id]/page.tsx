@@ -30,7 +30,7 @@ const page = ({params}: PageType) => {
         <div className="w-full lg:w-1/3 font-bold">
           <div className="flex items-center space-x-2">
             <div className="flex-grow h-[1px] bg-gray-400"></div>
-            <span className="icon w-20 h-20 flex-none text-[#32c5d2]">
+            <span className="icon-svg w-20 h-20 flex-none text-[#32c5d2]">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M21.947 9.179a1.001 1.001 0 0 0-.868-.676l-5.701-.453-2.467-5.461a.998.998 0 0 0-1.822-.001L8.622 8.05l-5.701.453a1 1 0 0 0-.619 1.713l4.213 4.107-1.49 6.452a1 1 0 0 0 1.53 1.057L12 18.202l5.445 3.63a1.001 1.001 0 0 0 1.517-1.106l-1.829-6.4 4.536-4.082c.297-.268.406-.686.278-1.065z"></path></svg>
             </span>
             <div className="flex-grow h-[1px] bg-gray-400"></div>
@@ -42,7 +42,7 @@ const page = ({params}: PageType) => {
         <div className="w-full lg:w-1/3 font-bold">
           <div className="flex items-center space-x-2">
             <div className="flex-grow h-[1px] bg-gray-400"></div>
-            <span className="icon w-20 h-20 flex-none text-[#32c5d2]">
+            <span className="icon-svg w-20 h-20 flex-none text-[#32c5d2]">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M21 4H3a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1zm-1 11a3 3 0 0 0-3 3H7a3 3 0 0 0-3-3V9a3 3 0 0 0 3-3h10a3 3 0 0 0 3 3v6z"></path><path d="M12 8c-2.206 0-4 1.794-4 4s1.794 4 4 4 4-1.794 4-4-1.794-4-4-4zm0 6c-1.103 0-2-.897-2-2s.897-2 2-2 2 .897 2 2-.897 2-2 2z"></path></svg>
             </span>
             <div className="flex-grow h-[1px] bg-gray-400"></div>
@@ -54,7 +54,7 @@ const page = ({params}: PageType) => {
         <div className="w-full lg:w-1/3 font-bold">
           <div className="flex items-center space-x-2">
             <div className="flex-grow h-[1px] bg-gray-400"></div>
-            <span className="icon w-20 h-20 flex-none text-[#32c5d2]">
+            <span className="icon-svg w-20 h-20 flex-none text-[#32c5d2]">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M21 4H2v2h2.3l3.521 9.683A2.004 2.004 0 0 0 9.7 17H18v-2H9.7l-.728-2H18c.4 0 .762-.238.919-.606l3-7A.998.998 0 0 0 21 4z"></path><circle cx="10.5" cy="19.5" r="1.5"></circle><circle cx="16.5" cy="19.5" r="1.5"></circle></svg>
             </span>
             <div className="flex-grow h-[1px] bg-gray-400"></div>

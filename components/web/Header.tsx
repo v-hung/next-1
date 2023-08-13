@@ -39,7 +39,7 @@ const Header = ({className = "", user}: any) => {
         <Link href={"/"}><img src="/logo2.png" alt="Logo" className='h-12 my-2' /></Link>
 
         <span 
-          className="icon rounded border w-8 h-8 p-1 hover:bg-gray-100 cursor-pointer lg:hidden"
+          className="icon-svg rounded border w-8 h-8 p-1 hover:bg-gray-100 cursor-pointer lg:hidden"
           onClick={() => setShowMenuMobile(true)}
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"></path></svg>
@@ -73,7 +73,7 @@ const Header = ({className = "", user}: any) => {
                     className="px-4 py-2 rounded-full border bg-white hover:bg-slate-800 hover:border-slate-800 hover:text-white
                       flex items-center space-x-2"
                   >
-                    <span className="icon">
+                    <span className="icon-svg">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="m13 16 5-4-5-4v3H4v2h9z"></path><path d="M20 3h-9c-1.103 0-2 .897-2 2v4h2V5h9v14h-9v-4H9v4c0 1.103.897 2 2 2h9c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2z"></path></svg>
                     </span>
                     <span>Đăng nhập</span>
@@ -110,7 +110,7 @@ const AvatarUser = ({user}: any) => {
           <div className='font-semibold'>{user.name}</div>
           <div className='text-xs'>{formatCurrency(100000)}</div>
         </div>
-        <span className="icon w-3 h-3 ">
+        <span className="icon-svg w-3 h-3 ">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M11.178 19.569a.998.998 0 0 0 1.644 0l9-13A.999.999 0 0 0 21 5H3a1.002 1.002 0 0 0-.822 1.569l9 13z"></path></svg>
         </span>
       </div>
@@ -118,7 +118,7 @@ const AvatarUser = ({user}: any) => {
         <Collapse show={isShow} setShow={setIsShow}>
           <div className="bg-white rounded py-2 border">
             <Link href="/profile" className="flex items-center space-x-2 hover:bg-blue-200 px-4 py-2">
-              <span className="icon">
+              <span className="icon-svg">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M7.5 6.5C7.5 8.981 9.519 11 12 11s4.5-2.019 4.5-4.5S14.481 2 12 2 7.5 4.019 7.5 6.5zM20 21h1v-1c0-3.859-3.141-7-7-7h-4c-3.86 0-7 3.141-7 7v1h17z"></path></svg>
               </span>
               <span>Trang cá nhân</span>
@@ -126,7 +126,7 @@ const AvatarUser = ({user}: any) => {
             <div className="flex items-center space-x-2 hover:bg-blue-200 px-4 py-2 text-red-500 cursor-pointer"
               onClick={() => signOut()}
             >
-              <span className="icon">
+              <span className="icon-svg">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M16 13v-2H7V8l-5 4 5 4v-3z"></path><path d="M20 3h-9c-1.103 0-2 .897-2 2v4h2V5h9v14h-9v-4H9v4c0 1.103.897 2 2 2h9c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2z"></path></svg>
               </span>
               <span>Đăng xuất</span>

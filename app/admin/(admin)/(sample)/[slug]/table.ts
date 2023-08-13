@@ -2,18 +2,18 @@ import { SampleColumnsType } from "@/lib/server/sample"
 
 type TableType = {
   name: string,
-  table_name: string,
+  tableName: string,
   slug: string,
-  rows_per_pages: number[],
+  rowsPerPages: number[],
   columns: SampleColumnsType[]
 }
 
 export const TABLES_SAMPLE: TableType[] = [
   {
     name: 'Sản phẩm',
-    table_name: 'product',
+    tableName: 'product',
     slug: 'products',
-    rows_per_pages: [10, 20, 50],
+    rowsPerPages: [10, 20, 50],
     columns: [
       { key: 'id', label: 'ID', type: 'int', show: true},
     
@@ -26,7 +26,7 @@ export const TABLES_SAMPLE: TableType[] = [
       { key: 'gem', label: 'Kim cương', type: 'int', show: true, required: true},
       { key: 'category', label: 'Danh mục', type: 'relation', show: true, required: true, details: {
         type: 'many-to-one',
-        api: '/api/admin/categories',
+        tableNameRelation: 'category',
         title: 'title'
       }},
       { key: 'images', label: 'Ảnh', type: 'image', show: true, details: { multiple: true }},
@@ -38,9 +38,9 @@ export const TABLES_SAMPLE: TableType[] = [
   },
   {
     name: 'Danh mục',
-    table_name: 'category',
+    tableName: 'category',
     slug: 'categories',
-    rows_per_pages: [10, 20, 50],
+    rowsPerPages: [10, 20, 50],
     columns: [
       { key: 'id', label: 'ID', type: 'string', show: true},
     
@@ -62,15 +62,20 @@ export const TABLES_SAMPLE: TableType[] = [
   },
   {
     name: 'Tài khoản',
-    table_name: 'admin',
+    tableName: 'admin',
     slug: 'users',
-    rows_per_pages: [10, 20, 50],
+    rowsPerPages: [10, 20, 50],
     columns: [
       { key: 'id', label: 'ID', type: 'string', show: true},
     
       { key: 'name', label: 'Tên', type: 'string', show: true, required: true},
       { key: 'email', label: 'Email', type: 'string', show: true, required: true},
       { key: 'image', label: 'Ảnh', type: 'image', show: true, details: { multiple: false }},
+      { key: 'role', label: 'Quyền', type: 'relation', show: true, required: true, details: {
+        type: 'many-to-one',
+        tableNameRelation: 'role',
+        title: 'name'
+      }},
     
       { key: 'createdAt', label: 'Ngày tạo', type: 'date', show: true},
       { key: 'updatedAt', label: 'Ngày cập nhập', type: 'date', show: true},
@@ -79,9 +84,9 @@ export const TABLES_SAMPLE: TableType[] = [
   },
   {
     name: 'Quyền',
-    table_name: 'role',
+    tableName: 'role',
     slug: 'roles',
-    rows_per_pages: [10, 20, 50],
+    rowsPerPages: [10, 20, 50],
     columns: [
       { key: 'id', label: 'ID', type: 'string', show: true},
     

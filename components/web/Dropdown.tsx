@@ -41,7 +41,7 @@ const Dropdown: React.FC<DropdownType> = ({isShow, setIsShow, title, items}) => 
       >
         <span className=''>{title}</span>
         { select ? <span className='text-gray-700 font-semibold'>{findTitle()}</span> : null }
-        <span className="icon w-3 h-3">
+        <span className="icon-svg w-3 h-3">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M11.178 19.569a.998.998 0 0 0 1.644 0l9-13A.999.999 0 0 0 21 5H3a1.002 1.002 0 0 0-.822 1.569l9 13z"></path></svg>
         </span>
       </div>

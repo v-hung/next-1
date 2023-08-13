@@ -14,6 +14,9 @@ const font = Roboto({
 const blackBase = '#27272a';
 const blackMain = alpha(blackBase, 0.7);
 
+const whiteBase = '#fff';
+const whiteMain = alpha(whiteBase, 0.7);
+
 export const lightTheme = createTheme({
   palette: {
     mode: "light",
@@ -23,6 +26,12 @@ export const lightTheme = createTheme({
       light: alpha(blackBase, 0.5),
       dark: alpha(blackBase, 0.9),
       contrastText: getContrastRatio(blackMain, '#fff') > 4.5 ? '#fff' : '#111',
+    },
+    white: {
+      main: whiteMain,
+      light: alpha(whiteBase, 0.5),
+      dark: alpha(whiteBase, 0.9),
+      contrastText: getContrastRatio(whiteMain, '#fff') > 4.5 ? '#fff' : '#111',
     }
   },
   typography: {
@@ -32,7 +41,8 @@ export const lightTheme = createTheme({
 
 declare module "@mui/material/Button" {
   interface ButtonPropsColorOverrides {
-    black: true;
+    black: true,
+    white: true,
   }
 }
 

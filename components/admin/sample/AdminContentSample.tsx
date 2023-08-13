@@ -113,7 +113,7 @@ const AdminContentSample: React.FC<SampleStateType> = ({
     setDeleteId(null)
   }
 
-  const showDeleteModel = (id?: number | string) => {
+  const showDeleteModal = (id?: number | string) => {
     if (id != undefined) {
       setDeleteId(id)
     }
@@ -158,7 +158,7 @@ const AdminContentSample: React.FC<SampleStateType> = ({
         </div>
 
         <Button variant="contained" color='error' disabled={checked.length == 0} 
-          onClick={() => showDeleteModel()}
+          onClick={() => showDeleteModal()}
           startIcon={(
             <span className="material-symbols-outlined">
               delete
@@ -263,7 +263,7 @@ const AdminContentSample: React.FC<SampleStateType> = ({
                           </span>
                         )}>Sửa</Button>
                         <Button color='error' variant='contained' size='small' 
-                          onClick={() => showDeleteModel(row.id)}
+                          onClick={() => showDeleteModal(row.id)}
                           startIcon={(
                             <span className="material-symbols-outlined">
                               delete
@@ -403,7 +403,7 @@ const ViewRelationField = (data: any | any[] | null, title: string) => {
   const length = list.length > 3 ? 3 : list.length
 
   return (
-    <div className="flex flex-wrap items-center -mx-1">
+    <div className="flex flex-wrap items-center justify-center -mx-1">
       {list.slice(0, length).map((item,i) =>
         <div className="px-1 mb-2" key={item.id}>
           <div key={item.id} className='rounded-full bg-gray-200 px-2 py-1.5 font-semibold text-xs'>{item[title] || ''}</div>

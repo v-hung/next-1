@@ -1,7 +1,7 @@
 "use client"
 import {useEffect, useState} from 'react'
 import { Image } from '@prisma/client';
-import AdminFormFieldImageModel from './image/ImageModel';
+import AdminImageModal from './image/ImageModal';
 import ImageSlide from './image/ImageSlide';
 
 type AdminFormFieldImageType = {
@@ -10,7 +10,7 @@ type AdminFormFieldImageType = {
   label?: string,
   required?: boolean,
   className?: string,
-
+  tableName: string,
   defaultValue?: Image[] | Image
 }
 
@@ -20,6 +20,7 @@ const AdminFormFieldImage: React.FC<AdminFormFieldImageType> = ({
   label,
   required = false,
   defaultValue,
+  tableName,
   className
 }) => {
   const [value, setValue] = useState<string>("")
@@ -49,7 +50,7 @@ const AdminFormFieldImage: React.FC<AdminFormFieldImageType> = ({
           { images.length > 0
             ? <ImageSlide images={images} />
             : <>
-              <span className="icon w-10 h-10 text-orange-600">
+              <span className="icon-svg w-10 h-10 text-orange-600">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M4 5h13v7h2V5c0-1.103-.897-2-2-2H4c-1.103 0-2 .897-2 2v12c0 1.103.897 2 2 2h8v-2H4V5z"></path><path d="m8 11-3 4h11l-4-6-3 4z"></path><path d="M19 14h-2v3h-3v2h3v3h2v-3h3v-2h-3z"></path></svg>
               </span>
               <span className="mt-2 text-xs font-semibold">Chọn để thêm một tài sản</span>
@@ -58,7 +59,7 @@ const AdminFormFieldImage: React.FC<AdminFormFieldImageType> = ({
         </div>
       </div>
 
-      <AdminFormFieldImageModel show={showModal} setShow={setShowModal} multiple={multiple} data={images} setData={setImages} />
+      <AdminImageModal tableName={tableName} show={showModal} setShow={setShowModal} multiple={multiple} data={images} setData={setImages} />
     </>
   )
 }

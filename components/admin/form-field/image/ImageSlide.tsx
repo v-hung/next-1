@@ -58,19 +58,19 @@ const ImageSlide = ({images}: {images: Image[]}) => {
           )}
         </div>
         <div className="absolute top-1/2 left-2 z-10 -translate-y-1/2" onClick={prevSlide}>
-          <span className="icon w-10 h-10 rounded-full hover:bg-gray-200 cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z"></path></svg>
+          <span className="icon rounded-full hover:bg-gray-200 cursor-pointer">
+            chevron_left
           </span>
         </div>
         <div className="absolute top-1/2 right-2 z-10 -translate-y-1/2" onClick={nextSlide}>
-          <span className="icon w-10 h-10 rounded-full hover:bg-gray-200 cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M10.707 17.707 16.414 12l-5.707-5.707-1.414 1.414L13.586 12l-4.293 4.293z"></path></svg>
+          <span className="icon rounded-full hover:bg-gray-200 cursor-pointer">
+            chevron_right
           </span>
         </div>
 
         <div className="absolute w-full bottom-7 p-2 z-10 flex justify-center space-x-2 pointer-events-none">
-          <span className="icon w-8 h-8 p-1 rounded bg-white border hover:bg-gray-200 cursor-pointer pointer-events-auto">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 11h-6V5h-2v6H5v2h6v6h2v-6h6z"></path></svg>
+          <span className="icon w-8 h-8 !text-lg p-1 rounded bg-white border hover:bg-gray-200 cursor-pointer pointer-events-auto">
+            add
           </span>
         </div>
       </div>

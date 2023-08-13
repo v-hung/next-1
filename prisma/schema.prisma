@@ -68,9 +68,11 @@ model Admin {
   name     String
 
   imageId String?
-  image   Image?  @relation("avatar",fields: [imageId], references: [id])
+  image   Image?  @relation("avatar", fields: [imageId], references: [id])
 
   images Image[] @relation("images")
+
+  folders FolderImage[] @relation("folders")
 
   roleId String
   role   Role   @relation(fields: [roleId], references: [id])
@@ -120,14 +122,21 @@ model PermissionsOnRoles {
 }
 
 model FolderImage {
-  id   String @id @default(cuid())
-  name String
+  id        String @id @default(cuid())
+  name      String
+  tableName String
+
+  adminId String
+  admin   Admin  @relation("folders", fields: [adminId], references: [id])
 
   parentId String?
   parent   FolderImage?  @relation("children", fields: [parentId], references: [id])
   children FolderImage[] @relation("children")
 
   images Image[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Image {
@@ -151,15 +160,15 @@ model Image {
 
   categories Category[]
   products   Product[]
-  admins     Admin[] @relation("avatar")
+  admins     Admin[]    @relation("avatar")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model GroupSetting {
-  id        String @id @default(uuid())
-  name      String
+  id   String @id @default(uuid())
+  name String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -168,17 +177,17 @@ model GroupSetting {
 }
 
 model Setting {
-  id String @id @default(uuid())
-  name    String @unique
+  id      String  @id @default(uuid())
+  name    String  @unique
   field   String
   details String?
-  value String?
+  value   String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   groupId String
-  group   GroupSetting  @relation(fields: [groupId], references: [id])
+  group   GroupSetting @relation(fields: [groupId], references: [id])
 }
 
 model Category {

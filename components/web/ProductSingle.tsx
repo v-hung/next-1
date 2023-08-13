@@ -59,14 +59,14 @@ const ProductSingle: React.FC<{
 
         <div className="p-4 pt-2 flex flex-col space-y-2">
           <div className="flex items-center space-x-2">
-            <span className="icon">
+            <span className="icon-svg">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z"></path><path d="M11 11h2v6h-2zm0-4h2v2h-2z"></path></svg>
             </span>
             <span>Tài khoản</span>
             <span className='text-red-500'>#{item.id}</span>
           </div>
           <div className="flex items-center space-x-2">
-            <span className="icon">
+            <span className="icon-svg">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M11.707 2.293A.997.997 0 0 0 11 2H6a.997.997 0 0 0-.707.293l-3 3A.996.996 0 0 0 2 6v5c0 .266.105.52.293.707l10 10a.997.997 0 0 0 1.414 0l8-8a.999.999 0 0 0 0-1.414l-10-10zM13 19.586l-9-9V6.414L6.414 4h4.172l9 9L13 19.586z"></path><circle cx="8.353" cy="8.353" r="1.647"></circle></svg>
             </span>
             <span>Giá tiền :</span>

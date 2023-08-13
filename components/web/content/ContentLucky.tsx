@@ -93,8 +93,8 @@ const ContentLucky = () => {
                 onClick={start}
               >
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 text-white">
-                  <span className="icon w-8 h-8">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="m12 3.879-7.061 7.06 2.122 2.122L12 8.121l4.939 4.94 2.122-2.122z"></path><path d="m4.939 17.939 2.122 2.122L12 15.121l4.939 4.94 2.122-2.122L12 10.879z"></path></svg>
+                  <span className="icon">
+                    keyboard_double_arrow_up
                   </span>
                 </div>
                 <div className="w-full h-full grid place-items-center text-white font-semibold text-sm">Quay</div>

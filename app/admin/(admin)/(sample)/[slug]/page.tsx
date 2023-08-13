@@ -15,17 +15,17 @@ export default async ({
     return <div>Trang không tồn tại</div>
 
   const page = +(searchParams['page'] || 1)
-  const per_page = +(searchParams['per_page'] || table.rows_per_pages[0])
+  const per_page = +(searchParams['per_page'] || table.rowsPerPages[0])
  
-  const { data, count } = await getDataSample({page, per_page, columns: table.columns, table: table.table_name})
+  const { data, count } = await getDataSample({page, per_page, columns: table.columns, table: table.tableName})
 
   return (
     <AdminContentSample 
       name={table.name} 
-      table_name={table.table_name}
+      table_name={table.tableName}
       data={data} 
       count={count} 
-      ROWS_PER_PAGES={table.rows_per_pages} 
+      ROWS_PER_PAGES={table.rowsPerPages} 
       columns={table.columns}
     />
   )

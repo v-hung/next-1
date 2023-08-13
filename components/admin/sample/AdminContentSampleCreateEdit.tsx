@@ -14,13 +14,13 @@ import AdminFormFieldPermissions from '../form-field/AdminFormFieldPermissions'
 export type SampleStateType = {
   data?: any | undefined,
   name: string,
-  table_name: string,
+  tableName: string,
   tablesName: string[],
   columns: SampleColumnsType[],
 }
 
 const AdminContentSampleCreateEdit: React.FC<SampleStateType> = ({
-  data, name, columns, table_name, tablesName
+  data, name, columns, tableName, tablesName
 }) => {
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
@@ -38,7 +38,7 @@ const AdminContentSampleCreateEdit: React.FC<SampleStateType> = ({
         new FormData(e.target as HTMLFormElement),
       )
 
-      await addEditDataSample({data: formData, edit: data != undefined, table: table_name, columns})
+      await addEditDataSample({data: formData, edit: data != undefined, table: tableName, columns})
 
       let variant: VariantType = "success"
       enqueueSnackbar('Thành công', { variant })
@@ -112,6 +112,7 @@ const AdminContentSampleCreateEdit: React.FC<SampleStateType> = ({
                         multiple={column.details.multiple}
                         name={column.key}
                         label={column.label}
+                        tableName={tableName}
                         required={column.required} 
                       />
                     : column.type == 'int' ? 
@@ -125,9 +126,10 @@ const AdminContentSampleCreateEdit: React.FC<SampleStateType> = ({
                     : column.type == 'relation' ? 
                       <AdminFormFieldRelation
                         defaultValue={data ? data[column.key] : undefined} 
-                        api={column.details.api}
+                        tableName={column.details.tableNameRelation}
                         name={column.key} 
                         required={column.required} 
+                        titleRelation={column.details.title}
                         label={column.label} 
                       />
                     : column.type == 'permissions' ? 

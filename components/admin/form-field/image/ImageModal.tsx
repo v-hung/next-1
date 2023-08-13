@@ -1,11 +1,13 @@
 "use client"
 import {useEffect, useRef, useState} from 'react'
 import { useClickOutside } from '@/lib/clickOutside';
-import { Image } from '@prisma/client';
+import { FolderImage, Image } from '@prisma/client';
 import { Button, Zoom } from '@mui/material';
 import { getScrollbarWidth } from '@/lib/utils/helper';
-import AdminFormFieldImageAdd from './ImageModelAdd';
-import AdminFormFieldImageEdit from './ImageModelEdit';
+import AdminImageAdd from './ImageModalAdd';
+import AdminImageEdit from './ImageModalEdit';
+import AdminImageModalAddFolder from './ImageModalAddFolder';
+import { getListFolderImage } from '@/lib/server/imageFormField';
 
 type ModalType = {
   show: boolean,
@@ -13,9 +15,10 @@ type ModalType = {
   multiple?: boolean,
   data: Image[]
   setData: (data: Image[]) => void,
+  tableName: string
 }
 
-const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow, multiple, data, setData}) => {
+const AdminImageModal: React.FC<ModalType> = ({show, setShow, multiple, data, setData, tableName}) => {
   const rechargeRef = useRef<HTMLDivElement>(null)
   const [loading, setLoading] = useState(false)
   const [images, setImages] = useState<Image[]>([])
@@ -30,6 +33,10 @@ const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow, multiple,
 
   const [editModal, setEditModal] = useState(false)
   const [dataEdit, setDataEdit] = useState<Image | null>(null)
+
+  const [addFolderModal, setAddFolderModal] = useState(false)
+  const [dataFolderEdit, setDataFolderEdit] = useState<FolderImage | null>(null)
+  const [dataFolderAdd, setDataFolderAdd] = useState<FolderImage | null>(null)
 
   useClickOutside(rechargeRef, () => {
     setShow(false)
@@ -49,9 +56,10 @@ const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow, multiple,
   const fetchImages = async () => {
     setLoading(true)
     try {
-      const res = await fetch('/api/admin/images')
-      if (!res.ok) throw ""
-      setImages(((await res.json())?.data as any[]).map(v => ({...v, checked: false})) || [])
+      const { folders, images } = await getListFolderImage({})
+
+      console.log({ folders, images })
+      // setImages(((await res.json())?.data as any[]).map(v => ({...v, checked: false})) || [])
     } catch (error) {
       return {data: []}
     } finally {
@@ -141,14 +149,14 @@ const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow, multiple,
             <div className="p-6 flex items-center justify-between">
               <span className='text-xl font-semibold'>Danh sách ảnh</span>
               <span 
-                className="icon w-8 h-8 rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer"
+                className="w-8 h-8 rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer flex items-center justify-center"
                 onClick={() => setShow(false)}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="m16.192 6.344-4.243 4.242-4.242-4.242-1.414 1.414L10.535 12l-4.242 4.242 1.414 1.414 4.242-4.242 4.243 4.242 1.414-1.414L13.364 12l4.242-4.242z"></path></svg>
+                <span className="icon">close</span>
               </span>
             </div>
 
-            <div className="py-6 pt-0 border-y">
+            <div className="border-y">
               <div className="px-6 flex items-center border-b">
                 <div 
                   className={`p-4 uppercase text-xs font-semibold border-b hover:bg-blue-100 cursor-pointer border-transparent ${page == 0 ? 'text-blue-600 !border-blue-600' : ''}`}
@@ -164,7 +172,12 @@ const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow, multiple,
                   <span>Đã chọn</span>
                   <span className="ml-1 px-1 py-0.5 bg-gray-100 rounded">{selects.length}</span>
                 </div>
-                <Button className='!ml-auto' variant="contained" size='small' color='primary'
+                <Button className='!ml-auto' variant="outlined" size='small' color='primary'
+                  onClick={() => setAddFolderModal(true)}
+                >
+                  Thêm thư mục
+                </Button>
+                <Button className='!ml-4' variant="contained" size='small' color='primary'
                   onClick={() => setAddModal(true)}
                 >
                   Thêm ảnh
@@ -174,37 +187,55 @@ const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow, multiple,
               <div hidden={page != 0}>
                 { loading
                   ? <div className="w-full p-6 grid place-items-center">
-                    <span className="icon w-10 h-10 animate-spin">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="20" r="2"></circle><circle cx="12" cy="4" r="2"></circle><circle cx="6.343" cy="17.657" r="2"></circle><circle cx="17.657" cy="6.343" r="2"></circle><circle cx="4" cy="12" r="2.001"></circle><circle cx="20" cy="12" r="2"></circle><circle cx="6.343" cy="6.344" r="2"></circle><circle cx="17.657" cy="17.658" r="2"></circle></svg>
+                    <span className="icon animate-spin">
+                      progress_activity
                     </span>
                   </div>
-                  : images.length > 0
-                  ? <div className="mt-6 grid gap-4 px-6 overflow-y-auto max-h-[60vh]" style={{gridTemplateColumns: 'repeat(auto-fill, minmax(13rem, 1fr))'}}>
-                    { images.map((v,i) =>
-                      <div className="rounded border overflow-hidden" key={v.id}>
-                        <div className="relative w-full h-24 bg-make-transparent">
-                          <img src={v.url} alt="" className="w-full h-full object-contain" loading='lazy' />
-                          <div className="absolute top-2 left-2">
-                            <input type="checkbox" value={v.id} checked={isChecked(v.id)} onChange={(e) => handleCheck(e)} />
+                  : <div className='overflow-y-auto max-h-[60vh] pb-6'>
+                    <div className="mt-6 px-6">
+                      <p className="font-semibold text-base mb-2">Thư mục (1)</p>
+                      <div className="grid gap-4 grid-flow-col auto-cols-[100px]">
+                        <div className="flex flex-col items-center space-y-1 px-2 py-2 bg-blue-50 rounded relative group cursor-pointer">
+                          <span className="material-symbols-outlined icon-fill !text-5xl text-blue-500">folder</span>
+                          <span className="line-clamp-3 text-center text-sm">Lorem ipsum dolor sitedita.</span>
+                          <div className="absolute top-0 right-2 w-8 h-8 rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer hidden group-hover:block">
+                            <span className="icon !text-[18px]">edit</span>
                           </div>
-                          <span
-                            className="absolute top-2 right-2 icon w-8 h-8 rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer"
-                            onClick={() => editImage(v)}
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M8.707 19.707 18 10.414 13.586 6l-9.293 9.293a1.003 1.003 0 0 0-.263.464L3 21l5.242-1.03c.176-.044.337-.135.465-.263zM21 7.414a2 2 0 0 0 0-2.828L19.414 3a2 2 0 0 0-2.828 0L15 4.586 19.414 9 21 7.414z"></path></svg>
-                          </span>
-                        </div>
-                        <div className="p-4 py-2 flex justify-between items-start border-t">
-                          <div className="text-xs">
-                            <p className="font-semibold">{v.name}</p>
-                            <p className="uppercase">{v.type}</p>
-                          </div>
-                          <div className="text-[10px] p-1 py-0.5 font-semibold rounded bg-gray-100">IMAGE</div>
                         </div>
                       </div>
-                    )}
+                    </div>
+                    <div className="mt-6 px-6">
+                      <p className="font-semibold text-base mb-2">Ảnh (2)</p>
+                      { images.length > 0
+                        ? <div className="grid gap-4 overflow-y-auto max-h-[60vh]" style={{gridTemplateColumns: 'repeat(auto-fill, minmax(13rem, 1fr))'}}>
+                          { images.map((v,i) =>
+                            <div className="rounded border overflow-hidden" key={v.id}>
+                              <div className="relative w-full h-24 bg-make-transparent group">
+                                <img src={v.url} alt="" className="w-full h-full object-contain" loading='lazy' />
+                                <div className="absolute top-2 left-2">
+                                  <input type="checkbox" value={v.id} checked={isChecked(v.id)} onChange={(e) => handleCheck(e)} />
+                                </div>
+                                <span
+                                  className="absolute top-2 right-2 material-symbols-outlined w-8 h-8 !text-[18px] rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer hidden group-hover:block"
+                                  onClick={() => editImage(v)}
+                                >
+                                  edit
+                                </span>
+                              </div>
+                              <div className="p-4 py-2 flex justify-between items-start border-t">
+                                <div className="text-xs">
+                                  <p className="font-semibold">{v.name}</p>
+                                  <p className="uppercase">{v.type}</p>
+                                </div>
+                                <div className="text-[10px] p-1 py-0.5 font-semibold rounded bg-gray-100">IMAGE</div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        : <p>Không có ảnh nào</p>
+                      }
+                    </div>
                   </div>
-                  : <div className='px-6 mt-6'>Không có ảnh nào</div>
                 }
               </div>
               
@@ -216,7 +247,7 @@ const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow, multiple,
                   </div>
                 </div>
                 { selects.length > 0
-                  ? <div className="px-6 mt-6 grid gap-4 overflow-y-auto max-h-[60vh]" style={{gridTemplateColumns: 'repeat(auto-fill, minmax(13rem, 1fr))'}}>
+                  ? <div className="px-6 my-6 grid gap-4 overflow-y-auto max-h-[60vh]" style={{gridTemplateColumns: 'repeat(auto-fill, minmax(13rem, 1fr))'}}>
                     { selects.map((v,i) =>
                       <div className="rounded border overflow-hidden" key={v.id}>
                         <div className="relative w-full h-24 bg-make-transparent">
@@ -225,10 +256,10 @@ const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow, multiple,
                             <input type="checkbox" value={v.id} checked={isChecked(v.id)} onChange={(e) => handleCheck(e)} />
                           </div>
                           <span
-                            className="absolute top-2 right-2 icon w-8 h-8 rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer"
+                            className="absolute top-2 right-2 material-symbols-outlined w-8 h-8 !text-[18px] rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer hidden group-hover:block"
                             onClick={() => editImage(v)}
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M8.707 19.707 18 10.414 13.586 6l-9.293 9.293a1.003 1.003 0 0 0-.263.464L3 21l5.242-1.03c.176-.044.337-.135.465-.263zM21 7.414a2 2 0 0 0 0-2.828L19.414 3a2 2 0 0 0-2.828 0L15 4.586 19.414 9 21 7.414z"></path></svg>
+                            edit
                           </span>
                         </div>
                         <div className="p-4 py-2 flex justify-between items-start border-t">
@@ -241,7 +272,7 @@ const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow, multiple,
                       </div>
                     )}
                   </div>
-                  : <div className='px-6 mt-6'>Không có ảnh nào được chọn</div>
+                  : <div className='px-6 my-6'>Không có ảnh nào được chọn</div>
                 }
               </div>
             </div>
@@ -259,12 +290,13 @@ const AdminFormFieldImageModel: React.FC<ModalType> = ({show, setShow, multiple,
             </div>
           </div>
         </Zoom>
-        <AdminFormFieldImageAdd show={addModal} setShow={setAddModal} setData={setDataUpload} />
-        <AdminFormFieldImageEdit show={editModal} setShow={setEditModal} data={dataEdit} setData={setDataEdit} />
+        <AdminImageAdd show={addModal} setShow={setAddModal} setData={setDataUpload} />
+        <AdminImageEdit show={editModal} setShow={setEditModal} data={dataEdit} setData={setDataEdit} />
+        <AdminImageModalAddFolder tableName={tableName} show={addFolderModal} setShow={setAddFolderModal} data={dataFolderEdit} setData={setDataFolderAdd} />
       </div>
       {/* <div className="flex-grow"></div> */}
     </div>
   )
 }
 
-export default AdminFormFieldImageModel
+export default AdminImageModal

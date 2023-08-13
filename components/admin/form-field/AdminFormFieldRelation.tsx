@@ -1,3 +1,4 @@
+import { getListDataOfRelation } from '@/lib/server/sample'
 import { Autocomplete, CircularProgress, TextField } from '@mui/material'
 import { VariantType, enqueueSnackbar } from 'notistack'
 import React, { useEffect, useState, useRef } from 'react'
@@ -7,7 +8,8 @@ type State = {
   name: string
   required?: boolean,
   defaultValue?: any,
-  api: string
+  titleRelation: string,
+  tableName: string
 }
 
 const AdminFormFieldRelation: React.FC<State> = ({
@@ -15,13 +17,16 @@ const AdminFormFieldRelation: React.FC<State> = ({
   name,
   required = false,
   defaultValue,
-  api
+  titleRelation,
+  tableName
 }) => {
   const [value, setValue] = useState<string>(defaultValue ? defaultValue.id : '')
 
   const handelChangeValue = (data: any) => {
     if (data && data.id)
       setValue(data.id)
+    else 
+      setValue('')
   }
 
   const [open, setOpen] = useState(false)
@@ -31,20 +36,11 @@ const AdminFormFieldRelation: React.FC<State> = ({
   useEffect(() => {
     (async () => {
       try {
-        setLoading(true);
-        const res = await fetch(api)
+        setLoading(true)
 
-        if (!res.ok) throw ""
-
-        const body = await res.json()
+        const body = await getListDataOfRelation({tableName: tableName})
 
         setOptions([...body.data])
-
-        // if (defaultValue) {
-        //   setTimeout(() => {
-        //     setValue(defaultValue)
-        //   }, 300);
-        // }
         
       } catch (error) {
         console.log({error})
@@ -69,14 +65,14 @@ const AdminFormFieldRelation: React.FC<State> = ({
         onClose={() => {
           setOpen(false)
         }}
-        isOptionEqualToValue={(option, value) => option.title === value.title}
-        getOptionLabel={(option) => option.title}
+        isOptionEqualToValue={(option, value) => option[titleRelation] === value[titleRelation]}
+        getOptionLabel={(option) => option[titleRelation]}
         options={options}
         loading={loading}
         renderOption={(props, option) => {
           return (
             <li {...props} key={option.id}>
-              {option.title}
+              {option[titleRelation]}
             </li>
           );
         }}

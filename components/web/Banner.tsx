@@ -73,12 +73,12 @@ const Banner = () => {
               </div>
 
               <div className="swiper-button-prev absolute -left-12 group-hover:left-4 top-1/2 transform -translate-y-1/2 z-10 transition-all">
-                <span className="icon w-8 h-8 md:w-12 md:h-12 rounded-full bg-gray-200 hover:bg-white hover:text-rose-500 p-1 cursor-pointer">
+                <span className="icon-svg w-8 h-8 md:w-12 md:h-12 rounded-full bg-gray-200 hover:bg-white hover:text-rose-500 p-1 cursor-pointer">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z"></path></svg>
                 </span>
               </div>
               <div className="swiper-button-next absolute -right-12 group-hover:right-4 top-1/2 transform -translate-y-1/2 z-10 transition-all">
-                <span className="icon w-8 h-8 md:w-12 md:h-12 rounded-full bg-gray-200 hover:bg-white hover:text-rose-500 p-1 cursor-pointer">
+                <span className="icon-svg w-8 h-8 md:w-12 md:h-12 rounded-full bg-gray-200 hover:bg-white hover:text-rose-500 p-1 cursor-pointer">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M10.707 17.707 16.414 12l-5.707-5.707-1.414 1.414L13.586 12l-4.293 4.293z"></path></svg>
                 </span>
               </div>

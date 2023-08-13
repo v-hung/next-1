@@ -9,7 +9,7 @@ type AddModalType = {
   setData: (data: any) => void,
 }
 
-const AdminFormFieldImageAdd: React.FC<AddModalType> = ({show, setShow, setData}) => {
+const AdminImageAdd: React.FC<AddModalType> = ({show, setShow, setData}) => {
   const rechargeRef = useRef<HTMLDivElement>(null)
 
   useClickOutside(rechargeRef, () => {
@@ -108,10 +108,10 @@ const AdminFormFieldImageAdd: React.FC<AddModalType> = ({show, setShow, setData}
             <div className="p-6 flex items-center justify-between">
               <span className='text-xl font-semibold'>Thêm ảnh mới</span>
               <span 
-                className="icon w-8 h-8 rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer"
+                className="w-8 h-8 rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer flex items-center justify-center"
                 onClick={() => setShow(false)}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="m16.192 6.344-4.243 4.242-4.242-4.242-1.414 1.414L10.535 12l-4.242 4.242 1.414 1.414 4.242-4.242 4.243 4.242 1.414-1.414L13.364 12l4.242-4.242z"></path></svg>
+                <span className="icon">close</span>
               </span>
             </div>
 
@@ -131,10 +131,10 @@ const AdminFormFieldImageAdd: React.FC<AddModalType> = ({show, setShow, setData}
                         <div className="relative w-full h-24 bg-make-transparent">
                           <img src={v.preview} alt="" className="w-full h-full object-contain" loading='lazy' />
                           <span
-                            className="absolute top-2 right-2 icon w-8 h-8 rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer"
+                            className="absolute top-2 right-2 icon w-8 h-8 !text-[18px] rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer"
                             onClick={() => {removeFileChange(i)}}
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"></path><path d="M9 10h2v8H9zm4 0h2v8h-2z"></path></svg>
+                            delete
                           </span>
                         </div>
                         <div className="p-4 py-2 flex justify-between items-start border-t">
@@ -155,8 +155,8 @@ const AdminFormFieldImageAdd: React.FC<AddModalType> = ({show, setShow, setData}
                     </div> 
                   </div>
                   <div className="px-6 mt-6 overflow-y-auto max-h-[60vh] flex flex-col items-center justify-center w-full border border-dashed py-12 rounded bg-gray-50">
-                    <span className="icon w-20 h-20 text-blue-600">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M4 5h13v7h2V5c0-1.103-.897-2-2-2H4c-1.103 0-2 .897-2 2v12c0 1.103.897 2 2 2h8v-2H4V5z"></path><path d="m8 11-3 4h11l-4-6-3 4z"></path><path d="M19 14h-2v3h-3v2h3v3h2v-3h3v-2h-3z"></path></svg>
+                    <span className="icon text-blue-600 !text-6xl">
+                      add_photo_alternate
                     </span>
                     <span className="my-4 font-semibold">Bấm để thêm một tài sản hoặc kéo và thả một trong khu vực này</span>
                     <Button variant="contained" component="label">
@@ -185,12 +185,12 @@ const AdminFormFieldImageAdd: React.FC<AddModalType> = ({show, setShow, setData}
       </div>
 
       { loading ? <div className="absolute w-full h-full top-0 left-0 bg-white/30 grid place-items-center pointer-events-auto">
-        <span className="icon animate-spin w-10 h-10">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 22c5.421 0 10-4.579 10-10h-2c0 4.337-3.663 8-8 8s-8-3.663-8-8c0-4.336 3.663-8 8-8V2C6.579 2 2 6.58 2 12c0 5.421 4.579 10 10 10z"></path></svg>
+        <span className="icon animate-spin">
+          progress_activity
         </span>
       </div> : null }
     </div>
   )
 }
 
-export default AdminFormFieldImageAdd
+export default AdminImageAdd
