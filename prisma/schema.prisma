@@ -68,14 +68,14 @@ model Admin {
   name     String
 
   imageId String?
-  image   Image?  @relation("avatar", fields: [imageId], references: [id])
+  image   Image?  @relation("avatar", fields: [imageId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   images Image[] @relation("images")
 
   folders FolderImage[] @relation("folders")
 
   roleId String
-  role   Role   @relation(fields: [roleId], references: [id])
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   publish   String   @default("publish") // or draft
   createdAt DateTime @default(now())
@@ -177,11 +177,12 @@ model GroupSetting {
 }
 
 model Setting {
-  id      String  @id @default(uuid())
-  name    String  @unique
-  field   String
-  details String?
-  value   String?
+  id        String   @id @default(uuid())
+  name      String   @unique
+  field     String
+  details   String?
+  value     String?
+  canDelete Boolean?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

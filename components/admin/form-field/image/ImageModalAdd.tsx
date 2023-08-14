@@ -2,14 +2,18 @@
 import {useEffect, useRef, useState} from 'react'
 import { useClickOutside } from '@/lib/clickOutside';
 import { Button, Zoom } from '@mui/material';
+import { VariantType, enqueueSnackbar } from 'notistack';
+import { uploadImages } from '@/lib/server/imageFormField';
 
 type AddModalType = {
   show: boolean,
   setShow: (data: boolean) => void,
   setData: (data: any) => void,
+  tableName: string,
+  folderImageId?: string
 }
 
-const AdminImageAdd: React.FC<AddModalType> = ({show, setShow, setData}) => {
+const AdminImageAdd: React.FC<AddModalType> = ({show, setShow, setData, tableName, folderImageId}) => {
   const rechargeRef = useRef<HTMLDivElement>(null)
 
   useClickOutside(rechargeRef, () => {
@@ -61,20 +65,17 @@ const AdminImageAdd: React.FC<AddModalType> = ({show, setShow, setData}) => {
     try {
       setLoading(true)
 
-      var data: any = new FormData()
+      var formData = new FormData()
 
       files.map(v => {
-        data.append('images[]', v.file)
+        formData.append('images[]', v.file)
       })
 
-      const res = await fetch('/api/admin/images', {
-        method: 'post',
-        body: data
+      const { images } = await uploadImages({
+        formData: formData,
+        tableName: tableName,
+        folderImageId: folderImageId
       })
-
-      if (!res.ok) throw ""
-
-      const { images } = await res.json()
 
       files.forEach((v,i) => {
         URL.revokeObjectURL(files[i].preview)
@@ -84,8 +85,9 @@ const AdminImageAdd: React.FC<AddModalType> = ({show, setShow, setData}) => {
       setShow(false)
       setData(images)
       
-    } catch (e) {
-
+    } catch (error) {
+      let variant: VariantType = "error"
+      enqueueSnackbar((typeof error === "string") ? error : 'Có lỗi xảy ra, vui lòng thử lại sau', { variant })
     } finally {
       setLoading(false)
     }

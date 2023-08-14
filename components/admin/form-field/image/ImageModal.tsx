@@ -15,13 +15,20 @@ type ModalType = {
   multiple?: boolean,
   data: Image[]
   setData: (data: Image[]) => void,
-  tableName: string
+  tableName: string,
+  onlyTable?: boolean,
+  myself?: boolean
 }
 
-const AdminImageModal: React.FC<ModalType> = ({show, setShow, multiple, data, setData, tableName}) => {
+const AdminImageModal: React.FC<ModalType> = ({
+  show, setShow, multiple, data, setData, tableName, onlyTable, myself
+}) => {
   const rechargeRef = useRef<HTMLDivElement>(null)
   const [loading, setLoading] = useState(false)
   const [images, setImages] = useState<Image[]>([])
+  const [folders, setFolders] = useState<FolderImage[]>([])
+  const [folderParentId, setFolderParentId] = useState<string | undefined>()
+  const [folderParents, setFolderParents] = useState<FolderImage[]>([])
 
   const [selects, setSelects] = useState<Image[]>(data)
   const [checked, setChecked] = useState<string[]>(data.map(v => v.id))
@@ -56,10 +63,16 @@ const AdminImageModal: React.FC<ModalType> = ({show, setShow, multiple, data, se
   const fetchImages = async () => {
     setLoading(true)
     try {
-      const { folders, images } = await getListFolderImage({})
+      const { folderParents, folders, images } = await getListFolderImage({
+        parentId: folderParentId,
+        tableName: onlyTable ? tableName : undefined,
+        myself
+      })
 
-      console.log({ folders, images })
-      // setImages(((await res.json())?.data as any[]).map(v => ({...v, checked: false})) || [])
+      setImages(images)
+      setFolders(folders)
+      setFolderParents(folderParents)
+
     } catch (error) {
       return {data: []}
     } finally {
@@ -67,10 +80,12 @@ const AdminImageModal: React.FC<ModalType> = ({show, setShow, multiple, data, se
     }
   }
 
+  // reload data in folder
   useEffect(() => {
     fetchImages()
-  }, [])
+  }, [folderParentId])
 
+  // upload images
   useEffect(() => {
     if (dataUpload.length == 0) return
 
@@ -95,6 +110,36 @@ const AdminImageModal: React.FC<ModalType> = ({show, setShow, multiple, data, se
   const editImage = (image: Image) => {
     setDataEdit(image)
     setEditModal(true)
+  }
+
+  // add or edit folder
+  useEffect(() => {
+    if (dataFolderAdd) {
+      let findDataFolder = folders.some(v => v.id == dataFolderAdd.id)
+
+      if (findDataFolder) {
+        setFolders(state => state.map(v => (v.id == dataFolderAdd.id) ? dataFolderAdd : v))
+      }
+      else {
+        setFolders(state => [...state, dataFolderAdd])
+      }
+    }
+  }, [dataFolderAdd])
+
+  const handelAddEditFolder = (e: React.MouseEvent, dataEdit?: FolderImage) => {
+    e.stopPropagation()
+    if (dataEdit) {
+      setDataFolderEdit(dataEdit)
+    }
+    else {
+      setDataFolderEdit(null)
+    }
+    setAddFolderModal(true)
+  }
+
+  // change folder parent
+  const handelClickFolder = (id: string) => {
+    setFolderParentId(id)
   }
 
   // Add/Remove checked item from list
@@ -173,7 +218,7 @@ const AdminImageModal: React.FC<ModalType> = ({show, setShow, multiple, data, se
                   <span className="ml-1 px-1 py-0.5 bg-gray-100 rounded">{selects.length}</span>
                 </div>
                 <Button className='!ml-auto' variant="outlined" size='small' color='primary'
-                  onClick={() => setAddFolderModal(true)}
+                  onClick={(e) => handelAddEditFolder(e)}
                 >
                   Thêm thư mục
                 </Button>
@@ -191,49 +236,79 @@ const AdminImageModal: React.FC<ModalType> = ({show, setShow, multiple, data, se
                       progress_activity
                     </span>
                   </div>
-                  : <div className='overflow-y-auto max-h-[60vh] pb-6'>
-                    <div className="mt-6 px-6">
-                      <p className="font-semibold text-base mb-2">Thư mục (1)</p>
-                      <div className="grid gap-4 grid-flow-col auto-cols-[100px]">
-                        <div className="flex flex-col items-center space-y-1 px-2 py-2 bg-blue-50 rounded relative group cursor-pointer">
-                          <span className="material-symbols-outlined icon-fill !text-5xl text-blue-500">folder</span>
-                          <span className="line-clamp-3 text-center text-sm">Lorem ipsum dolor sitedita.</span>
-                          <div className="absolute top-0 right-2 w-8 h-8 rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer hidden group-hover:block">
-                            <span className="icon !text-[18px]">edit</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mt-6 px-6">
-                      <p className="font-semibold text-base mb-2">Ảnh (2)</p>
-                      { images.length > 0
-                        ? <div className="grid gap-4 overflow-y-auto max-h-[60vh]" style={{gridTemplateColumns: 'repeat(auto-fill, minmax(13rem, 1fr))'}}>
-                          { images.map((v,i) =>
-                            <div className="rounded border overflow-hidden" key={v.id}>
-                              <div className="relative w-full h-24 bg-make-transparent group">
-                                <img src={v.url} alt="" className="w-full h-full object-contain" loading='lazy' />
-                                <div className="absolute top-2 left-2">
-                                  <input type="checkbox" value={v.id} checked={isChecked(v.id)} onChange={(e) => handleCheck(e)} />
-                                </div>
-                                <span
-                                  className="absolute top-2 right-2 material-symbols-outlined w-8 h-8 !text-[18px] rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer hidden group-hover:block"
-                                  onClick={() => editImage(v)}
-                                >
-                                  edit
-                                </span>
-                              </div>
-                              <div className="p-4 py-2 flex justify-between items-start border-t">
-                                <div className="text-xs">
-                                  <p className="font-semibold">{v.name}</p>
-                                  <p className="uppercase">{v.type}</p>
-                                </div>
-                                <div className="text-[10px] p-1 py-0.5 font-semibold rounded bg-gray-100">IMAGE</div>
-                              </div>
-                            </div>
+                  : <div className="">
+                    { folderParents.length > 0
+                      ? <div className="flex px-6 py-4 items-center bg-gray-100">
+                        <span className="icon flex-none hover:bg-text-500 cursor-pointer"
+                          onClick={() => setFolderParentId(undefined)}  
+                        >folder_copy</span>
+                        <div className="flex-grow min-w-0 flex flex-row-reverse justify-end items-center">
+                          {folderParents.map((v, i) => 
+                            <div key={v.id}>
+                              <span className='mx-2'>/</span>
+                              <span className={`text-sm hover:bg-text-500 ${i == 0 ? '' : 'text-blue-600 hover:underline cursor-pointer'}`}
+                                onClick={() => setFolderParentId(v.id)}  
+                              >{i == 4 ? '...' : v.name}</span>
+                            </div>  
                           )}
                         </div>
-                        : <p>Không có ảnh nào</p>
+                      </div>
+                      : null
+                    }
+                    <div className='overflow-y-auto max-h-[60vh] pb-6'>
+                      { folders.length > 0
+                        ? <div className="mt-6 px-6">
+                          <p className="font-semibold text-base mb-2">Thư mục ({folders.length})</p>
+                          <div className="grid gap-4 grid-flow-col auto-cols-[100px]">
+                            { folders.map(v =>
+                              <div key={v.id} className="flex flex-col items-center space-y-1 px-2 py-2 bg-blue-50 rounded relative group cursor-pointer"
+                                onClick={() => handelClickFolder(v.id)}
+                              >
+                                <span className="material-symbols-outlined icon-fill !text-5xl text-blue-500">folder</span>
+                                <span className="line-clamp-3 text-center text-sm">{v.name}</span>
+                                <div className="absolute top-0 right-2 w-8 h-8 rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer hidden group-hover:block"
+                                  onClick={(e) => handelAddEditFolder(e,v)}
+                                >
+                                  <span className="icon !text-[18px]">edit</span>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        : null
                       }
+                    
+                      <div className="mt-6 px-6">
+                        <p className="font-semibold text-base mb-2">Ảnh ({images.length})</p>
+                        { images.length > 0
+                          ? <div className="grid gap-4 overflow-y-auto max-h-[60vh]" style={{gridTemplateColumns: 'repeat(auto-fill, minmax(13rem, 1fr))'}}>
+                            { images.map((v,i) =>
+                              <div className="rounded border overflow-hidden" key={v.id}>
+                                <div className="relative w-full h-24 bg-make-transparent group">
+                                  <img src={v.url} alt="" className="w-full h-full object-contain" loading='lazy' />
+                                  <div className="absolute top-2 left-2">
+                                    <input type="checkbox" value={v.id} checked={isChecked(v.id)} onChange={(e) => handleCheck(e)} />
+                                  </div>
+                                  <span
+                                    className="absolute top-2 right-2 material-symbols-outlined w-8 h-8 !text-[18px] rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer hidden group-hover:block"
+                                    onClick={() => editImage(v)}
+                                  >
+                                    edit
+                                  </span>
+                                </div>
+                                <div className="p-4 py-2 flex justify-between items-start border-t">
+                                  <div className="text-xs">
+                                    <p className="font-semibold">{v.name}</p>
+                                    <p className="uppercase">{v.type}</p>
+                                  </div>
+                                  <div className="text-[10px] p-1 py-0.5 font-semibold rounded bg-gray-100">IMAGE</div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          : <p>Không có ảnh nào</p>
+                        }
+                      </div>
                     </div>
                   </div>
                 }
@@ -290,9 +365,9 @@ const AdminImageModal: React.FC<ModalType> = ({show, setShow, multiple, data, se
             </div>
           </div>
         </Zoom>
-        <AdminImageAdd show={addModal} setShow={setAddModal} setData={setDataUpload} />
+        <AdminImageAdd tableName={tableName} folderImageId={folderParentId} show={addModal} setShow={setAddModal} setData={setDataUpload} />
         <AdminImageEdit show={editModal} setShow={setEditModal} data={dataEdit} setData={setDataEdit} />
-        <AdminImageModalAddFolder tableName={tableName} show={addFolderModal} setShow={setAddFolderModal} data={dataFolderEdit} setData={setDataFolderAdd} />
+        <AdminImageModalAddFolder tableName={tableName} show={addFolderModal} parentId={folderParentId} setShow={setAddFolderModal} data={dataFolderEdit} setData={setDataFolderAdd} />
       </div>
       {/* <div className="flex-grow"></div> */}
     </div>

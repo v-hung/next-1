@@ -5,6 +5,7 @@ const nextConfig = {
     // Required:
     appDir: true,
     serverActions: true,
+    serverActionsBodySizeLimit: '20mb',
     serverComponentsExternalPackages: ['bcrypt', 'sharp', 'crypto', "uuid"],
   }
 }

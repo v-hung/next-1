@@ -6,16 +6,18 @@ import { FolderImage } from '@prisma/client';
 import AdminFormFieldText from '../AdminFormFieldText';
 import moment from 'moment';
 import { createEditFolder } from '@/lib/server/imageFormField';
+import { VariantType, enqueueSnackbar } from 'notistack';
 
 type AddModalType = {
   show: boolean,
   setShow: (data: boolean) => void,
   data: FolderImage | null
   setData: (data: FolderImage) => void,
+  parentId?: string,
   tableName: string
 }
 
-const AdminImageModalAddFolder: React.FC<AddModalType> = ({show, setShow, data, setData, tableName}) => {
+const AdminImageModalAddFolder: React.FC<AddModalType> = ({show, setShow, data, setData, tableName, parentId}) => {
   const rechargeRef = useRef<HTMLDivElement>(null)
 
   useClickOutside(rechargeRef, () => {
@@ -25,21 +27,28 @@ const AdminImageModalAddFolder: React.FC<AddModalType> = ({show, setShow, data, 
   const [loading, setLoading] = useState(false)
   const [name, setName] = useState('')
 
+  useEffect(() => {
+    setName(data?.name || '')
+  }, [data])
+
   const handelSubmit = async (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault()
     try {
       setLoading(true)
 
       const { folder } = await createEditFolder({
+        folderId: data?.id,
         name: name,
-        tableName: tableName
+        tableName: tableName,
+        parentId: data ? data.parentId : parentId
       })
 
       setShow(false)
       setData(folder)
       
-    } catch (e) {
-
+    } catch (error) {
+      let variant: VariantType = "error"
+      enqueueSnackbar((typeof error === "string") ? error : 'Có lỗi xảy ra, vui lòng thử lại sau', { variant })
     } finally {
       setLoading(false)
     }
@@ -76,7 +85,7 @@ const AdminImageModalAddFolder: React.FC<AddModalType> = ({show, setShow, data, 
                 : null
               }
 
-              <AdminFormFieldText label='Tên' name='name' value={name} onChange={(e) => setName(e.target.value)} defaultValue={data?.name} />
+              <AdminFormFieldText label='Tên' name='name' value={name} onChange={(e) => setName(e.target.value)} />
             </div>
 
             <div className="p-6 bg-gray-100 flex items-center">

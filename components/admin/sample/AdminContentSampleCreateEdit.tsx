@@ -110,8 +110,10 @@ const AdminContentSampleCreateEdit: React.FC<SampleStateType> = ({
                       <AdminFormFieldImage 
                         defaultValue={data ? data[column.key] : undefined} 
                         multiple={column.details.multiple}
+                        onlyTable={column.details.onlyTable}
                         name={column.key}
                         label={column.label}
+                        myself={column.details.myself}
                         tableName={tableName}
                         required={column.required} 
                       />

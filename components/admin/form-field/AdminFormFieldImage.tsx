@@ -11,7 +11,10 @@ type AdminFormFieldImageType = {
   required?: boolean,
   className?: string,
   tableName: string,
-  defaultValue?: Image[] | Image
+  defaultValue?: Image[] | Image | null,
+  onlyTable?: boolean
+  myself?: boolean,
+  onChange?: (id: string) => void
 }
 
 const AdminFormFieldImage: React.FC<AdminFormFieldImageType> = ({
@@ -21,7 +24,10 @@ const AdminFormFieldImage: React.FC<AdminFormFieldImageType> = ({
   required = false,
   defaultValue,
   tableName,
-  className
+  className,
+  onlyTable,
+  myself,
+  onChange
 }) => {
   const [value, setValue] = useState<string>("")
   const [showModal, setShowModal] = useState(false)
@@ -33,7 +39,11 @@ const AdminFormFieldImage: React.FC<AdminFormFieldImageType> = ({
   }
 
   useEffect(() => {
-    setValue(multiple ? JSON.stringify(images.map(v => v.id)) : images.length > 0 ? images[0].id : "")
+    let tempValue = multiple ? JSON.stringify(images.map(v => v.id)) : images.length > 0 ? images[0].id : ""
+    setValue(tempValue)
+
+    if (typeof onChange == 'function') 
+      onChange(tempValue)
   }, [images])
 
   return (
@@ -59,7 +69,7 @@ const AdminFormFieldImage: React.FC<AdminFormFieldImageType> = ({
         </div>
       </div>
 
-      <AdminImageModal tableName={tableName} show={showModal} setShow={setShowModal} multiple={multiple} data={images} setData={setImages} />
+      <AdminImageModal onlyTable={onlyTable} myself={myself} tableName={tableName} show={showModal} setShow={setShowModal} multiple={multiple} data={images} setData={setImages} />
     </>
   )
 }

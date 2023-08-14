@@ -29,7 +29,9 @@ export type SampleColumnSelectType = {
 export type SampleColumnImageType = {
   type: 'image',
   details: {
-    multiple: boolean
+    multiple: boolean,
+    onlyTable?: boolean,
+    myself?: boolean
   }
 }
 
@@ -254,7 +256,7 @@ export const addEditDataSample = async ({
   }
   catch (error) {
     console.log({error})
-    throw "Server Error"
+    throw (typeof error === "string") ? error : 'Có lỗi xảy ra vui lòng thử lại sau'
   }
 }
 
@@ -270,8 +272,8 @@ export const getListDataOfRelation = async ({
 
     return {data}
   }
-  catch (e) {
-    console.log(e)
-    throw (typeof e === "string") ? e : "Server Error"
+  catch (error) {
+    console.log(error)
+    throw (typeof error === "string") ? error : 'Có lỗi xảy ra vui lòng thử lại sau'
   }
 }
