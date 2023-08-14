@@ -30,8 +30,8 @@ export default async function page() {
         data: {
           name,
           email,
-          imageId,
-          password: password ? password : undefined
+          imageId: imageId || undefined,
+          password: password || undefined
         }
       })
   

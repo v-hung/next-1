@@ -45,6 +45,8 @@ const ProfileContentAdmin: React.FC<State> = ({defaultValue, updateProfile}) => 
 
       router.refresh()
 
+      let variant: VariantType = "success"
+      enqueueSnackbar('Thành công', { variant })
     } 
     catch (error) {
       let variant: VariantType = "error"

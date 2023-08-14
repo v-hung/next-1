@@ -85,6 +85,8 @@ const AdminImageAdd: React.FC<AddModalType> = ({show, setShow, setData, tableNam
       setShow(false)
       setData(images)
       
+      let variant: VariantType = "success"
+      enqueueSnackbar('Thành công', { variant })
     } catch (error) {
       let variant: VariantType = "error"
       enqueueSnackbar((typeof error === "string") ? error : 'Có lỗi xảy ra, vui lòng thử lại sau', { variant })

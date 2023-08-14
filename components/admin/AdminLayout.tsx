@@ -16,31 +16,29 @@ const AdminLayout : React.FC<{
   userData: NonNullable<AdminUserType>
 }> = ({children, userData}) => {
 
-  const willMount = useRef(true)
-  const adminUser = useAdminUser()
+  // const willMount = useRef(true)
+  // const adminUser = useAdminUser()
   const adminMenu = useStoreCustom(useAdminMenu, (state) => state)
   // const adminMenu = useAdminMenu()
 
-  if (willMount.current && userData) {
-    adminUser.save(userData)
-    willMount.current = false
-    // if (typeof window != "undefined") {
-    //   let a = JSON.parse(sessionStorage.getItem("admin-menu") as any)
-    //   // console.log(a.state.open, 2)
-    //   adminMenu.open = a.state.open
-    // }
-  }
+  // if (willMount.current && userData) {
+  //   adminUser.save(userData)
+  //   willMount.current = false
+  // }
 
   return (
     <ClientOnly>
-      <SnackbarProvider maxSnack={3}>
+      <SnackbarProvider maxSnack={3} autoHideDuration={3000} anchorOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}>
         <div className='w-full min-h-screen bg-gray-100'>
           <MenuAdmin/>
           <div 
             className='w-full transition-all'
             style={{paddingLeft: adminMenu?.open ? adminMenu?.width : "60px"}}
           >
-            <HeaderAdmin />
+            <HeaderAdmin adminUser={userData} />
             <div className="px-8 py-4">{children}</div>
           </div>
           {/* <AdminModal /> */}

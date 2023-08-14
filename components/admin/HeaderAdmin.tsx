@@ -8,9 +8,9 @@ import { useStoreCustom } from '@/stores';
 import { Avatar, Divider, Menu, MenuItem } from '@mui/material';
 import { AdminUserType, logoutUserAdmin } from '@/lib/server/helperServer';
 
-const HeaderAdmin = () => {
-  const adminUser = useAdminUser(state => state.user)
-  // const adminMenu = useAdminMenu()
+const HeaderAdmin = ({
+  adminUser
+}:{ adminUser: NonNullable<AdminUserType>} ) => {
   const adminMenu = useStoreCustom(useAdminMenu, (state) => state)
 
   return (

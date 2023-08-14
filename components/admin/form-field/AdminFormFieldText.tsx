@@ -9,6 +9,7 @@ type State = {
   number?: boolean
   value?: string,
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+  className?: string
 }
 
 const AdminFormFieldText: React.FC<State> = ({
@@ -18,7 +19,8 @@ const AdminFormFieldText: React.FC<State> = ({
   defaultValue,
   number = false,
   value,
-  onChange
+  onChange,
+  className
 }) => {
 
   const changeEvent = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,7 +29,7 @@ const AdminFormFieldText: React.FC<State> = ({
   }
 
   return (
-    <div>
+    <div className={className}>
       <p className="text-sm font-semibold mb-1">{label} { required && <span className="text-red-500">*</span> }</p>
       <div className="border rounded focus-within:ring-2 ring-blue-600 bg-white">
         { value != undefined
