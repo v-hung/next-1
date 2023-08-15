@@ -5,29 +5,34 @@ import AdminImageModal from './image/ImageModal';
 import ImageSlide from './image/ImageSlide';
 
 type AdminFormFieldImageType = {
-  multiple?: boolean,
-  name: string,
-  label?: string,
+  label: string,
+  name: string
   required?: boolean,
-  className?: string,
-  tableName: string,
   defaultValue?: Image[] | Image | null,
-  onlyTable?: boolean
-  myself?: boolean,
+  value?: string,
   onChange?: (id: string) => void
+  className?: string,
+  details: {
+    multiple?: boolean,
+    tableName: string,
+    onlyTable?: boolean
+    myself?: boolean,
+  }
 }
 
 const AdminFormFieldImage: React.FC<AdminFormFieldImageType> = ({
-  multiple = false,
   name,
   label,
   required = false,
   defaultValue,
-  tableName,
   className,
-  onlyTable,
-  myself,
-  onChange
+  onChange,
+  details: {
+    multiple = false,
+    tableName,
+    onlyTable,
+    myself,
+  }
 }) => {
   const [value, setValue] = useState<string>("")
   const [showModal, setShowModal] = useState(false)
@@ -47,9 +52,9 @@ const AdminFormFieldImage: React.FC<AdminFormFieldImageType> = ({
   }, [images])
 
   return (
-    <>
+    <div className={className}>
       { label
-        ? <p className="text-sm font-semibold mb-1">{label} { required && <span className="text-red-500">*</span> }</p>
+        ? <p className="text-sm font-semibold mb-1 capitalize">{label} { required && <span className="text-red-500">*</span> }</p>
         : null
       }
       <div className={`h-40 border rounded bg-white ${className}`}>
@@ -70,7 +75,7 @@ const AdminFormFieldImage: React.FC<AdminFormFieldImageType> = ({
       </div>
 
       <AdminImageModal onlyTable={onlyTable} myself={myself} tableName={tableName} show={showModal} setShow={setShowModal} multiple={multiple} data={images} setData={setImages} />
-    </>
+    </div>
   )
 }
 

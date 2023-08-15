@@ -7,7 +7,6 @@ import useAdminUser from 'stores/admin/adminUser';
 import HeaderAdmin from './HeaderAdmin';
 import MenuAdmin from './MenuAdmin';
 import { useStoreCustom } from '@/stores';
-import AdminModal from './modal/AdminModal';
 import { SnackbarProvider } from 'notistack';
 import { AdminUserType } from '@/lib/server/helperServer';
 
@@ -41,7 +40,6 @@ const AdminLayout : React.FC<{
             <HeaderAdmin adminUser={userData} />
             <div className="px-8 py-4">{children}</div>
           </div>
-          {/* <AdminModal /> */}
         </div>
       </SnackbarProvider>
     </ClientOnly>

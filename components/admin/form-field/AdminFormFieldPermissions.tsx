@@ -1,18 +1,28 @@
+"use client"
 import { PermissionsOnRoles } from '@prisma/client'
 import React, { useEffect, useState, useRef, forwardRef, useImperativeHandle } from 'react'
 
 type State = {
   label: string,
   name: string
+  required?: boolean,
   defaultValue?: PermissionsOnRoles[],
-  tablesName: string[]
+  value?: string,
+  onChange?: (data: any) => void
+  className?: string,
+  details: {
+    tablesName: string[]
+  }
 }
 
 const AdminFormFieldPermissions: React.FC<State> = ({
   label,
   name,
+  className,
   defaultValue,
-  tablesName
+  details: {
+    tablesName
+  }
 }) => {
   const [value, setValue] = useState<{
     key: string,
@@ -31,8 +41,8 @@ const AdminFormFieldPermissions: React.FC<State> = ({
   }
 
   return (
-    <div>
-      <p className="text-sm font-semibold mb-1">{label}</p>
+    <div className={className}>
+      <p className="text-sm font-semibold mb-1 capitalize">{label}</p>
       <input type="hidden" name={name} value={JSON.stringify(value)} />
       <div className="flex space-x-2 text-sm">
         <button className='text-blue-500' onClick={(e) => setChecked(e, true)}>Chọn tất cả</button>

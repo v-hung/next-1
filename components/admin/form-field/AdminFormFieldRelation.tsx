@@ -1,24 +1,39 @@
+"use client"
 import { getListDataOfRelation } from '@/lib/server/sample'
 import { Autocomplete, CircularProgress, TextField } from '@mui/material'
 import { VariantType, enqueueSnackbar } from 'notistack'
 import React, { useEffect, useState, useRef } from 'react'
 
 type State = {
+  // label: string,
+  // name: string
+  // required?: boolean,
+  // defaultValue?: any,
+  // titleRelation: string,
+  // tableName: string
   label: string,
   name: string
   required?: boolean,
   defaultValue?: any,
-  titleRelation: string,
-  tableName: string
+  value?: string,
+  onChange?: (data: any) => void
+  className?: string,
+  details: {
+    titleRelation: string,
+    tableNameRelation: string
+  }
 }
 
 const AdminFormFieldRelation: React.FC<State> = ({
   label,
   name,
   required = false,
+  className,
   defaultValue,
-  titleRelation,
-  tableName
+  details: {
+    titleRelation,
+    tableNameRelation
+  }
 }) => {
   const [value, setValue] = useState<string>(defaultValue ? defaultValue.id : '')
 
@@ -38,7 +53,7 @@ const AdminFormFieldRelation: React.FC<State> = ({
       try {
         setLoading(true)
 
-        const body = await getListDataOfRelation({tableName: tableName})
+        const body = await getListDataOfRelation({tableName: tableNameRelation})
 
         setOptions([...body.data])
         
@@ -54,8 +69,8 @@ const AdminFormFieldRelation: React.FC<State> = ({
   }, [])
 
   return (
-    <div>
-      <p className="text-sm font-semibold mb-1">{label} { required && <span className="text-red-500">*</span> }</p>
+    <div className={className}>
+      <p className="text-sm font-semibold mb-1 capitalize">{label} { required && <span className="text-red-500">*</span> }</p>
       <input type="hidden" name={name} value={value} />
       <Autocomplete
         open={open}

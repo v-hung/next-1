@@ -1,21 +1,24 @@
 'use server'
+
 import { useCurrentUserAdmin } from "./helperServer";
 import db from "./prismadb"
 
 export type SampleColumnsType = {
-  key: string,
+  name: string,
   label: string,
   show: boolean,
   required?: boolean,
   col?: number
-} & (
+} & SampleFieldAndDetailsType
+
+export type SampleFieldAndDetailsType = (
   SampleColumnSelectType | 
   SampleColumnReactionType |
   SampleColumnImageType |
   SampleColumnPermissionsType |
   {
-    type: 'string' | 'date' | 'publish' | 'int',
-    details?: undefined;
+    type: 'string' | 'date' | 'publish' | 'int' | 'bool' | 'text',
+    details?: undefined
   }
 )
 
@@ -40,12 +43,13 @@ export type SampleColumnReactionType = {
   details: {
     type: 'one-to-one' | 'one-to-many' | 'many-to-one' | 'many-to-many',
     tableNameRelation: string,
-    title: string
+    titleRelation: string
   }
 }
 
 export type SampleColumnPermissionsType = {
   type: 'permissions',
+  details?: {}
 }
 
 export type GetDataSampleState = {
@@ -66,7 +70,7 @@ export const getDataSample = async ({
 
   const include = columns.reduce((pre, cur) => {
     if (cur.type == "image" || cur.type == "relation") {
-      return {...pre, [cur.key]: true}
+      return {...pre, [cur.name]: true}
     }
     else {
       return pre
@@ -106,7 +110,7 @@ export const getItemDataSample = async ({
 
   const include = columns.reduce((pre, cur) => {
     if (cur.type == "image" || cur.type == "relation" || cur.type == "permissions") {
-      return {...pre, [cur.key]: true}
+      return {...pre, [cur.name]: true}
     }
     else {
       return pre
@@ -115,7 +119,7 @@ export const getItemDataSample = async ({
 
   const data = await (db as any)[table].findUnique({
     where: {
-      id: columns.find(v => v.key == "id")?.type == "int" ? (+id || 0) : id,
+      id: columns.find(v => v.name == "id")?.type == "int" ? (+id || 0) : id,
     },
     include: include
   })
@@ -151,57 +155,57 @@ export const addEditDataSample = async ({
 }: AddEditDataSampleState & { table: string }) => {
   try {
     const dataCreate: any = columns.filter(v => !['id', 'createdAt', 'updatedAt', 'publish']
-      .includes(v.key)).reduce((cur, pre) => {
+      .includes(v.name)).reduce((cur, pre) => {
         if (pre.type == "date") {
-          return { ...cur, [pre.key]: new Date(data[pre.key]) }
+          return { ...cur, [pre.name]: new Date(data[pre.name]) }
         }
         else if (pre.type == "int") {
-          return { ...cur, [pre.key]: +(data[pre.key]) }
+          return { ...cur, [pre.name]: +(data[pre.name]) }
         }
         else if (pre.type == "image") {
-          if (data[pre.key]) {
-            let tempConnect = { id: data[pre.key] }
+          if (data[pre.name]) {
+            let tempConnect = { id: data[pre.name] }
             if (pre.details.multiple) {
-              tempConnect = JSON.parse(data[pre.key]).map((v: string) => ({
+              tempConnect = JSON.parse(data[pre.name]).map((v: string) => ({
                 id: v
               }))
             }
-            return { ...cur, [pre.key]: { connect: tempConnect } }
+            return { ...cur, [pre.name]: { connect: tempConnect } }
           }
           else
             return cur
         }
         else if (pre.type == "relation") {
-          if (data[pre.key]) {
-            let tempConnect = { id: data[pre.key] }
+          if (data[pre.name]) {
+            let tempConnect = { id: data[pre.name] }
             if (pre.details.type == 'one-to-many' || pre.details.type == 'many-to-many') {
-              tempConnect = JSON.parse(data[pre.key]).map((v: string) => ({
+              tempConnect = JSON.parse(data[pre.name]).map((v: string) => ({
                 id: v
               }))
             }
-            return { ...cur, [pre.key]: { connect: tempConnect } }
+            return { ...cur, [pre.name]: { connect: tempConnect } }
           }
           else
             return cur
         }
         else if (pre.type == "permissions") {
-          if (data[pre.key]) {
+          if (data[pre.name]) {
             let tempCreate = {}
 
             if (!edit) {
               tempCreate = {
-                create: JSON.parse(data[pre.key]).map((v: any) =>
+                create: JSON.parse(data[pre.name]).map((v: any) =>
                   ({
                     permission: {
                       connectOrCreate: {
                         where: {
                           key_tableName: {
-                            key: v.key,
+                            key: v.name,
                             tableName: v.tableName
                           }
                         },
                         create: {
-                          key: v.key,
+                          key: v.name,
                           tableName: v.tableName
                         }
                       }
@@ -212,17 +216,17 @@ export const addEditDataSample = async ({
             }
             else {
               tempCreate = {
-                connectOrCreate: JSON.parse(data[pre.key]).map((v: any) =>
+                connectOrCreate: JSON.parse(data[pre.name]).map((v: any) =>
                   ({
                     where: {
                       roleId_permissionKey_permissionTableName: {
-                        permissionKey: v.key,
+                        permissionKey: v.name,
                         permissionTableName: v.tableName,
                         roleId: data.id
                       }
                     },
                     create: {
-                      permissionKey: v.key,
+                      permissionKey: v.name,
                       permissionTableName: v.tableName
                     }
                   })
@@ -230,13 +234,13 @@ export const addEditDataSample = async ({
               }
             }
 
-            return { ...cur, [pre.key]: tempCreate }
+            return { ...cur, [pre.name]: tempCreate }
           }
           else
             return cur
         }
         else {
-          return { ...cur, [pre.key]: data[pre.key] }
+          return { ...cur, [pre.name]: data[pre.name] }
         }
       }, {})
 

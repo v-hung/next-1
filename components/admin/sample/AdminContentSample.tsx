@@ -68,7 +68,7 @@ const AdminContentSample: React.FC<SampleStateType> = ({
     setAnchorElShowField(null)
   }
 
-  const [columnShowFields, setColumnShowFields] = useState<string[]>(columns.filter(v => v.show).map(e => e.key))
+  const [columnShowFields, setColumnShowFields] = useState<string[]>(columns.filter(v => v.show).map(e => e.name))
   const handelChangeColumnShowField = (e: React.FormEvent<HTMLInputElement>, key: string) => {
     const { checked: isChecked } = e.target as HTMLInputElement
 
@@ -199,10 +199,10 @@ const AdminContentSample: React.FC<SampleStateType> = ({
             }}
           >
             {columns.map(column =>
-              <MenuItem key={column.key}>
+              <MenuItem key={column.name}>
                 <FormIOSSwitch label={column.label} 
-                  onChange={(e) => handelChangeColumnShowField(e, column.key)} 
-                  checked={columnShowFields.includes(column.key)} className='block w-full'/>
+                  onChange={(e) => handelChangeColumnShowField(e, column.name)} 
+                  checked={columnShowFields.includes(column.name)} className='block w-full'/>
               </MenuItem>
             )}
           </Menu>
@@ -218,12 +218,12 @@ const AdminContentSample: React.FC<SampleStateType> = ({
                   <StyledTableCell style={{width: '0px'}} align="left">
                     <input type="checkbox" checked={checked.length == data.length} onChange={handleSelectAll} />
                   </StyledTableCell>
-                  {columns.filter(v => columnShowFields.includes(v.key)).map((column) => (
+                  {columns.filter(v => columnShowFields.includes(v.name)).map((column) => (
                     <StyledTableCell
-                      key={column.key}
+                      key={column.name}
                       align="center"
                       // width={column?.width || 'auto'}
-                      style={{width: column.key == 'id' ? 0 : 'auto'}}
+                      style={{width: column.name == 'id' ? 0 : 'auto'}}
                     >
                       {column.label}
                     </StyledTableCell>
@@ -237,16 +237,16 @@ const AdminContentSample: React.FC<SampleStateType> = ({
                     <TableCell align="left">
                       <input type="checkbox" id={row.id} checked={checked.includes(row.id)} onChange={handleSelect} />
                     </TableCell>
-                    {columns.filter(v => columnShowFields.includes(v.key)).map(column => 
-                      <TableCell align="center" key={`${row.id}-${column.key}`}>
+                    {columns.filter(v => columnShowFields.includes(v.name)).map(column => 
+                      <TableCell align="center" key={`${row.id}-${column.name}`}>
                         { column.type == 'date'
-                          ? ViewDateField(row[column.key])
-                          : column.type == 'publish' ? ViewPublishField(row[column.key])
-                          : column.type == 'select' ? ViewSelectField(row[column.key], column.details.list)
-                          : column.type == 'image' ? ViewImageField(row[column.key])
-                          : column.type == 'relation' ? ViewRelationField(row[column.key], column.details.title)
+                          ? ViewDateField(row[column.name])
+                          : column.type == 'publish' ? ViewPublishField(row[column.name])
+                          : column.type == 'select' ? ViewSelectField(row[column.name], column.details.list)
+                          : column.type == 'image' ? ViewImageField(row[column.name])
+                          : column.type == 'relation' ? ViewRelationField(row[column.name], column.details.title)
                           : column.type == 'permissions' ? null
-                          : <span>{row[column.key] || ''}</span>
+                          : <span>{row[column.name] || ''}</span>
                         }
                       </TableCell>
                     )}
@@ -291,8 +291,6 @@ const AdminContentSample: React.FC<SampleStateType> = ({
       </section>
 
       <Modal
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description"
         open={isDelete}
         onClose={handleCloseModalDelete}
         closeAfterTransition

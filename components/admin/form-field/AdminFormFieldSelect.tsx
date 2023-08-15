@@ -4,10 +4,15 @@ import React, { useState } from 'react'
 
 type State = {
   label: string,
-  defaultValue?: string,
   name: string
   required?: boolean,
-  list: Item[]
+  defaultValue?: any,
+  value?: string,
+  onChange?: (data: any) => void
+  className?: string,
+  details: {
+    list: Item[]
+  }
 }
 
 type Item = {
@@ -18,9 +23,10 @@ type Item = {
 const AdminFormFieldSelect: React.FC<State> = ({
   label,
   defaultValue,
+  className,
   name,
   required = false,
-  list
+  details: { list }
 }) => {
 
   const [value, setValue] = useState<string>(defaultValue || '')
@@ -30,9 +36,8 @@ const AdminFormFieldSelect: React.FC<State> = ({
   }
 
   return (
-    // <div>AdminFormFieldSelect</div>
-    <div>
-      <p className="text-sm font-semibold mb-1">{label} { required && <span className="text-red-500">*</span> }</p>
+    <div className={className}>
+      <p className="text-sm font-semibold mb-1 capitalize">{label} { required && <span className="text-red-500">*</span> }</p>
       <FormControl className='w-full'>
         <Select
           value={value}

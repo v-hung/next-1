@@ -167,8 +167,9 @@ model Image {
 }
 
 model GroupSetting {
-  id   String @id @default(uuid())
-  name String
+  id        String   @id @default(uuid())
+  name      String
+  canDelete Boolean  @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -179,10 +180,12 @@ model GroupSetting {
 model Setting {
   id        String   @id @default(uuid())
   name      String   @unique
-  field     String
+  type      String
   details   String?
   value     String?
-  canDelete Boolean?
+  required  Boolean
+  col       Int?
+  canDelete Boolean  @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

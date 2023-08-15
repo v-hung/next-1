@@ -7,8 +7,7 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write \"**/*.{js,ts,tsx,md}\"",
-    "seed": "ts-node-esm ./prisma/seed.ts",
-    "_comment": "npm i -g ts-node"
+    "seed": "npx ts-node-esm ./prisma/seed.ts"
   },
   "prettier": {
     "arrowParens": "always",
@@ -23,6 +22,7 @@
     "@mui/material": "5.12.3",
     "@next-auth/prisma-adapter": "1.0.6",
     "@prisma/client": "5.1.1",
+    "@tinymce/tinymce-react": "4.3.0",
     "bcrypt": "5.1.0",
     "clsx": "1.2.1",
     "cookie": "0.5.0",
@@ -42,6 +42,7 @@
     "styled-components": "6.0.0-beta.2",
     "styled-jsx": "5.1.2",
     "swiper": "9.2.4",
+    "tinymce": "6.6.2",
     "use-count-up": "3.0.1",
     "uuid": "9.0.0",
     "validator": "13.9.0",

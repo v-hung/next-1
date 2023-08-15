@@ -10,6 +10,8 @@ import moment from 'moment'
 import AdminFormFieldRelation from '../form-field/AdminFormFieldRelation'
 import { AddEditDataSampleState, SampleColumnsType, addEditDataSample } from '@/lib/server/sample'
 import AdminFormFieldPermissions from '../form-field/AdminFormFieldPermissions'
+import AdminFormFieldNumber from '../form-field/AdminFormFieldNumber'
+import { DATA_FIELDS } from '@/lib/server/fields'
 
 export type SampleStateType = {
   data?: any | undefined,
@@ -58,7 +60,7 @@ const AdminContentSampleCreateEdit: React.FC<SampleStateType> = ({
   return (
     <form onSubmit={save}>
       { data
-        ? <input type={columns.find(v => v.key == "id")?.type == "int" ? 'number': 'string'} readOnly={true} className='sr-only' name="id" value={data.id || ''} />
+        ? <input type={columns.find(v => v.name == "id")?.type == "int" ? 'number': 'string'} readOnly={true} className='sr-only' name="id" value={data.id || ''} />
         : null
       }
 
@@ -96,60 +98,16 @@ const AdminContentSampleCreateEdit: React.FC<SampleStateType> = ({
         <div className="w-full lg:w-3/4 px-2 mb-4">
           <div className="w-full p-4 bg-white rounded shadow">
             <div className="flex -mx-2 flex-wrap">
-              {columns.filter(v => !['id', 'createdAt', 'updatedAt', 'publish'].includes(v.key)).map(column =>
-                <div className="px-2 mb-4" key={column.key} style={{ width: column.col ? `${(12 / column.col) * 100}%` : '50%' }}>
-                  { column.type == 'select'
-                    ? <AdminFormFieldSelect 
-                        defaultValue={data ? data[column.key] : undefined} 
-                        name={column.key} 
-                        required={column.required} 
-                        label={column.label}
-                        list={column.details.list} 
-                      />
-                    : column.type == 'image' ? 
-                      <AdminFormFieldImage 
-                        defaultValue={data ? data[column.key] : undefined} 
-                        multiple={column.details.multiple}
-                        onlyTable={column.details.onlyTable}
-                        name={column.key}
-                        label={column.label}
-                        myself={column.details.myself}
-                        tableName={tableName}
-                        required={column.required} 
-                      />
-                    : column.type == 'int' ? 
-                      <AdminFormFieldText 
-                        number={true} 
-                        defaultValue={data ? data[column.key] : undefined} 
-                        name={column.key} 
-                        required={column.required} 
-                        label={column.label} 
-                      />
-                    : column.type == 'relation' ? 
-                      <AdminFormFieldRelation
-                        defaultValue={data ? data[column.key] : undefined} 
-                        tableName={column.details.tableNameRelation}
-                        name={column.key} 
-                        required={column.required} 
-                        titleRelation={column.details.title}
-                        label={column.label} 
-                      />
-                    : column.type == 'permissions' ? 
-                      <AdminFormFieldPermissions
-                        defaultValue={data ? data[column.key] : undefined} 
-                        name={column.key}
-                        tablesName={tablesName}
-                        label={column.label} 
-                      />
-                    : <AdminFormFieldText 
-                        defaultValue={data ? data[column.key] : undefined} 
-                        name={column.key} 
-                        required={column.required} 
-                        label={column.label} 
-                      />
-                  }
-                </div>
-              )}
+              {columns.filter(v => !['id', 'createdAt', 'updatedAt', 'publish'].includes(v.name)).map(column => {
+                const Component = DATA_FIELDS[column.type] ? DATA_FIELDS[column.type].Component : null
+                return Component ? <div className="px-2 mb-4" key={column.name} style={{ width: column.col ? `${(12 / column.col) * 100}%` : '50%' }}>
+                  <Component
+                    label={column.name} name={column.name}
+                    required={column.required} defaultValue={data ? data[column.name] : undefined}
+                    details={{...column.details, tablesName: tablesName}}
+                  />
+                </div> : null
+              })}
             </div>
           </div>
         </div>
