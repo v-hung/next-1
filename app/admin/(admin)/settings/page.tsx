@@ -59,6 +59,34 @@ const createEditGroup = async ({
   } 
 }
 
+const deleteGroup = async ({ id }: { id?: string }) => {
+  "use server"
+  try {
+    await db.groupSetting.delete({
+      where: {
+        id: id
+      }
+    })
+  } 
+  catch (error) {
+    throw (typeof error === "string") ? error : 'Có lỗi xảy ra, vui lòng thử lại sau'
+  } 
+}
+
+const createEditSetting = async () => {
+  "use server"
+  try {
+    await db.groupSetting.delete({
+      where: {
+        id: id
+      }
+    })
+  } 
+  catch (error) {
+    throw (typeof error === "string") ? error : 'Có lỗi xảy ra, vui lòng thử lại sau'
+  } 
+}
+
 async function page() {
 
   const groupSettings = await getData()
