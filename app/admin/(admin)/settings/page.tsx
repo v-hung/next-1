@@ -8,10 +8,7 @@ export type GroupSettingType = Omit<GroupSetting, 'settings'> & {
   settings: SettingType[]
 }
 
-export type SettingType = (Omit<Setting, 'type' | 'details'>) & {
-  type: SampleFieldAndDetailsType['type']
-  details: SampleFieldAndDetailsType['details']
-}
+export type SettingType = (Omit<Setting, 'type' | 'details'>) & SampleFieldAndDetailsType
 
 const getData = async () => {
   const data = await db.groupSetting.findMany({

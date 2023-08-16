@@ -70,11 +70,11 @@ const AdminAddField: React.FC<ComponentType> = ({
             { 
               type == "image"
               ? <div className='border-t flex justify-evenly space-x-2'>
-                  <DetailsImage defaultMultiple={details.multiple || true} defaultOnlyTable={true} onChangeDetails={onChangeDetails} />
+                  <DetailsImage defaultMultiple={details.multiple || false} defaultOnlyTable={true} onChangeDetails={onChangeDetails} />
                 </div>
               : type == "select" ?
                 <div className='border-t'>
-                  <DetailsSelect defaultMultiple={details.multiple || true} defaultList={[]} onChangeDetails={onChangeDetails} />
+                  <DetailsSelect defaultMultiple={details.multiple || true} defaultList={[]} onChangeDetails={onChangeDetails} setExpanded={setExpanded} />
                 </div>
               : null
             }
@@ -112,11 +112,12 @@ const DetailsImage = ({
 }
 
 const DetailsSelect = ({
-  defaultMultiple, defaultList, onChangeDetails
+  defaultMultiple, defaultList, onChangeDetails, setExpanded
 }: {
   defaultMultiple: boolean, 
   defaultList: {id: string, title: string, value: string}[],
-  onChangeDetails: (details: any) => void
+  onChangeDetails: (details: any) => void,
+  setExpanded: React.Dispatch<React.SetStateAction<boolean>>
 }) => {
   // checked
   const [multiple, setMultiple] = useState(defaultMultiple)
@@ -148,6 +149,10 @@ const DetailsSelect = ({
     }))
   }
 
+  const inValidInput = (e: any)=> {
+    setExpanded(true)
+  }
+
   useEffect(() => {
     onChangeDetails({
       multiple: multiple,
@@ -163,9 +168,11 @@ const DetailsSelect = ({
           <div key={v.id} className="flex space-x-2">
             <input type="text" className='flex-1 rounded !bg-gray-200 px-2 py-0.5' placeholder='Tiêu đề' required={true}
               value={v.title} onChange={(e) => changeValue({title: e.target.value, id: v.id})}
+              onInvalid={inValidInput}
             />
             <input type="text" className='flex-1 rounded !bg-gray-200 px-2 py-0.5' placeholder='Giá trị' required={true}
               value={v.value} onChange={(e) => changeValue({value: e.target.value, id: v.id})}
+              onInvalid={inValidInput}
             />
             <Button variant='text' size='small' color='error'
               onClick={() => deleteItemInList(v.id)}

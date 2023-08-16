@@ -58,11 +58,11 @@ const SettingsModalAdd = ({
     name: string,
   } & SampleFieldAndDetailsType)[]>([])
 
-  const mapSettingToData = (settings: SettingType[]) => {
+  const mapSettingToData: any = (settings: SettingType[]) => {
     return settings.map(v => ({
       id: v.id,
-      type: v.type,
       name: v.name,
+      type: v.type,
       details: v.details
     }))
   }
@@ -70,7 +70,7 @@ const SettingsModalAdd = ({
   useEffect(() => {
     if (!group) return
 
-    // setData(mapSettingToData(group.settings))
+    setData(mapSettingToData(group.settings))
   },[group])
 
   const getDetailsDefault = <T extends SampleFieldAndDetailsType['type']>(
