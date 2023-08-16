@@ -7,6 +7,7 @@ import moment from 'moment';
 import { GroupSetting } from '@prisma/client';
 import AdminFormFieldText from '../form-field/AdminFormFieldText';
 import { promiseFunction } from '@/lib/server/promise';
+import { GroupSettingType } from '@/app/admin/(admin)/settings/page';
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -19,7 +20,7 @@ const SettingsModalAddGroup = ({
   data, open, setOpen,
   createEditGroup
 }: {
-  data?: GroupSetting
+  data?: GroupSettingType
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   createEditGroup: (data: {id?: string,name: string}) => Promise<GroupSetting>
@@ -29,7 +30,11 @@ const SettingsModalAddGroup = ({
   const [loading, setLoading] = useState(false)
   const handleClose = () => setOpen(false)
 
-  const [name, setName] = useState(data?.name || '')
+  const [name, setName] = useState('')
+
+  useEffect(() => {
+    setName(data?.name || '')
+  }, [data])
 
   const handelSubmit = async () => {
     await promiseFunction({

@@ -27,12 +27,12 @@ export type DataFieldType = Record<SampleFieldAndDetailsType['type'], {
 export const DATA_FIELDS: DataFieldType = {
   'string': { fieldName: "Plain text", icon: 'title', Component: AdminFormFieldText },
   'text': { fieldName: "Rich text", icon: 'border_color', Component: AdminFormFieldRichText },
-  'int': { fieldName: "Rich text", icon: 'tag', Component: AdminFormFieldNumber },
-  'bool': { fieldName: "Rich text", icon: 'toggle_on', Component: AdminFormFieldBool },
-  'date': { fieldName: "Rich text", icon: 'calendar_today', Component: AdminFormFieldDateTime },
-  'image': { fieldName: "Rich text", icon: 'photo_library', Component: AdminFormFieldImage },
-  'select': { fieldName: "Rich text", icon: 'checklist', Component: AdminFormFieldSelect },
-  'relation': { fieldName: "Rich text", icon: 'network_node', Component: AdminFormFieldRelation },
+  'int': { fieldName: "Number", icon: 'tag', Component: AdminFormFieldNumber },
+  'bool': { fieldName: "Boolean", icon: 'toggle_on', Component: AdminFormFieldBool },
+  'date': { fieldName: "Date Time", icon: 'calendar_today', Component: AdminFormFieldDateTime },
+  'image': { fieldName: "Image", icon: 'photo_library', Component: AdminFormFieldImage },
+  'select': { fieldName: "Select", icon: 'checklist', Component: AdminFormFieldSelect },
+  'relation': { fieldName: "Relation", icon: 'network_node', Component: AdminFormFieldRelation },
   'publish': { fieldName: "Publish", icon: 'publish', Component: null },
   'permissions': { fieldName: "Permission", icon: 'encrypted', Component: AdminFormFieldPermissions },
 }

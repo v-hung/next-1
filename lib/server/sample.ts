@@ -15,10 +15,10 @@ export type SampleFieldAndDetailsType = (
   SampleColumnSelectType | 
   SampleColumnReactionType |
   SampleColumnImageType |
-  SampleColumnPermissionsType |
+  // SampleColumnPermissionsType |
   {
-    type: 'string' | 'date' | 'publish' | 'int' | 'bool' | 'text',
-    details?: undefined
+    type: 'string' | 'date' | 'publish' | 'int' | 'bool' | 'text' | 'permissions',
+    details: undefined
   }
 )
 
@@ -26,13 +26,14 @@ export type SampleColumnSelectType = {
   type: 'select',
   details: {
     list: { title: string, value: string}[]
+    multiple?: boolean,
   }
 }
 
 export type SampleColumnImageType = {
   type: 'image',
   details: {
-    multiple: boolean,
+    multiple?: boolean,
     onlyTable?: boolean,
     myself?: boolean
   }
@@ -47,10 +48,10 @@ export type SampleColumnReactionType = {
   }
 }
 
-export type SampleColumnPermissionsType = {
-  type: 'permissions',
-  details?: {}
-}
+// export type SampleColumnPermissionsType = {
+//   type: 'permissions',
+//   details?: undefined
+// }
 
 export type GetDataSampleState = {
   page: number, 

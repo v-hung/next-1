@@ -59,7 +59,7 @@ const createEditGroup = async ({
   } 
 }
 
-const deleteGroup = async ({ id }: { id?: string }) => {
+const deleteGroup = async ({ id }: { id: string }) => {
   "use server"
   try {
     await db.groupSetting.delete({
@@ -73,14 +73,14 @@ const deleteGroup = async ({ id }: { id?: string }) => {
   } 
 }
 
-const createEditSetting = async () => {
+const createEditSetting = async ({ groupId }: { groupId: string}) => {
   "use server"
   try {
-    await db.groupSetting.delete({
-      where: {
-        id: id
-      }
-    })
+    // await db.groupSetting.delete({
+    //   where: {
+    //     id: id
+    //   }
+    // })
   } 
   catch (error) {
     throw (typeof error === "string") ? error : 'Có lỗi xảy ra, vui lòng thử lại sau'
@@ -92,7 +92,11 @@ async function page() {
   const groupSettings = await getData()
 
   return (
-    <SettingContentAdmin groupSettings={groupSettings} createEditGroup={createEditGroup} />
+    <SettingContentAdmin groupSettings={groupSettings} 
+      createEditGroup={createEditGroup} 
+      deleteGroup={deleteGroup} 
+      createEditSetting={createEditSetting} 
+    />
   )
 }
 

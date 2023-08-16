@@ -244,7 +244,7 @@ const AdminContentSample: React.FC<SampleStateType> = ({
                           : column.type == 'publish' ? ViewPublishField(row[column.name])
                           : column.type == 'select' ? ViewSelectField(row[column.name], column.details.list)
                           : column.type == 'image' ? ViewImageField(row[column.name])
-                          : column.type == 'relation' ? ViewRelationField(row[column.name], column.details.title)
+                          : column.type == 'relation' ? ViewRelationField(row[column.name], column.details.titleRelation)
                           : column.type == 'permissions' ? null
                           : <span>{row[column.name] || ''}</span>
                         }

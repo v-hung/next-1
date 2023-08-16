@@ -3,20 +3,25 @@ import { useRouter } from 'next/navigation';
 import React, { FormEvent, useEffect, useState } from 'react'
 import { v4 } from 'uuid';
 import AdminAddField from '../add-form-field/AdminAddField';
-import { SampleFieldAndDetailsType } from '@/lib/server/sample';
+import { SampleColumnImageType, SampleColumnReactionType, SampleColumnSelectType, SampleFieldAndDetailsType } from '@/lib/server/sample';
 import { DATA_FIELDS } from '@/lib/server/fields';
+import { GroupSettingType, SettingType } from '@/app/admin/(admin)/settings/page';
+import { promiseFunction } from '@/lib/server/promise';
+import { createPortal } from 'react-dom';
 
 const SettingsModalAdd = ({
-  open, setOpen
+  group, open, setOpen, createEditSetting
 }: {
+  group: GroupSettingType,
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  createEditSetting: (data: any) => Promise<void>
 }) => {
 
   const router = useRouter()
   
   const onCloseModal = () => {
-    if (data.length > 0) {
+    if (JSON.stringify(mapSettingToData(group.settings)) != JSON.stringify(data)) {
       setHasCloseModal(true)
     }
     else {
@@ -29,11 +34,10 @@ const SettingsModalAdd = ({
   const changeHasCloseModal = () => {
     setHasCloseModal(false)
     setOpen(false)
-    setData([])
   }
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const openFileds = Boolean(anchorEl)
+  const openFields = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
   }
@@ -41,20 +45,63 @@ const SettingsModalAdd = ({
     setAnchorEl(null)
   }
 
-  const [widthFileds, setWidthFileds] = useState(0)
+  const [widthFields, setWidthFields] = useState(0)
   useEffect(() => {
     if (anchorEl) {
-      setWidthFileds(anchorEl.offsetWidth)
+      setWidthFields(anchorEl.offsetWidth)
     }
   }, [anchorEl])
 
-  const [data, setData] = useState<{id: string, type: SampleFieldAndDetailsType['type'], name: string, }[]>([])
+  // data
+  const [data, setData] = useState<({
+    id: string, 
+    name: string,
+  } & SampleFieldAndDetailsType)[]>([])
+
+  const mapSettingToData = (settings: SettingType[]) => {
+    return settings.map(v => ({
+      id: v.id,
+      type: v.type,
+      name: v.name,
+      details: v.details
+    }))
+  }
+
+  useEffect(() => {
+    if (!group) return
+
+    // setData(mapSettingToData(group.settings))
+  },[group])
+
+  const getDetailsDefault = <T extends SampleFieldAndDetailsType['type']>(
+    type: T
+  ) => {
+    switch (type) {
+      case "select":
+        return {
+          list: [],
+        } as SampleColumnSelectType['details']
+      case "image":
+        return {
+          multiple: false
+        } as SampleColumnImageType['details']
+      case "relation":
+        return {
+          tableNameRelation: '',
+          titleRelation: '',
+          type: 'one-to-one'
+        } as SampleColumnReactionType['details']
+      default:
+        return undefined
+    }
+  }
 
   const addField = (fieldName: SampleFieldAndDetailsType['type']) => {
     setData(state => [...state, {
       id: v4(),
       name: "field",
       type: fieldName,
+      details: getDetailsDefault(fieldName) as any
     }])
     handleCloseMenu()
   }
@@ -73,44 +120,32 @@ const SettingsModalAdd = ({
     }))
   }
 
+  const onChangeDetailField = (details: SampleFieldAndDetailsType['details'], id: string) => {
+    setData(state => state.map(v => {
+      if (v.id == id) {
+        v.details = details
+      }
+
+      return v
+    }))
+  }
+
   // create collection
   const [loading, setLoading] = useState(false)
 
-  const submit = async (e: FormEvent) => {
+  const handelSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    try {
-      if (loading) return
-      setLoading(true)
+    // return 
 
-      const { name } = Object.fromEntries(
-        new FormData(e.target as HTMLFormElement),
-      );
-
-      const res = await fetch('/api/admin/database/create', {
-        method: 'POST',
-        body: JSON.stringify({
-          name: name,
-          fields: data
-        }),
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8'
-        }
-      })
-
-      if (!res.ok) throw "Error"
-
-      const body = await res.json()
-
-      router.refresh()
-      setOpen(false)
-      setData([])
-      
-    } catch (error) {
-      
-    } finally {
-      setLoading(false)
-    }
+    // await promiseFunction({
+    //   loading: loading,
+    //   setLoading: setLoading,
+    //   callback: async () => {
+    //     router.refresh()
+    //     setOpen(false)
+    //   }
+    // })
   }
 
   return (
@@ -120,26 +155,35 @@ const SettingsModalAdd = ({
         open={open}
         onClose={onCloseModal}
       >
-        <form className='w-[700px] max-w-[100vw] flex flex-col h-full' onSubmit={submit}>
+        <form id='settingAdd' className='w-[700px] max-w-[100vw] flex flex-col h-full' onSubmit={handelSubmit}>
           <div className="flex-none bg-gray-100 py-6 px-8">
-            <h3 className='text-xl'>Thêm cài đặt mới</h3>
+            <h3 className='text-xl'>Cập nhập nhóm <span className="text-blue-600">{group.name}</span></h3>
           </div>
           <div className="flex-grow min-h-0 overflow-y-auto py-6 px-8 flex flex-col space-y-4">
             {data.map(v => 
-              <AdminAddField key={v.id} type={v.type} onChange={(e) => onChangeField(e, v.id)} onDelete={() => onDeleteField(v.id)} />
+              // @ts-ignore
+              <AdminAddField 
+                key={v.id} 
+                type={v.type} 
+                details={v.details}
+                defaultValue={v.name} 
+                onChangeDetails={(data) => onChangeDetailField(data, v.id)}
+                onChange={(e) => onChangeField(e, v.id)} 
+                onDelete={() => onDeleteField(v.id)} 
+              />
             )}
             <Button className='w-full' variant="outlined" startIcon={(
               <span className="icon">add</span>
             )} onClick={handleClick}>
-              New Fields
+              Thêm trường mới
             </Button>
             <Menu
               MenuListProps={{
                 // "aria-labelledby": "basic-button",
-                sx: { width: widthFileds }
+                sx: { width: widthFields }
               }}
               anchorEl={anchorEl}
-              open={openFileds}
+              open={openFields}
               onClose={handleCloseMenu}
               anchorOrigin={{
                 vertical: 'bottom',
@@ -151,7 +195,7 @@ const SettingsModalAdd = ({
               }}
             >
               <div className="w-full grid grid-cols-4 px-2 text-sm">
-                {Object.keys(DATA_FIELDS).map(v => {
+                {Object.keys(DATA_FIELDS).filter(v => !["publish", "permissions"].includes(v)).map(v => {
 
                   const fieldType = v as SampleFieldAndDetailsType['type'];
                   const fieldInfo = DATA_FIELDS[fieldType]
@@ -169,8 +213,8 @@ const SettingsModalAdd = ({
             </Menu>
           </div>
           <div className="flex-none py-6 px-8 flex justify-end space-x-4 border-t">
-            <Button variant="text" color='black' onClick={onCloseModal}>Cancel</Button>
-            <Button variant="contained" type='submit'>Create</Button>
+            <Button variant="text" color='black' onClick={onCloseModal}>Hủy</Button>
+            <Button variant="contained" type='submit'>Cập nhập</Button>
           </div>
         </form>
       </Drawer>
@@ -180,13 +224,13 @@ const SettingsModalAdd = ({
         onClose={() => setHasCloseModal(false)}
         aria-describedby="alert-dialog-slide-description"
       >
-        <DialogTitle>Close the panel</DialogTitle>
+        <DialogTitle>Đóng bảng điều khiển</DialogTitle>
         <DialogContent>
-          You have unsaved changes. Do you really want to close the panel?
+          Bạn có các thay đổi chưa lưu. Bạn có thực sự muốn đóng bảng điều khiển không?
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setHasCloseModal(false)}>No</Button>
-          <Button variant='contained' color='error' onClick={changeHasCloseModal}>Yes</Button>
+          <Button onClick={() => setHasCloseModal(false)}>Hủy</Button>
+          <Button variant='contained' color='error' onClick={changeHasCloseModal}>Đóng</Button>
         </DialogActions>
       </Dialog>
 
