@@ -1,5 +1,5 @@
 import LoginContentAdmin from '@/components/admin/content/LoginContentAdmin'
-import { useCurrentUserAdmin } from '@/lib/server/helperServer'
+import { useCurrentUserAdmin } from '@/lib/admin/helperServer'
 import { redirect } from 'next/navigation'
 
 const page = async () => {

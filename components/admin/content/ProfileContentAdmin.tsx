@@ -6,7 +6,7 @@ import React, { useState } from 'react'
 import AdminFormFieldText from '../form-field/AdminFormFieldText';
 import { TextField } from '@mui/material';
 import AdminFormFieldImage from '../form-field/AdminFormFieldImage';
-import { AdminUserType } from '@/lib/server/helperServer';
+import { AdminUserType } from '@/lib/admin/helperServer';
 import { VariantType, enqueueSnackbar } from 'notistack';
 import { useRouter } from 'next/navigation';
 import { UpdateProfileType } from '@/app/admin/(admin)/profile/page';

@@ -3,7 +3,7 @@ import {useEffect, useRef, useState} from 'react'
 import { useClickOutside } from '@/lib/clickOutside';
 import { Button, Zoom } from '@mui/material';
 import { VariantType, enqueueSnackbar } from 'notistack';
-import { uploadImages } from '@/lib/server/imageFormField';
+import { uploadImages } from '@/lib/admin/imageFormField';
 
 type AddModalType = {
   show: boolean,

@@ -5,11 +5,14 @@ import { NextRequest } from "next/server";
 import db from "./prismadb";
 import { verifyToken } from "../utils/jwt";
 import { redirect } from "next/navigation";
-import { Admin, Image } from "@prisma/client";
+import { Admin, Image, PermissionsOnRoles, Role } from "@prisma/client";
 import { exclude } from "../utils/helper";
 
 export type AdminUserType = Omit<Admin, "password"> & {
   image: Image | null
+  role: Role & {
+    permissions: PermissionsOnRoles[]
+  }
 } | null
 
 export const useCurrentUserAdmin = async (request?: NextRequest) => {
@@ -40,7 +43,12 @@ export const useCurrentUserAdmin = async (request?: NextRequest) => {
       id: adminId
     },
     include: {
-      image: true
+      image: true,
+      role: {
+        include: {
+          permissions: true
+        }
+      }
     }
   })
 

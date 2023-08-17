@@ -6,93 +6,96 @@ import bcrypt from 'bcrypt'
 (() => {
   const prisma = new PrismaClient();
   async function main() {
-    // const permissions: Permission[] = await prisma.$transaction([
-    //   {
-    //     key: 'browse',
-    //     tableName: 'admin'
-    //   },
-    //   {
-    //     key: 'create',
-    //     tableName: 'admin'
-    //   },
-    //   {
-    //     key: 'edit',
-    //     tableName: 'admin'
-    //   },
-    //   {
-    //     key: 'delete',
-    //     tableName: 'admin'
-    //   },
-    //   {
-    //     key: 'image',
-    //     tableName: 'admin'
-    //   },
-    //   {
-    //     key: 'browse',
-    //     tableName: 'role'
-    //   },
-    //   {
-    //     key: 'create',
-    //     tableName: 'role'
-    //   },
-    //   {
-    //     key: 'edit',
-    //     tableName: 'role'
-    //   },
-    //   {
-    //     key: 'delete',
-    //     tableName: 'role'
-    //   },
-    //   {
-    //     key: 'image',
-    //     tableName: 'role'
-    //   }
-    // ].map(v => prisma.permission.create({
-    //   data: v
-    // })))
+    const permissions: Permission[] = await prisma.$transaction([
+      {
+        key: 'browse',
+        tableName: 'admin'
+      },
+      {
+        key: 'create',
+        tableName: 'admin'
+      },
+      {
+        key: 'edit',
+        tableName: 'admin'
+      },
+      {
+        key: 'delete',
+        tableName: 'admin'
+      },
+      {
+        key: 'image',
+        tableName: 'admin'
+      },
+      {
+        key: 'browse',
+        tableName: 'role'
+      },
+      {
+        key: 'create',
+        tableName: 'role'
+      },
+      {
+        key: 'edit',
+        tableName: 'role'
+      },
+      {
+        key: 'delete',
+        tableName: 'role'
+      },
+      {
+        key: 'image',
+        tableName: 'role'
+      }
+    ].map(v => prisma.permission.create({
+      data: v
+    })))
 
-    // const role = await prisma.role.create({
-    //   data: {
-    //     name: 'Administrator',
-    //     permissions: {
-    //       create: permissions.map(v =>
-    //         ({
-    //           permission: {
-    //             connectOrCreate: {
-    //               where: {
-    //                 key_tableName: {
-    //                   key: v.key,
-    //                   tableName: v.tableName
-    //                 }
-    //               },
-    //               create: {
-    //                 key: v.key,
-    //                 tableName: v.tableName
-    //               }
-    //             }
-    //           }
-    //         })
-    //       )
-    //     }
-    //   }
-    // })
+    const role = await prisma.role.create({
+      data: {
+        name: 'Administrator',
+        permissions: {
+          create: permissions.map(v =>
+            ({
+              permission: {
+                connectOrCreate: {
+                  where: {
+                    key_tableName: {
+                      key: v.key,
+                      tableName: v.tableName
+                    }
+                  },
+                  create: {
+                    key: v.key,
+                    tableName: v.tableName
+                  }
+                }
+              }
+            })
+          )
+        }
+      }
+    })
 
-    // const password = await bcrypt.hash("password", 10)
-    // const user = await prisma.admin.create({
-    //   data: {
-    //     name: 'Admin',
-    //     email: 'admin@admin.com',
-    //     roleId: role.id,
-    //     password
-    //   }
-    // })
+    const password = await bcrypt.hash("password", 10)
+    const user = await prisma.admin.create({
+      data: {
+        name: 'Admin',
+        email: 'admin@admin.com',
+        roleId: role.id,
+        password
+      }
+    })
 
     const groups = await prisma.$transaction(
       [
         { name: "Site", canDelete: false, settings: [
           { name: 'site title', type: 'string', required: false, canDelete: false },
           { name: 'site description', type: 'string', required: false, canDelete: false },
-          { name: 'site logo', type: 'image', required: false, canDelete: false },
+          { name: 'site logo', type: 'image', required: false, details: `{
+            multiple: false,
+            onlyTable: true
+          }`, canDelete: false },
         ] },
         { name: "Admin", canDelete: false, settings: [
           { name: 'admin title', type: 'string', required: false, canDelete: false },

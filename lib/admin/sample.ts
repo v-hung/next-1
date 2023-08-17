@@ -1,7 +1,9 @@
 'use server'
 
+import { Setting } from "@prisma/client";
 import { useCurrentUserAdmin } from "./helperServer";
 import db from "./prismadb"
+import bcrypt from 'bcrypt'
 
 export type SampleColumnsType = {
   name: string,
@@ -17,8 +19,8 @@ export type SampleFieldAndDetailsType = (
   SampleColumnImageType |
   // SampleColumnPermissionsType |
   {
-    type: 'string' | 'date' | 'publish' | 'int' | 'bool' | 'text' | 'permissions',
-    details: undefined
+    type: 'string' | 'date' | 'publish' | 'int' | 'bool' | 'text' | 'permissions' | 'password',
+    details?: undefined
   }
 )
 
@@ -69,21 +71,19 @@ export const getDataSample = async ({
 
   const start = (page - 1) * per_page
 
-  const include = columns.reduce((pre, cur) => {
-    if (cur.type == "image" || cur.type == "relation") {
-      return {...pre, [cur.name]: true}
-    }
-    else {
-      return pre
-    }
-  }, {})
-
   try {
     const [data, count] = await db.$transaction([
       (db as any)[table].findMany({
         take: per_page,
         skip: start,
-        include: include
+        select: columns.reduce((pre, cur) => {
+          if (cur.type != "password") {
+            return {...pre, [cur.name]: true}
+          }
+          else {
+            return pre
+          }
+        }, {})
       }),
       (db as any)[table].count(),
     ])
@@ -109,20 +109,27 @@ export const getItemDataSample = async ({
   table, columns
 }: GetItemDataSampleState & { table: string }) => {
 
-  const include = columns.reduce((pre, cur) => {
-    if (cur.type == "image" || cur.type == "relation" || cur.type == "permissions") {
-      return {...pre, [cur.name]: true}
-    }
-    else {
-      return pre
-    }
-  }, {})
+  // const include = columns.reduce((pre, cur) => {
+  //   if (cur.type == "image" || cur.type == "relation" || cur.type == "permissions") {
+  //     return {...pre, [cur.name]: true}
+  //   }
+  //   else {
+  //     return pre
+  //   }
+  // }, {})
 
   const data = await (db as any)[table].findUnique({
     where: {
       id: columns.find(v => v.name == "id")?.type == "int" ? (+id || 0) : id,
     },
-    include: include
+    select: columns.reduce((pre, cur) => {
+      if (cur.type != "password") {
+        return {...pre, [cur.name]: true}
+      }
+      else {
+        return pre
+      }
+    }, {})
   })
 
   return data
@@ -155,13 +162,17 @@ export const addEditDataSample = async ({
   data, edit = false, columns, table
 }: AddEditDataSampleState & { table: string }) => {
   try {
-    const dataCreate: any = columns.filter(v => !['id', 'createdAt', 'updatedAt', 'publish']
-      .includes(v.name)).reduce((cur, pre) => {
+
+    const intermediateResults = await Promise.all(columns.filter(v => !['id', 'createdAt', 'updatedAt', 'publish']
+      .includes(v.name)).map(async (pre) => {
         if (pre.type == "date") {
-          return { ...cur, [pre.name]: new Date(data[pre.name]) }
+          return { [pre.name]: new Date(data[pre.name]) }
         }
         else if (pre.type == "int") {
-          return { ...cur, [pre.name]: +(data[pre.name]) }
+          return { [pre.name]: +(data[pre.name]) }
+        }
+        else if (pre.type == "password") {
+          return { [pre.name]: await bcrypt.hash("password", 10) }
         }
         else if (pre.type == "image") {
           if (data[pre.name]) {
@@ -171,10 +182,10 @@ export const addEditDataSample = async ({
                 id: v
               }))
             }
-            return { ...cur, [pre.name]: { connect: tempConnect } }
+            return { [pre.name]: { connect: tempConnect } }
           }
           else
-            return cur
+            return { [pre.name]: undefined }
         }
         else if (pre.type == "relation") {
           if (data[pre.name]) {
@@ -184,10 +195,10 @@ export const addEditDataSample = async ({
                 id: v
               }))
             }
-            return { ...cur, [pre.name]: { connect: tempConnect } }
+            return { [pre.name]: { connect: tempConnect } }
           }
           else
-            return cur
+            return { [pre.name]: undefined }
         }
         else if (pre.type == "permissions") {
           if (data[pre.name]) {
@@ -201,12 +212,12 @@ export const addEditDataSample = async ({
                       connectOrCreate: {
                         where: {
                           key_tableName: {
-                            key: v.name,
+                            key: v.key,
                             tableName: v.tableName
                           }
                         },
                         create: {
-                          key: v.name,
+                          key: v.key,
                           tableName: v.tableName
                         }
                       }
@@ -221,13 +232,13 @@ export const addEditDataSample = async ({
                   ({
                     where: {
                       roleId_permissionKey_permissionTableName: {
-                        permissionKey: v.name,
+                        permissionKey: v.key,
                         permissionTableName: v.tableName,
                         roleId: data.id
                       }
                     },
                     create: {
-                      permissionKey: v.name,
+                      permissionKey: v.key,
                       permissionTableName: v.tableName
                     }
                   })
@@ -235,15 +246,19 @@ export const addEditDataSample = async ({
               }
             }
 
-            return { ...cur, [pre.name]: tempCreate }
+            return { [pre.name]: tempCreate }
           }
           else
-            return cur
+            return { [pre.name]: undefined }
         }
         else {
-          return { ...cur, [pre.name]: data[pre.name] }
+          return { [pre.name]: data[pre.name] }
         }
-      }, {})
+      }, 
+      {}
+    ))
+
+    const dataCreate = intermediateResults.reduce((cur, result) => ({ ...cur, ...result }), {});
 
     if (edit) {
       await (db as any)[table].update({
@@ -261,7 +276,7 @@ export const addEditDataSample = async ({
   }
   catch (error) {
     console.log({error})
-    throw (typeof error === "string") ? error : 'Có lỗi xảy ra vui lòng thử lại sau'
+    throw (typeof error === "string" && error) ? error : 'Có lỗi xảy ra vui lòng thử lại sau'
   }
 }
 
@@ -279,6 +294,31 @@ export const getListDataOfRelation = async ({
   }
   catch (error) {
     console.log(error)
-    throw (typeof error === "string") ? error : 'Có lỗi xảy ra vui lòng thử lại sau'
+    throw (typeof error === "string" && error) ? error : 'Có lỗi xảy ra vui lòng thử lại sau'
   }
+}
+
+export const getValueSettings = async (settings: Setting[]) => {
+  return Promise.all(settings.map(async (v2) => {
+
+    if (v2.type == "image" && v2.value) {
+      v2.value = await db.image.findUnique({
+        where: {
+          id: v2.value
+        }
+      }) as any
+    }
+
+    return {
+      ...v2,
+      details: v2.details ? JSON.parse(v2.details) : {}
+    }
+  }))
+}
+
+export const getSettingsData = async () => {
+  const settings = await db.setting.findMany()
+
+  const data = await getValueSettings(settings)
+  return data
 }

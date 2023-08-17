@@ -7,7 +7,7 @@ import { getScrollbarWidth } from '@/lib/utils/helper';
 import AdminImageAdd from './ImageModalAdd';
 import AdminImageEdit from './ImageModalEdit';
 import AdminImageModalAddFolder from './ImageModalAddFolder';
-import { getListFolderImage } from '@/lib/server/imageFormField';
+import { getListFolderImage } from '@/lib/admin/imageFormField';
 
 type ModalType = {
   show: boolean,

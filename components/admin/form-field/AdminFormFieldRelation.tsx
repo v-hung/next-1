@@ -1,5 +1,5 @@
 "use client"
-import { getListDataOfRelation } from '@/lib/server/sample'
+import { getListDataOfRelation } from '@/lib/admin/sample'
 import { Autocomplete, CircularProgress, TextField } from '@mui/material'
 import { VariantType, enqueueSnackbar } from 'notistack'
 import React, { useEffect, useState, useRef } from 'react'

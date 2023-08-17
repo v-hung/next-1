@@ -1,6 +1,6 @@
 import ProfileContentAdmin from '@/components/admin/content/ProfileContentAdmin'
-import { useCurrentUserAdmin } from '@/lib/server/helperServer'
-import db from '@/lib/server/prismadb'
+import { useCurrentUserAdmin } from '@/lib/admin/helperServer'
+import db from '@/lib/admin/prismadb'
 import { redirect } from 'next/navigation'
 import React from 'react'
 
@@ -37,7 +37,7 @@ export default async function page() {
   
     } catch (error) {
       console.log(error)
-      throw (typeof error === "string") ? error : 'Có lỗi xảy ra vui lòng thử lại sau'
+      throw (typeof error === "string" && error) ? error : 'Có lỗi xảy ra vui lòng thử lại sau'
     }
   }
 

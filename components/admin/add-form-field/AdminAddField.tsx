@@ -1,7 +1,7 @@
 "use client"
 import FormIOSSwitch from '@/components/FormIOSSwitch';
-import { DATA_FIELDS } from '@/lib/server/fields';
-import { SampleFieldAndDetailsType } from '@/lib/server/sample';
+import { DATA_FIELDS } from '@/lib/admin/fields';
+import { SampleFieldAndDetailsType } from '@/lib/admin/sample';
 import { Button, Collapse } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -13,6 +13,8 @@ type ComponentType = {
   onDelete: () => void,
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
   defaultValue?: string,
+  required?: boolean,
+  onChangeRequired: (data: boolean) => void,
   onChangeDetails: (data: SampleFieldAndDetailsType['details']) => void
 } & SampleFieldAndDetailsType
 
@@ -22,7 +24,9 @@ const AdminAddField: React.FC<ComponentType> = ({
   defaultValue,
   type,
   details,
-  onChangeDetails
+  onChangeDetails,
+  required,
+  onChangeRequired
 }) => {
   const [expanded, setExpanded] = useState<boolean>(false)
 
@@ -63,7 +67,7 @@ const AdminAddField: React.FC<ComponentType> = ({
       <Collapse in={expanded}>
         <div className='rounded-b border-2 border-gray-300 p-2 bg-white'>
           <div className="flex justify-between" style={{userSelect: 'none'}}>
-            <FormIOSSwitch label="None Empty" size='small' />
+            <FormIOSSwitch label="None Empty" defaultValue={required} onChange={(e,v) => onChangeRequired(v)} size='small' />
             <Button variant="text" color='error' onClick={(e) => deleteField(e)}>Remove</Button>
           </div>
           <div>

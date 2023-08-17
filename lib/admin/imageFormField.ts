@@ -4,8 +4,11 @@ import { FolderImage, Image } from "@prisma/client"
 import { useCurrentUserAdmin } from "./helperServer"
 import db from "./prismadb"
 import { existsSync, mkdirSync } from "fs"
+import fsPromise from "fs/promises"
 import sharp from "sharp"
 import { v4 } from "uuid"
+import path from "path"
+import { imageSize } from "image-size";
 
 const getParentString = (depth = 1) => {
 
@@ -66,7 +69,7 @@ export const getListFolderImage = async ({
 
   } catch (error) {
     console.log(error)
-    throw (typeof error === "string") ? error : 'Có lỗi xảy ra vui lòng thử lại sau'
+    throw (typeof error === "string" && error) ? error : 'Có lỗi xảy ra vui lòng thử lại sau'
   }
 }
 
@@ -105,7 +108,7 @@ export const createEditFolder = async ({
     return {folder}
 
   } catch (error) {
-    throw (typeof error === "string") ? error : 'Có lỗi xảy ra vui lòng thử lại sau'
+    throw (typeof error === "string" && error) ? error : 'Có lỗi xảy ra vui lòng thử lại sau'
   }
 }
 
@@ -138,34 +141,57 @@ export const uploadImages = async ({
 
     let res: any[] = []
     for (let file of files) {
-      
-      let fileData = sharp(await file.arrayBuffer(), { animated: true })
-      
-      let metadata = await fileData.metadata()
-      
-      let name = v4() + "." + metadata.format
-      let fileUrl = `./storage/${tableName}/${name}`
+      const extension = path.extname(file.name)
 
-      if (Object.keys(compress).findIndex(v => v == metadata.format) < 0) {
-        throw "Không phải định dạng ảnh"
+      if (Object.keys(compress).findIndex(v => `.${v}` == extension) < 0) {
+        let name = v4() + extension
+        let fileUrl = `./storage/${tableName}/${name}`
+
+        const fileBuffer = Buffer.from(await file.arrayBuffer())
+
+        const {width, height} = imageSize(fileBuffer)
+
+        await fsPromise.writeFile(fileUrl, fileBuffer)
+
+        res.push({
+          name: file.name,
+          naturalWidth: width,
+          naturalHeight: height,
+          size: file.size,
+          type: file.type,
+          url: fileUrl.slice(1)
+        })
+      }
+      else {
+        let fileData = sharp(await file.arrayBuffer(), { animated: true })
+        
+        let metadata = await fileData.metadata()
+        
+        let name = v4() + "." + metadata.format
+        let fileUrl = `./storage/${tableName}/${name}`
+    
+        if (Object.keys(compress).findIndex(v => v == metadata.format) < 0) {
+          throw "Không phải định dạng ảnh"
+        }
+    
+        //@ts-ignore
+        let fileSave = await fileData[metadata.format || "png"](compress[metadata.format || "png"]).toFile(fileUrl)
+          .then((data: any) => {
+            return data
+          })
+    
+        let { format, size, width, height } = fileSave
+    
+        res.push({
+          name: file.name,
+          naturalWidth: width,
+          naturalHeight: height,
+          size: size,
+          type: file.type,
+          url: fileUrl.slice(1)
+        })
       }
 
-      //@ts-ignore
-      let fileSave = await fileData[metadata.format || "png"](compress[metadata.format || "png"]).toFile(fileUrl)
-        .then((data: any) => {
-          return data
-        })
-
-      let { format, size, width, height } = fileSave
-
-      res.push({
-        name: file.name,
-        naturalWidth: width,
-        naturalHeight: height,
-        size: size,
-        type: file.type,
-        url: fileUrl.slice(1)
-      })
     }
 
     let images: Image[] = await db.$transaction(
@@ -182,6 +208,6 @@ export const uploadImages = async ({
     return {images}
   } catch (error) {
     console.log(error)
-    throw (typeof error === "string") ? error : 'Có lỗi xảy ra vui lòng thử lại sau'
+    throw (typeof error === "string" && error) ? error : 'Có lỗi xảy ra vui lòng thử lại sau'
   }
 }

@@ -1,6 +1,6 @@
 import SettingContentAdmin from '@/components/admin/content/SettingContentAdmin'
-import db from '@/lib/server/prismadb'
-import { SampleColumnsType, SampleFieldAndDetailsType } from '@/lib/server/sample'
+import db from '@/lib/admin/prismadb'
+import { SampleColumnsType, SampleFieldAndDetailsType, getValueSettings } from '@/lib/admin/sample'
 import { Setting, GroupSetting } from '@prisma/client'
 import React from 'react'
 
@@ -8,7 +8,9 @@ export type GroupSettingType = Omit<GroupSetting, 'settings'> & {
   settings: SettingType[]
 }
 
-export type SettingType = (Omit<Setting, 'type' | 'details'>) & SampleFieldAndDetailsType
+export type SettingType = (Omit<Setting, 'type' | 'details' | 'value'>) & SampleFieldAndDetailsType & {
+  value: any
+}
 
 const getData = async () => {
   const data = await db.groupSetting.findMany({
@@ -17,13 +19,11 @@ const getData = async () => {
     }
   })
 
-  const groupSettings = data.map(v => ({
+  const groupSettings = await Promise.all(data.map(async v => ({
     ...v,
-    settings: v.settings.map(v2 => ({
-      ...v2,
-      details: v2.details ? JSON.parse(v2.details) : {}
-    }))
-  })) as any[] as GroupSettingType[]
+    settings: await getValueSettings(v.settings)
+
+  })) as any[] as GroupSettingType[])
  
   return groupSettings
 }
@@ -70,17 +70,57 @@ const deleteGroup = async ({ id }: { id: string }) => {
   } 
 }
 
-const createEditSetting = async ({ groupId }: { groupId: string}) => {
+export type CreateEditSettingType = {
+  groupId: string,
+  settings: ({
+    id: string, 
+    name: string,
+    required: boolean,
+  } & SampleFieldAndDetailsType)[]
+}
+
+const createEditSetting = async ({ 
+  groupId, settings
+}: CreateEditSettingType) => {
   "use server"
   try {
-    // await db.groupSetting.delete({
-    //   where: {
-    //     id: id
-    //   }
-    // })
+    await db.setting.deleteMany({
+      where: {
+        groupId: groupId
+      }
+    })
+
+    await db.$transaction(settings.map(v => db.setting.create({
+      data: {
+        name: v.name,
+        required: v.required || false,
+        type: v.type,
+        details: JSON.stringify(v.details),
+        groupId: groupId
+      }
+    })))
   } 
   catch (error) {
+    console.log({error})
     throw (typeof error === "string") ? error : 'Có lỗi xảy ra, vui lòng thử lại sau'
+  } 
+}
+
+const saveSetting = async(data : Array<[string, string]>) => {
+  "use server"
+  try {
+    await db.$transaction(data.map(([key, value]) => db.setting.update({
+      where: {
+        name: key
+      },
+      data: {
+        value: value
+      }
+    })))
+  } 
+  catch (error) {
+    console.log({error})
+    throw (typeof error === "string" && error) ? error : 'Có lỗi xảy ra, vui lòng thử lại sau'
   } 
 }
 
@@ -93,6 +133,7 @@ async function page() {
       createEditGroup={createEditGroup} 
       deleteGroup={deleteGroup} 
       createEditSetting={createEditSetting} 
+      saveSetting={saveSetting}
     />
   )
 }

@@ -1,5 +1,5 @@
 import ContentRecharge from "@/components/web/content/ContentRecharge";
-import { getCurrentUser } from "@/lib/client/getCurrentUser";
+import { getCurrentUser } from "@/lib/web/getCurrentUser";
 import { redirect } from "next/navigation";
 
 const page = async () => {

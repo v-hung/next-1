@@ -1,7 +1,7 @@
 import AdminLayout from 'components/admin/AdminLayout';
 import { cookies } from 'next/headers';
 import React from 'react';
-import { useCurrentUserAdmin } from '@/lib/server/helperServer';
+import { useCurrentUserAdmin } from '@/lib/admin/helperServer';
 import ClientOnly from '@/components/ClientOnly';
 import { redirect } from 'next/navigation';
 

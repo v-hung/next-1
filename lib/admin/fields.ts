@@ -8,6 +8,8 @@ import AdminFormFieldImage from "@/components/admin/form-field/AdminFormFieldIma
 import AdminFormFieldSelect from "@/components/admin/form-field/AdminFormFieldSelect";
 import AdminFormFieldRelation from "@/components/admin/form-field/AdminFormFieldRelation";
 import AdminFormFieldPermissions from "@/components/admin/form-field/AdminFormFieldPermissions";
+import { PermissionsOnRoles } from "@prisma/client";
+import AdminFormFieldPassword from "@/components/admin/form-field/AdminFormFieldPassword";
 
 export type DataFieldType = Record<SampleFieldAndDetailsType['type'], {
   fieldName: string,
@@ -35,4 +37,15 @@ export const DATA_FIELDS: DataFieldType = {
   'relation': { fieldName: "Relation", icon: 'network_node', Component: AdminFormFieldRelation },
   'publish': { fieldName: "Publish", icon: 'publish', Component: null },
   'permissions': { fieldName: "Permission", icon: 'encrypted', Component: AdminFormFieldPermissions },
+  'password': { fieldName: "Password", icon: 'key', Component: AdminFormFieldPassword },
+}
+
+export const findSettingByName = (arr: any[], name: string) : any | undefined => {
+  return arr.find(v => v.name == name)?.value || undefined
+}
+
+export const checkPermissions = (permission: PermissionsOnRoles[], tableName: string, 
+  key: 'browse' | 'create' | 'edit' | 'delete' | 'image' 
+) => {
+  return permission.findIndex(v => v.permissionTableName == tableName && v.permissionKey == key) >= 0
 }

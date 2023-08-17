@@ -5,7 +5,7 @@ import { Button, Zoom } from '@mui/material';
 import { FolderImage } from '@prisma/client';
 import AdminFormFieldText from '../AdminFormFieldText';
 import moment from 'moment';
-import { createEditFolder } from '@/lib/server/imageFormField';
+import { createEditFolder } from '@/lib/admin/imageFormField';
 import { VariantType, enqueueSnackbar } from 'notistack';
 
 type AddModalType = {

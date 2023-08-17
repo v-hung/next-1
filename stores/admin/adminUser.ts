@@ -1,4 +1,4 @@
-import { AdminUserType } from "@/lib/server/helperServer";
+import { AdminUserType } from "@/lib/admin/helperServer";
 import { Admin, Image } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { create } from "zustand";

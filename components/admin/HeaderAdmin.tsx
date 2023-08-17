@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Collapse from '../Collapse';
 import { useStoreCustom } from '@/stores';
 import { Avatar, Divider, Menu, MenuItem } from '@mui/material';
-import { AdminUserType, logoutUserAdmin } from '@/lib/server/helperServer';
+import { AdminUserType, logoutUserAdmin } from '@/lib/admin/helperServer';
 
 const HeaderAdmin = ({
   adminUser

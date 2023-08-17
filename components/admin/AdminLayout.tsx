@@ -8,22 +8,14 @@ import HeaderAdmin from './HeaderAdmin';
 import MenuAdmin from './MenuAdmin';
 import { useStoreCustom } from '@/stores';
 import { SnackbarProvider } from 'notistack';
-import { AdminUserType } from '@/lib/server/helperServer';
+import { AdminUserType } from '@/lib/admin/helperServer';
 
 const AdminLayout : React.FC<{
   children: React.ReactNode,
   userData: NonNullable<AdminUserType>
 }> = ({children, userData}) => {
 
-  // const willMount = useRef(true)
-  // const adminUser = useAdminUser()
   const adminMenu = useStoreCustom(useAdminMenu, (state) => state)
-  // const adminMenu = useAdminMenu()
-
-  // if (willMount.current && userData) {
-  //   adminUser.save(userData)
-  //   willMount.current = false
-  // }
 
   return (
     <ClientOnly>
@@ -32,7 +24,7 @@ const AdminLayout : React.FC<{
         horizontal: 'right',
       }}>
         <div className='w-full min-h-screen bg-gray-100'>
-          <MenuAdmin/>
+          <MenuAdmin permissions={userData.role.permissions}/>
           <div 
             className='w-full transition-all'
             style={{paddingLeft: adminMenu?.open ? adminMenu?.width : "60px"}}

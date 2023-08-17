@@ -3,10 +3,10 @@ import { useRouter } from 'next/navigation';
 import React, { FormEvent, useEffect, useState } from 'react'
 import { v4 } from 'uuid';
 import AdminAddField from '../add-form-field/AdminAddField';
-import { SampleColumnImageType, SampleColumnReactionType, SampleColumnSelectType, SampleFieldAndDetailsType } from '@/lib/server/sample';
-import { DATA_FIELDS } from '@/lib/server/fields';
-import { GroupSettingType, SettingType } from '@/app/admin/(admin)/settings/page';
-import { promiseFunction } from '@/lib/server/promise';
+import { SampleColumnImageType, SampleColumnReactionType, SampleColumnSelectType, SampleFieldAndDetailsType } from '@/lib/admin/sample';
+import { DATA_FIELDS } from '@/lib/admin/fields';
+import { CreateEditSettingType, GroupSettingType, SettingType } from '@/app/admin/(admin)/settings/page';
+import { promiseFunction } from '@/lib/admin/promise';
 import { createPortal } from 'react-dom';
 
 const SettingsModalAdd = ({
@@ -15,7 +15,7 @@ const SettingsModalAdd = ({
   group: GroupSettingType,
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  createEditSetting: (data: any) => Promise<void>
+  createEditSetting: ({ groupId, settings }: CreateEditSettingType) => Promise<void>
 }) => {
 
   const router = useRouter()
@@ -34,6 +34,7 @@ const SettingsModalAdd = ({
   const changeHasCloseModal = () => {
     setHasCloseModal(false)
     setOpen(false)
+    setData(mapSettingToData(group.settings))
   }
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -56,6 +57,7 @@ const SettingsModalAdd = ({
   const [data, setData] = useState<({
     id: string, 
     name: string,
+    required: boolean,
   } & SampleFieldAndDetailsType)[]>([])
 
   const mapSettingToData: any = (settings: SettingType[]) => {
@@ -63,7 +65,8 @@ const SettingsModalAdd = ({
       id: v.id,
       name: v.name,
       type: v.type,
-      details: v.details
+      details: v.details,
+      required: v.required
     }))
   }
 
@@ -101,6 +104,7 @@ const SettingsModalAdd = ({
       id: v4(),
       name: "field",
       type: fieldName,
+      required: false,
       details: getDetailsDefault(fieldName) as any
     }])
     handleCloseMenu()
@@ -130,22 +134,36 @@ const SettingsModalAdd = ({
     }))
   }
 
+  const onChangeRequired = (data: boolean, id: string) => {
+    setData(state => state.map(v => {
+      if (v.id == id) {
+        v.required = data
+      }
+
+      return v
+    }))
+  }
+
   // create collection
   const [loading, setLoading] = useState(false)
 
   const handelSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // return 
+    await promiseFunction({
+      loading: loading,
+      setLoading: setLoading,
+      callback: async () => {
 
-    // await promiseFunction({
-    //   loading: loading,
-    //   setLoading: setLoading,
-    //   callback: async () => {
-    //     router.refresh()
-    //     setOpen(false)
-    //   }
-    // })
+        await createEditSetting({
+          groupId: group.id,
+          settings: data
+        })
+
+        router.refresh()
+        setOpen(false)
+      }
+    })
   }
 
   return (
@@ -155,7 +173,7 @@ const SettingsModalAdd = ({
         open={open}
         onClose={onCloseModal}
       >
-        <form id='settingAdd' className='w-[700px] max-w-[100vw] flex flex-col h-full' onSubmit={handelSubmit}>
+        <form className='w-[700px] max-w-[100vw] flex flex-col h-full' onSubmit={handelSubmit}>
           <div className="flex-none bg-gray-100 py-6 px-8">
             <h3 className='text-xl'>Cập nhập nhóm <span className="text-blue-600">{group.name}</span></h3>
           </div>
@@ -168,6 +186,8 @@ const SettingsModalAdd = ({
                 details={v.details}
                 defaultValue={v.name} 
                 onChangeDetails={(data) => onChangeDetailField(data, v.id)}
+                required={v.required}
+                onChangeRequired={(data) => onChangeRequired(data, v.id)}
                 onChange={(e) => onChangeField(e, v.id)} 
                 onDelete={() => onDeleteField(v.id)} 
               />

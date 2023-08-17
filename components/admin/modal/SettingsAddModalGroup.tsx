@@ -6,7 +6,7 @@ import AdminAddField from '../add-form-field/AdminAddField';
 import moment from 'moment';
 import { GroupSetting } from '@prisma/client';
 import AdminFormFieldText from '../form-field/AdminFormFieldText';
-import { promiseFunction } from '@/lib/server/promise';
+import { promiseFunction } from '@/lib/admin/promise';
 import { GroupSettingType } from '@/app/admin/(admin)/settings/page';
 
 const style = {

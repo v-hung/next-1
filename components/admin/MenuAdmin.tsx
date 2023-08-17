@@ -8,8 +8,10 @@ import Link from 'next/link';
 import useAdminMenu from 'stores/admin/adminMenu';
 import { useStoreCustom } from '@/stores';
 import { usePathname } from 'next/navigation';
+import { PermissionsOnRoles } from '@prisma/client';
+import { checkPermissions } from '@/lib/admin/fields';
 
-const MenuAdmin = () => {
+const MenuAdmin = ({permissions}: {permissions: PermissionsOnRoles[]}) => {
   // const adminMenu = useAdminMenu()
   const pathname = usePathname()
   const adminMenu = useStoreCustom(useAdminMenu, (state) => state)
@@ -37,6 +39,7 @@ const MenuAdmin = () => {
         category
       </span>),
       name: "Danh mục",
+      tableName: 'category',
       path: "/admin/categories"
     },
     {
@@ -44,9 +47,10 @@ const MenuAdmin = () => {
         inventory_2
       </span>),
       name: "Sản phẩm",
+      tableName: 'product',
       path: "/admin/products"
     }
-  ]
+  ].filter(v => v.tableName ? checkPermissions(permissions, v.tableName, "browse") : true)
 
   const generalLinks = [
     {
@@ -54,6 +58,7 @@ const MenuAdmin = () => {
         person
       </span>),
       name: "Người dùng",
+      tableName: 'admin',
       path: "/admin/users"
     },
     {
@@ -61,6 +66,7 @@ const MenuAdmin = () => {
         key
       </span>),
       name: "Quyền",
+      tableName: '',
       path: "/admin/roles"
     },
     {
@@ -68,9 +74,10 @@ const MenuAdmin = () => {
         settings
       </span>),
       name: "Cài đặt",
+      tableName: 'setting',
       path: "/admin/settings"
     }
-  ]
+  ].filter(v => v.tableName ? checkPermissions(permissions, v.tableName, "browse") : true)
   
   return (
     <div 

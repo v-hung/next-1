@@ -1,4 +1,4 @@
-import { SampleColumnsType } from "@/lib/server/sample"
+import { SampleColumnsType } from "@/lib/admin/sample"
 
 type TableType = {
   name: string,
@@ -76,6 +76,7 @@ export const TABLES_SAMPLE: TableType[] = [
         tableNameRelation: 'role',
         titleRelation: 'name'
       }},
+      { name: 'password', label: 'Password', type: 'password', show: false, required: true},
     
       { name: 'createdAt', label: 'Ngày tạo', type: 'date', show: true},
       { name: 'updatedAt', label: 'Ngày cập nhập', type: 'date', show: true},
@@ -92,6 +93,20 @@ export const TABLES_SAMPLE: TableType[] = [
     
       { name: 'name', label: 'Tên', type: 'string', show: true, required: true},
       { name: 'permissions', label: 'Quyền', type: 'permissions', show: false, required: true, col: 12},
+    
+      { name: 'createdAt', label: 'Ngày tạo', type: 'date', show: true},
+      { name: 'updatedAt', label: 'Ngày cập nhập', type: 'date', show: true},
+    ]
+  },
+  {
+    name: 'Cài đặt',
+    tableName: 'setting',
+    slug: 'settings',
+    rowsPerPages: [10, 20, 50],
+    columns: [
+      { name: 'id', label: 'ID', type: 'string', show: true},
+    
+      { name: 'name', label: 'Tên', type: 'string', show: true, required: true},
     
       { name: 'createdAt', label: 'Ngày tạo', type: 'date', show: true},
       { name: 'updatedAt', label: 'Ngày cập nhập', type: 'date', show: true},

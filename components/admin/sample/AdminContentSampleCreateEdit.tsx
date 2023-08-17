@@ -8,10 +8,10 @@ import AdminFormFieldSelect from '../form-field/AdminFormFieldSelect'
 import { VariantType, useSnackbar } from 'notistack'
 import moment from 'moment'
 import AdminFormFieldRelation from '../form-field/AdminFormFieldRelation'
-import { AddEditDataSampleState, SampleColumnsType, addEditDataSample } from '@/lib/server/sample'
+import { AddEditDataSampleState, SampleColumnsType, addEditDataSample } from '@/lib/admin/sample'
 import AdminFormFieldPermissions from '../form-field/AdminFormFieldPermissions'
 import AdminFormFieldNumber from '../form-field/AdminFormFieldNumber'
-import { DATA_FIELDS } from '@/lib/server/fields'
+import { DATA_FIELDS } from '@/lib/admin/fields'
 
 export type SampleStateType = {
   data?: any | undefined,

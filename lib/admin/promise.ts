@@ -17,9 +17,11 @@ export const promiseFunction = async ({
     let variant: VariantType = "success"
     enqueueSnackbar('Thành công', { variant })
   } 
-  catch (error) {
+  catch (error: any) {
     let variant: VariantType = "error"
-    enqueueSnackbar((typeof error === "string") ? error : 'Có lỗi xảy ra, vui lòng thử lại sau', { variant })
+    enqueueSnackbar((typeof error?.message === "string") ? (
+      error.message.startsWith("Error: ") ? error.message.substring("Error: ".length) : error.message
+    ) : 'Có lỗi xảy ra, vui lòng thử lại sau', { variant })
   } 
   finally {
     if (typeof setLoading == "function")

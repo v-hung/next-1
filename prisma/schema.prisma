@@ -147,8 +147,8 @@ model Image {
   url           String
   width         Int?
   height        Int?
-  naturalHeight Int
-  naturalWidth  Int
+  naturalHeight Int?
+  naturalWidth  Int?
   size          Float
   tableName     String
 

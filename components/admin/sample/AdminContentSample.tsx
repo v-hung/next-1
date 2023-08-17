@@ -11,7 +11,7 @@ import { useSearchParams } from 'next/navigation';
 import moment from 'moment';
 import FormIOSSwitch from '@/components/FormIOSSwitch';
 import { VariantType, enqueueSnackbar } from 'notistack';
-import { DeleteDataSampleState, SampleColumnsType, deleteDataSample } from '@/lib/server/sample';
+import { DeleteDataSampleState, SampleColumnsType, deleteDataSample } from '@/lib/admin/sample';
 import { useTransition } from "react";
 
 export type SampleStateType = {
@@ -21,9 +21,10 @@ export type SampleStateType = {
   count: number,
   ROWS_PER_PAGES: number[],
   columns: SampleColumnsType[],
+  canDelete: boolean
 }
 const AdminContentSample: React.FC<SampleStateType> = ({ 
-  data, name, table_name, count, ROWS_PER_PAGES, columns 
+  data, name, table_name, count, ROWS_PER_PAGES, columns , canDelete
 }) => {
   const router = useRouter()
   const pathname = usePathname()
@@ -157,7 +158,7 @@ const AdminContentSample: React.FC<SampleStateType> = ({
           {/* <p className="text-sm text-gray-600 mt-1">{count} bản ghi</p> */}
         </div>
 
-        <Button variant="contained" color='error' disabled={checked.length == 0} 
+        <Button variant="contained" color='error' disabled={!canDelete || checked.length == 0} 
           onClick={() => showDeleteModal()}
           startIcon={(
             <span className="material-symbols-outlined">

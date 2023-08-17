@@ -8,19 +8,22 @@ import AdminFormFieldText from '../form-field/AdminFormFieldText';
 import { GroupSetting, Setting } from '@prisma/client';
 import SettingsModalAddGroup from '../modal/SettingsAddModalGroup';
 import SettingsModalAdd from '../modal/SettingsModalAdd';
-import { GroupSettingType } from '@/app/admin/(admin)/settings/page';
-import { DATA_FIELDS } from '@/lib/server/fields';
-import { promiseFunction } from '@/lib/server/promise';
+import { CreateEditSettingType, GroupSettingType } from '@/app/admin/(admin)/settings/page';
+import { DATA_FIELDS } from '@/lib/admin/fields';
+import { promiseFunction } from '@/lib/admin/promise';
 import { useRouter } from 'next/navigation';
 
 type State = {
   groupSettings: GroupSettingType[],
   createEditGroup: (data: {id?: string,name: string}) => Promise<GroupSetting>
   deleteGroup: (data: {id: string}) => Promise<void>
-  createEditSetting: (data: {groupId: string}) => Promise<void>
+  createEditSetting: (data: CreateEditSettingType) => Promise<void>
+  saveSetting: (data: any) => Promise<void>
 }
 
-const SettingContentAdmin: React.FC<State> = ({groupSettings, createEditGroup, deleteGroup, createEditSetting}) => {
+const SettingContentAdmin: React.FC<State> = ({
+  groupSettings, createEditGroup, deleteGroup, createEditSetting, saveSetting
+}) => {
   const [groupActive, setGroupActive] = React.useState(groupSettings.length > 0 ? groupSettings[0] : undefined);
 
   const settings = groupActive != undefined ? groupActive.settings : []
@@ -45,6 +48,25 @@ const SettingContentAdmin: React.FC<State> = ({groupSettings, createEditGroup, d
     setOpenDeleteModalGroup(true)
   }
 
+  // save settings
+  const [loading, setLoading] = useState(false)
+  const handelSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    await promiseFunction({
+      loading: loading,
+      setLoading: setLoading,
+      callback: async () => {
+
+        const formData = Array.from(
+          new FormData(e.target as HTMLFormElement),
+        )
+
+        await saveSetting(formData)
+      }
+    })
+  }
+
   return (
     <>
       <div className="-my-4 flex flex-col" style={{minHeight: 'calc(100vh - 64px)'}}>
@@ -59,7 +81,7 @@ const SettingContentAdmin: React.FC<State> = ({groupSettings, createEditGroup, d
                   onClick={() => setGroupActive(v)}
                 >{v.name}</div>
               )}
-              <Button variant='contained' size='small' startIcon={<span className="icon">add</span>}
+              <Button variant='contained' size='small' color='secondary' startIcon={<span className="icon">add</span>}
                 onClick={() => handelOpenAddModalGroup()}
               >
                 Nhóm mới
@@ -82,27 +104,35 @@ const SettingContentAdmin: React.FC<State> = ({groupSettings, createEditGroup, d
             </>
             : null
           }
-          <Button variant='contained' startIcon={<span className="icon">add</span>}
+          <Button variant='contained' color='info' startIcon={<span className="icon">add</span>}
             onClick={() => handelOpenAddModal()}
           >
             Cập nhập cài đặt
           </Button>
         </div>
         <div className="flex-grow min-h-0 -mx-8 p-8">
-          <div className="grid grid-cols-12 bg-white rounded-lg p-8 gap-6">
-            { settings.length > 0 ? settings.map(v => {
-                const Component = DATA_FIELDS[v.type] ? DATA_FIELDS[v.type].Component : null
-                return Component ? <div key={v.id} style={{gridColumn: 'span 6 / span 6'}}>
-                  <Component
-                    label={v.name} name={v.name}
-                    required={v.required} defaultValue={v.value}
-                    details={{...v.details, tablesName: 'setting'}}
-                  />
-                </div> : null
-              })
+          <form className="grid grid-cols-12 bg-white rounded-lg p-8 gap-6" onSubmit={handelSubmit}>
+            { settings.length > 0 
+              ? <>
+                { settings.map(v => {
+                  const Component = DATA_FIELDS[v.type] ? DATA_FIELDS[v.type].Component : null
+                  return Component ? <div key={v.id} style={{gridColumn: 'span 6 / span 6'}}>
+                    <Component
+                      label={v.name} name={v.name}
+                      required={v.required} defaultValue={v.value}
+                      details={{...v.details, tableName: 'setting'}}
+                    />
+                  </div> : null
+                })}
+                <div className="col-span-12">
+                  <Button type='submit' className='float-right' variant='contained' startIcon={<span className="icon">save</span>}>
+                    Lưu cài đặt
+                  </Button>
+                </div>
+              </>
               : <p className='col-span-12'>Không có cài đặt nào</p>
             }
-          </div>
+          </form>
         </div>
       </div>
       { groupActive != undefined
