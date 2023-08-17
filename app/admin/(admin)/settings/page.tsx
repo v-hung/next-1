@@ -1,8 +1,11 @@
 import SettingContentAdmin from '@/components/admin/content/SettingContentAdmin'
+import { useCurrentUserAdmin } from '@/lib/admin/helperServer'
 import db from '@/lib/admin/prismadb'
 import { SampleColumnsType, SampleFieldAndDetailsType, getValueSettings } from '@/lib/admin/sample'
 import { Setting, GroupSetting } from '@prisma/client'
 import React from 'react'
+import { TABLES_SAMPLE } from '../(sample)/[slug]/table'
+import { checkPermissions } from '@/lib/admin/fields'
 
 export type GroupSettingType = Omit<GroupSetting, 'settings'> & {
   settings: SettingType[]
@@ -125,6 +128,11 @@ const saveSetting = async(data : Array<[string, string]>) => {
 }
 
 async function page() {
+  const admin = await useCurrentUserAdmin()
+
+  if (!checkPermissions(admin?.role.permissions || [], "setting", "browse")) {
+    return <div>Bạn không có quyền truy cập trang này</div>
+  }
 
   const groupSettings = await getData()
 

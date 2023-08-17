@@ -66,7 +66,7 @@ const MenuAdmin = ({permissions}: {permissions: PermissionsOnRoles[]}) => {
         key
       </span>),
       name: "Quyền",
-      tableName: '',
+      tableName: 'role',
       path: "/admin/roles"
     },
     {

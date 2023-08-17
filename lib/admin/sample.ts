@@ -109,15 +109,6 @@ export const getItemDataSample = async ({
   table, columns
 }: GetItemDataSampleState & { table: string }) => {
 
-  // const include = columns.reduce((pre, cur) => {
-  //   if (cur.type == "image" || cur.type == "relation" || cur.type == "permissions") {
-  //     return {...pre, [cur.name]: true}
-  //   }
-  //   else {
-  //     return pre
-  //   }
-  // }, {})
-
   const data = await (db as any)[table].findUnique({
     where: {
       id: columns.find(v => v.name == "id")?.type == "int" ? (+id || 0) : id,
@@ -227,20 +218,32 @@ export const addEditDataSample = async ({
               }
             }
             else {
+
+              await db.$transaction(JSON.parse(data[pre.name]).map((v: any) => db.permission.upsert({
+                where: {
+                  key_tableName: {
+                    key: v.key,
+                    tableName: v.tableName
+                  }
+                },
+                create: {
+                  key: v.key,
+                  tableName: v.tableName
+                },
+                update: {}
+              })))
+
+              await db.permissionsOnRoles.deleteMany({
+                where: {
+                  roleId: data.id
+                }
+              })
+
               tempCreate = {
-                connectOrCreate: JSON.parse(data[pre.name]).map((v: any) =>
+                create: JSON.parse(data[pre.name]).map((v: any) =>
                   ({
-                    where: {
-                      roleId_permissionKey_permissionTableName: {
-                        permissionKey: v.key,
-                        permissionTableName: v.tableName,
-                        roleId: data.id
-                      }
-                    },
-                    create: {
-                      permissionKey: v.key,
-                      permissionTableName: v.tableName
-                    }
+                    permissionKey: v.key,
+                    permissionTableName: v.tableName
                   })
                 )
               }
