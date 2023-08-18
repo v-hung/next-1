@@ -104,7 +104,7 @@ const AdminContentSampleCreateEdit: React.FC<SampleStateType> = ({
                   <Component
                     label={column.name} name={column.name}
                     required={column.required} defaultValue={data ? data[column.name] : undefined}
-                    details={{...column.details, tablesName: tablesName}}
+                    details={{...column.details, tableName: tableName}}
                   />
                 </div> : null
               })}

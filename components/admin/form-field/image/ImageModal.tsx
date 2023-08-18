@@ -27,7 +27,7 @@ const AdminImageModal: React.FC<ModalType> = ({
   const [loading, setLoading] = useState(false)
   const [images, setImages] = useState<Image[]>([])
   const [folders, setFolders] = useState<FolderImage[]>([])
-  const [folderParentId, setFolderParentId] = useState<string | undefined>()
+  const [folderParentId, setFolderParentId] = useState<string | undefined>(data.length > 0 ? (data[0].folderImageId || undefined) : undefined)
   const [folderParents, setFolderParents] = useState<FolderImage[]>([])
 
   const [selects, setSelects] = useState<Image[]>(data)
@@ -281,7 +281,7 @@ const AdminImageModal: React.FC<ModalType> = ({
                       <div className="mt-6 px-6">
                         <p className="font-semibold text-base mb-2">Ảnh ({images.length})</p>
                         { images.length > 0
-                          ? <div className="grid gap-4 overflow-y-auto max-h-[60vh]" style={{gridTemplateColumns: 'repeat(auto-fill, minmax(13rem, 1fr))'}}>
+                          ? <div className="grid gap-4" style={{gridTemplateColumns: 'repeat(auto-fill, minmax(13rem, 1fr))'}}>
                             { images.map((v,i) =>
                               <div className="rounded border overflow-hidden" key={v.id}>
                                 <div className="relative w-full h-24 bg-make-transparent group">
@@ -297,11 +297,11 @@ const AdminImageModal: React.FC<ModalType> = ({
                                   </span>
                                 </div>
                                 <div className="p-4 py-2 flex justify-between items-start border-t">
-                                  <div className="text-xs">
-                                    <p className="font-semibold">{v.name}</p>
+                                  <div className="flex-grow min-w-0 text-xs">
+                                    <p className="font-semibold break-words">{v.name}</p>
                                     <p className="uppercase">{v.type}</p>
                                   </div>
-                                  <div className="text-[10px] p-1 py-0.5 font-semibold rounded bg-gray-100">IMAGE</div>
+                                  <div className="flex-none text-[10px] p-1 py-0.5 font-semibold rounded bg-gray-100">IMAGE</div>
                                 </div>
                               </div>
                             )}
@@ -338,11 +338,11 @@ const AdminImageModal: React.FC<ModalType> = ({
                           </span>
                         </div>
                         <div className="p-4 py-2 flex justify-between items-start border-t">
-                          <div className="text-xs">
-                            <p className="font-semibold">{v.name}</p>
+                          <div className="flex-grow min-w-0 text-xs">
+                            <p className="font-semibold break-words">{v.name}</p>
                             <p className="uppercase">{v.type}</p>
                           </div>
-                          <div className="text-[10px] p-1 py-0.5 font-semibold rounded bg-gray-100">IMAGE</div>
+                          <div className="flex-none text-[10px] p-1 py-0.5 font-semibold rounded bg-gray-100">IMAGE</div>
                         </div>
                       </div>
                     )}

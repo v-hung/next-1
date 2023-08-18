@@ -18,12 +18,16 @@ export async function generateMetadata(
   const siteLogo = findSettingByName(settings, "site logo")
  
   return {
+    metadataBase: new URL(process.env.NEXTAUTH_URL || "http://localhost:3000"),
     title: siteTitle || "Việt Hùng It",
     description: siteDescription || 'Việt Hùng It lập trình viên web, mobile, hệ thống',
     openGraph: {
       title: siteTitle || "Việt Hùng It",
       description: siteDescription || 'Việt Hùng It lập trình viên web, mobile, hệ thống',
+      url: new URL(process.env.NEXTAUTH_URL || "http://localhost:3000"),
+      siteName: siteTitle || "Việt Hùng It",
       images: siteLogo ? siteLogo?.url : null,
+      type: 'website',
     },
   }
 }

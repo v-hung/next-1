@@ -5,7 +5,7 @@ import AdminImageModal from './image/ImageModal';
 import ImageSlide from './image/ImageSlide';
 
 type AdminFormFieldImageType = {
-  label: string,
+  label?: string,
   name: string
   required?: boolean,
   defaultValue?: Image[] | Image | null,
@@ -30,7 +30,7 @@ const AdminFormFieldImage: React.FC<AdminFormFieldImageType> = ({
   details: {
     multiple = false,
     tableName,
-    onlyTable,
+    onlyTable = true,
     myself,
   }
 }) => {

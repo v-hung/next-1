@@ -44,7 +44,7 @@ export type SampleColumnImageType = {
 export type SampleColumnReactionType = {
   type: 'relation',
   details: {
-    type: 'one-to-one' | 'one-to-many' | 'many-to-one' | 'many-to-many',
+    typeRelation: 'one-to-one' | 'one-to-many' | 'many-to-one' | 'many-to-many',
     tableNameRelation: string,
     titleRelation: string
   }
@@ -181,7 +181,7 @@ export const addEditDataSample = async ({
         else if (pre.type == "relation") {
           if (data[pre.name]) {
             let tempConnect = { id: data[pre.name] }
-            if (pre.details.type == 'one-to-many' || pre.details.type == 'many-to-many') {
+            if (pre.details.typeRelation == 'one-to-many' || pre.details.typeRelation == 'many-to-many') {
               tempConnect = JSON.parse(data[pre.name]).map((v: string) => ({
                 id: v
               }))

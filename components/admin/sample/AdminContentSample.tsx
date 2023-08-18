@@ -212,7 +212,7 @@ const AdminContentSample: React.FC<SampleStateType> = ({
 
       <section className='mt-8'>
         <Paper sx={{ width: '100%' }} className='rounded overflow-hidden'>
-          <TableContainer sx={{ maxHeight: 440 }}>
+          <TableContainer sx={{ maxHeight: 'calc(100vh - 222px)' }}>
             <Table stickyHeader aria-label="custom pagination table">
               <TableHead>
                 <TableRow>

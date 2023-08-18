@@ -19,6 +19,7 @@ type State = {
   onChange?: (data: any) => void
   className?: string,
   details: {
+    typeRelation: 'one-to-one' | 'one-to-many' | 'many-to-one' | 'many-to-many',
     titleRelation: string,
     tableNameRelation: string
   }
@@ -31,6 +32,7 @@ const AdminFormFieldRelation: React.FC<State> = ({
   className,
   defaultValue,
   details: {
+    typeRelation,
     titleRelation,
     tableNameRelation
   }
@@ -73,6 +75,7 @@ const AdminFormFieldRelation: React.FC<State> = ({
       <p className="text-sm font-semibold mb-1 capitalize">{label} { required && <span className="text-red-500">*</span> }</p>
       <input type="hidden" name={name} value={value} />
       <Autocomplete
+        multiple={["one-to-many", "many-to-many"].includes(typeRelation)}
         open={open}
         onOpen={() => {
           setOpen(true)

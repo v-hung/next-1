@@ -142,11 +142,11 @@ const AdminImageAdd: React.FC<AddModalType> = ({show, setShow, setData, tableNam
                           </span>
                         </div>
                         <div className="p-4 py-2 flex justify-between items-start border-t">
-                          <div className="text-xs">
-                            <p className="font-semibold">{v.name}</p>
+                          <div className="flex-col min-w-0 text-xs">
+                            <p className="font-semibold break-words">{v.name}</p>
                             <p className="uppercase">{v.type}</p>
                           </div>
-                          <div className="text-[10px] p-1 py-0.5 font-semibold rounded bg-gray-100">IMAGE</div>
+                          <div className="flex-none text-[10px] p-1 py-0.5 font-semibold rounded bg-gray-100">IMAGE</div>
                         </div>
                       </div>
                     )}

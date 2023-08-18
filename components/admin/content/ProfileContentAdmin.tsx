@@ -111,7 +111,7 @@ const ProfileContentAdmin: React.FC<State> = ({defaultValue, updateProfile}) => 
                   </span>
                 }
               </div>
-              <AdminFormFieldImage tableName="admin" onlyTable={true} defaultValue={defaultValue.image} onChange={(v) => setImageId(v)} myself={true} name='name' className='w-96' />
+              <AdminFormFieldImage details={{tableName:"admin", onlyTable:true, myself: true}} defaultValue={defaultValue.image} onChange={(v) => setImageId(v)} name='name' className='w-96' />
             </div>
             <div className='border-b pb-6 pr-8'>
               <div className="font-semibold">Mật khẩu</div>
