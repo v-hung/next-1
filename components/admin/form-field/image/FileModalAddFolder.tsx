@@ -2,22 +2,23 @@
 import {FormEvent, useEffect, useRef, useState} from 'react'
 import { useClickOutside } from '@/lib/clickOutside';
 import { Button, Zoom } from '@mui/material';
-import { FolderImage } from '@prisma/client';
+import { FolderFile } from '@prisma/client';
 import AdminFormFieldText from '../AdminFormFieldText';
 import moment from 'moment';
-import { createEditFolder } from '@/lib/admin/imageFormField';
+import { createEditFolder } from '@/lib/admin/filesUpload';
 import { VariantType, enqueueSnackbar } from 'notistack';
+import { promiseFunction } from '@/lib/admin/promise';
 
 type AddModalType = {
   show: boolean,
   setShow: (data: boolean) => void,
-  data: FolderImage | null
-  setData: (data: FolderImage) => void,
+  data: FolderFile | null
+  setData: (data: FolderFile) => void,
   parentId?: string,
   tableName: string
 }
 
-const AdminImageModalAddFolder: React.FC<AddModalType> = ({show, setShow, data, setData, tableName, parentId}) => {
+const AdminFileModalAddFolder: React.FC<AddModalType> = ({show, setShow, data, setData, tableName, parentId}) => {
   const rechargeRef = useRef<HTMLDivElement>(null)
 
   useClickOutside(rechargeRef, () => {
@@ -33,27 +34,22 @@ const AdminImageModalAddFolder: React.FC<AddModalType> = ({show, setShow, data, 
 
   const handelSubmit = async (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault()
-    try {
-      setLoading(true)
 
-      const { folder } = await createEditFolder({
-        folderId: data?.id,
-        name: name,
-        tableName: tableName,
-        parentId: data ? data.parentId : parentId
-      })
-
-      setShow(false)
-      setData(folder)
-      
-      let variant: VariantType = "success"
-      enqueueSnackbar('Thành công', { variant })
-    } catch (error) {
-      let variant: VariantType = "error"
-      enqueueSnackbar((typeof error === "string") ? error : 'Có lỗi xảy ra, vui lòng thử lại sau', { variant })
-    } finally {
-      setLoading(false)
-    }
+    await promiseFunction({
+      loading,
+      setLoading,
+      callback: async () => {
+        const { folder } = await createEditFolder({
+          folderId: data?.id,
+          name: name,
+          tableName: tableName,
+          parentId: data ? data.parentId : parentId
+        })
+  
+        setShow(false)
+        setData(folder)
+      }
+    })
   }
 
   return (
@@ -114,4 +110,4 @@ const AdminImageModalAddFolder: React.FC<AddModalType> = ({show, setShow, data, 
   )
 }
 
-export default AdminImageModalAddFolder
+export default AdminFileModalAddFolder

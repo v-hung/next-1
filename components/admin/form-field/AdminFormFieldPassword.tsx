@@ -2,8 +2,8 @@
 import React from 'react'
 
 type State = {
-  label: string,
-  name: string
+  label?: string,
+  name?: string
   required?: boolean,
   defaultValue?: string,
   value?: string,
@@ -27,7 +27,10 @@ const AdminFormFieldPassword: React.FC<State> = ({
 
   return (
     <div className={className}>
-      <p className="text-sm font-semibold mb-1 capitalize">{label} { required && <span className="text-red-500">*</span> }</p>
+      { label
+        ? <p className="text-sm font-medium mb-1 capitalize">{label} { required && <span className="text-red-500">*</span> }</p>
+        : null
+      }
       <div className="border rounded focus-within:ring-2 ring-blue-600 bg-white">
         <input type='password' name={name} value={value} onChange={(e) => changeEvent(e)} className="w-full px-4 py-2" required={required} />
       </div>

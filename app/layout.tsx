@@ -4,6 +4,8 @@ import React, { Suspense } from 'react';
 import MuiProvider from '@/components/MuiProvider';
 import { AfterNavigationEvents, NavigationEvents } from '@/components/ProgressBar';
 
+
+// million-ignore
 export default function RootLayout({
   children,
 }: {

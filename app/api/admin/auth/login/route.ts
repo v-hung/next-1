@@ -40,7 +40,7 @@ export async function POST(request: Request) {
 
     const response = NextResponse.next()
 
-    const token = await signToken(user, remember ? "60d" : "1d")
+    const token = await signToken(user.id.toString(), remember ? "60d" : "1d")
 
     return NextResponse.json({ user, token }, {
       headers: {

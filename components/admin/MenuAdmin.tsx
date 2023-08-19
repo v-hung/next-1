@@ -10,8 +10,15 @@ import { useStoreCustom } from '@/stores';
 import { usePathname } from 'next/navigation';
 import { PermissionsOnRoles } from '@prisma/client';
 import { checkPermissions } from '@/lib/admin/fields';
+import { LinkState } from './AdminLayout';
 
-const MenuAdmin = ({permissions}: {permissions: PermissionsOnRoles[]}) => {
+const MenuAdmin = ({
+  permissions, managerLinks, generalLinks
+}: {
+  permissions: PermissionsOnRoles[]
+  managerLinks: LinkState[],
+  generalLinks: LinkState[]
+}) => {
   // const adminMenu = useAdminMenu()
   const pathname = usePathname()
   const adminMenu = useStoreCustom(useAdminMenu, (state) => state)
@@ -26,58 +33,9 @@ const MenuAdmin = ({permissions}: {permissions: PermissionsOnRoles[]}) => {
     setIsHover(false);
   }
 
-  const managerLinks = [
-    {
-      icon: (<span className="material-symbols-outlined icon-500">
-        dashboard
-      </span>),
-      name: "Bảng điều khiển",
-      path: "/admin"
-    },
-    {
-      icon: (<span className="material-symbols-outlined icon-500">
-        category
-      </span>),
-      name: "Danh mục",
-      tableName: 'category',
-      path: "/admin/categories"
-    },
-    {
-      icon: (<span className="material-symbols-outlined icon-500">
-        inventory_2
-      </span>),
-      name: "Sản phẩm",
-      tableName: 'product',
-      path: "/admin/products"
-    }
-  ].filter(v => v.tableName ? checkPermissions(permissions, v.tableName, "browse") : true)
+  const managerLinksPermission = managerLinks.filter(v => v.tableName ? checkPermissions(permissions, v.tableName, "browse") : true)
 
-  const generalLinks = [
-    {
-      icon: (<span className="material-symbols-outlined icon-500">
-        person
-      </span>),
-      name: "Người dùng",
-      tableName: 'admin',
-      path: "/admin/users"
-    },
-    {
-      icon: (<span className="material-symbols-outlined icon-500">
-        key
-      </span>),
-      name: "Quyền",
-      tableName: 'role',
-      path: "/admin/roles"
-    },
-    {
-      icon: (<span className="material-symbols-outlined icon-500">
-        settings
-      </span>),
-      name: "Cài đặt",
-      tableName: 'setting',
-      path: "/admin/settings"
-    }
-  ].filter(v => v.tableName ? checkPermissions(permissions, v.tableName, "browse") : true)
+  const generalLinksPermission = generalLinks.filter(v => v.tableName ? checkPermissions(permissions, v.tableName, "browse") : true)
   
   return (
     <div 
@@ -108,7 +66,7 @@ const MenuAdmin = ({permissions}: {permissions: PermissionsOnRoles[]}) => {
               : <div className="w-full h-[1px] bg-gray-300"></div>
             }
           </div>
-          {managerLinks.map((v,i) => {
+          {managerLinksPermission.map((v,i) => {
             return (
               <Link
                 className={`flex-none w-full flex items-center py-3 overflow-x-hidden hover:bg-blue-200 rounded text-gray-800
@@ -118,7 +76,9 @@ const MenuAdmin = ({permissions}: {permissions: PermissionsOnRoles[]}) => {
                 key={i}
               >
                 <div className='flex-none px-1 grid place-items-center' style={{width: "44px"}}>
-                  {v.icon}
+                  <span className="material-symbols-outlined icon-500">
+                    {v.icon}
+                  </span>
                 </div>
                 <span className="flex-none">{v.name}</span>
               </Link>
@@ -140,7 +100,9 @@ const MenuAdmin = ({permissions}: {permissions: PermissionsOnRoles[]}) => {
                 key={i}
               >
                 <div className='flex-none px-1 grid place-items-center' style={{width: "44px"}}>
-                  {v.icon}
+                  <span className="material-symbols-outlined icon-500">
+                    {v.icon}
+                  </span>
                 </div>
                 <span className="flex-none">{v.name}</span>
               </Link>

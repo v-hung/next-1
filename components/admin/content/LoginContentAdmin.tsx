@@ -2,6 +2,8 @@
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import React, { FormEvent, useState } from 'react'
+import { promiseFunction } from '@/lib/admin/promise'
+import { loginUserAdmin } from '@/lib/admin/helperServer'
 
 const LoginContentAdmin = () => {
   const router = useRouter();
@@ -11,45 +13,23 @@ const LoginContentAdmin = () => {
 
   const login = async (e: FormEvent) => {
     e.preventDefault()
-    if (loading) return
 
-    try {
-      setLoading(true)
-      
-      const { email, password, remember } = Object.fromEntries(
-        new FormData(e.target as HTMLFormElement),
-      );
-      
-      const res = await fetch('/api/admin/auth/login', {
-        method: 'post',
-        body: JSON.stringify({
-          email,
-          password,
-          remember
-        }),
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8'
-        }
-      })
-      
-      if (!res.ok) {
-        throw await res.text()
+    await promiseFunction({
+      loading,
+      setLoading,
+      callback: async () => {
+
+        const { email, password, remember }: any = Object.fromEntries(
+          new FormData(e.target as HTMLFormElement),
+        )
+        
+        const { user } = await loginUserAdmin({
+          email, password, remember
+        })
+
+        router.refresh()
       }
-
-      const body = await res.json()
-
-      setError("")
-
-      // router.push('/admin')
-      router.replace('/admin')
-      // router.refresh()
-    } 
-    catch (error) {
-      setError(error as any)
-      console.log({error}) 
-    } finally {
-      setLoading(false)
-    }
+    })
   }
 
   return (

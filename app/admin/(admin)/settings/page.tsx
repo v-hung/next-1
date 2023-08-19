@@ -123,7 +123,7 @@ const saveSetting = async(data : Array<[string, string]>) => {
   } 
   catch (error) {
     console.log({error})
-    throw (typeof error === "string" && error) ? error : 'Có lỗi xảy ra, vui lòng thử lại sau'
+    throw (typeof error === "string" && error != "") ? error : 'Có lỗi xảy ra, vui lòng thử lại sau'
   } 
 }
 

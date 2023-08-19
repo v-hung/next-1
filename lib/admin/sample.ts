@@ -16,7 +16,7 @@ export type SampleColumnsType = {
 export type SampleFieldAndDetailsType = (
   SampleColumnSelectType | 
   SampleColumnReactionType |
-  SampleColumnImageType |
+  SampleColumnFileType |
   // SampleColumnPermissionsType |
   {
     type: 'string' | 'date' | 'publish' | 'int' | 'bool' | 'text' | 'permissions' | 'password',
@@ -32,12 +32,15 @@ export type SampleColumnSelectType = {
   }
 }
 
-export type SampleColumnImageType = {
-  type: 'image',
+export type FileTypeState = ('all' | 'image' | 'audio' | 'video')[]
+
+export type SampleColumnFileType = {
+  type: 'file',
   details: {
     multiple?: boolean,
     onlyTable?: boolean,
-    myself?: boolean
+    myself?: boolean,
+    fileTypes?: FileTypeState
   }
 }
 
@@ -165,7 +168,7 @@ export const addEditDataSample = async ({
         else if (pre.type == "password") {
           return { [pre.name]: await bcrypt.hash("password", 10) }
         }
-        else if (pre.type == "image") {
+        else if (pre.type == "file") {
           if (data[pre.name]) {
             let tempConnect = { id: data[pre.name] }
             if (pre.details.multiple) {
@@ -279,7 +282,7 @@ export const addEditDataSample = async ({
   }
   catch (error) {
     console.log({error})
-    throw (typeof error === "string" && error) ? error : 'Có lỗi xảy ra vui lòng thử lại sau'
+    throw (typeof error === "string" && error != "") ? error : 'Có lỗi xảy ra vui lòng thử lại sau'
   }
 }
 
@@ -297,15 +300,15 @@ export const getListDataOfRelation = async ({
   }
   catch (error) {
     console.log(error)
-    throw (typeof error === "string" && error) ? error : 'Có lỗi xảy ra vui lòng thử lại sau'
+    throw (typeof error === "string" && error != "") ? error : 'Có lỗi xảy ra vui lòng thử lại sau'
   }
 }
 
 export const getValueSettings = async (settings: Setting[]) => {
   return Promise.all(settings.map(async (v2) => {
 
-    if (v2.type == "image" && v2.value) {
-      v2.value = await db.image.findUnique({
+    if (v2.type == "file" && v2.value) {
+      v2.value = await db.file.findUnique({
         where: {
           id: v2.value
         }

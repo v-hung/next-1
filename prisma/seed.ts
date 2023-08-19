@@ -92,9 +92,10 @@ import bcrypt from 'bcrypt'
         { name: "Site", canDelete: false, settings: [
           { name: 'site title', type: 'string', required: false, canDelete: false },
           { name: 'site description', type: 'string', required: false, canDelete: false },
-          { name: 'site logo', type: 'image', required: false, details: `{
+          { name: 'site logo', type: 'file', required: false, details: `{
             multiple: false,
-            onlyTable: true
+            onlyTable: true,
+            typeFiles: ['image']
           }`, canDelete: false },
         ] },
         { name: "Admin", canDelete: false, settings: [

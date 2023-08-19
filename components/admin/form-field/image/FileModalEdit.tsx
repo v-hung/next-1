@@ -1,18 +1,19 @@
 "use client"
 import {useEffect, useRef, useState} from 'react'
 import { useClickOutside } from '@/lib/clickOutside';
-import { Image } from '@prisma/client';
+import { File } from '@prisma/client';
 import { Button, Tooltip, Zoom } from '@mui/material';
 import { formatBytes, formatDate } from '@/lib/utils/helper';
+import { promiseFunction } from '@/lib/admin/promise';
 
 type EditModalType = {
   show: boolean,
   setShow: (data: boolean) => void,
-  data: Image | null,
+  data: File | null,
   setData: (data: any) => void,
 }
 
-const AdminImageEdit: React.FC<EditModalType> = ({show, setShow, data, setData}) => {
+const AdminFileEdit: React.FC<EditModalType> = ({show, setShow, data, setData}) => {
   const rechargeRef = useRef<HTMLDivElement>(null)
 
   useClickOutside(rechargeRef, () => {
@@ -23,19 +24,13 @@ const AdminImageEdit: React.FC<EditModalType> = ({show, setShow, data, setData})
   const [deletePopup, setDeletePopup] = useState(false)
 
   const save = async () => {
-    try {
-      setLoading(true)
-
-      var formData: any = new FormData()
-
-      
-
-      setShow(false)
-    } catch (e) {
-
-    } finally {
-      setLoading(false)
-    }
+    await promiseFunction({
+      loading,
+      setLoading,
+      callback: async () => {
+        
+      }
+    })
   }
 
   const download = () => {
@@ -53,7 +48,7 @@ const AdminImageEdit: React.FC<EditModalType> = ({show, setShow, data, setData})
     navigator.clipboard.writeText(data.url);
   }
 
-  const deleteImage = () => {
+  const deleteFile = () => {
 
   }
 
@@ -122,7 +117,7 @@ const AdminImageEdit: React.FC<EditModalType> = ({show, setShow, data, setData})
                   </div>
                   <div>
                     <p className="uppercase font-semibold">Phần MỞ RỘNG</p>
-                    <p className='mt-1'>{data?.type.split("/")[1] || "Trống"}</p>
+                    <p className='mt-1'>{data?.mime.split("/")[0] || "Trống"}</p>
                   </div>
                   <div>
                     <p className="uppercase font-semibold">ID ảnh</p>
@@ -161,7 +156,7 @@ const AdminImageEdit: React.FC<EditModalType> = ({show, setShow, data, setData})
                     </p>
                     <div className="p-4 bg-gray-200 flex space-x-4 justify-end">
                       <Button color='inherit' size='small' variant='text' onClick={() => setDeletePopup(false)}>Hủy bỏ</Button>
-                      <Button variant="contained" size='small' color='error' onClick={deleteImage}>
+                      <Button variant="contained" size='small' color='error' onClick={deleteFile}>
                         Xóa
                       </Button>
                     </div>
@@ -194,4 +189,4 @@ const AdminImageEdit: React.FC<EditModalType> = ({show, setShow, data, setData})
   )
 }
 
-export default AdminImageEdit
+export default AdminFileEdit

@@ -32,6 +32,7 @@ export async function generateMetadata(
   }
 }
 
+// million-ignore
 export default async function WebRootLayout({
   children,
   params

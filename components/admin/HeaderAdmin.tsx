@@ -7,11 +7,21 @@ import Collapse from '../Collapse';
 import { useStoreCustom } from '@/stores';
 import { Avatar, Divider, Menu, MenuItem } from '@mui/material';
 import { AdminUserType, logoutUserAdmin } from '@/lib/admin/helperServer';
+import { LinkState } from './AdminLayout';
+import { usePathname } from 'next/navigation';
 
 const HeaderAdmin = ({
-  adminUser
-}:{ adminUser: NonNullable<AdminUserType>} ) => {
+  adminUser, managerLinks, generalLinks
+}:{ 
+  adminUser: NonNullable<AdminUserType>,
+  managerLinks: LinkState[],
+  generalLinks: LinkState[]
+} ) => {
   const adminMenu = useStoreCustom(useAdminMenu, (state) => state)
+
+  const pathname = usePathname()
+
+  const linkCurrent = [...managerLinks, ...generalLinks].find(v => v.path == pathname)
 
   return (
     <div className='sticky top-0 w-full h-16 bg-white border-b z-50'>
@@ -25,7 +35,7 @@ const HeaderAdmin = ({
           </span>
         </button>
 
-        <span className='rounded-full bg-gray-100 px-4 py-2'>Bảng điều khiển</span>
+        <span className='rounded-full bg-gray-100 px-4 py-2'>{linkCurrent?.name || 'Bảng điều khiển'}</span>
 
         <div className="!ml-auto"></div>
         <Notification user={adminUser} />

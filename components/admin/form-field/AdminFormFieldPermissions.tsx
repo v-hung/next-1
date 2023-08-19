@@ -3,8 +3,8 @@ import { PermissionsOnRoles } from '@prisma/client'
 import React, { useEffect, useState, useRef, forwardRef, useImperativeHandle } from 'react'
 
 type State = {
-  label: string,
-  name: string
+  label?: string,
+  name?: string
   required?: boolean,
   defaultValue?: PermissionsOnRoles[],
   value?: string,
@@ -18,6 +18,7 @@ type State = {
 const AdminFormFieldPermissions: React.FC<State> = ({
   label,
   name,
+  required,
   className,
   defaultValue,
   details: {
@@ -42,7 +43,10 @@ const AdminFormFieldPermissions: React.FC<State> = ({
 
   return (
     <div className={className}>
-      <p className="text-sm font-semibold mb-1 capitalize">{label}</p>
+      { label
+        ? <p className="text-sm font-medium mb-1 capitalize">{label} { required && <span className="text-red-500">*</span> }</p>
+        : null
+      }
       <input type="hidden" name={name} value={JSON.stringify(value)} />
       <div className="flex space-x-2 text-sm">
         <button className='text-blue-500' onClick={(e) => setChecked(e, true)}>Chọn tất cả</button>

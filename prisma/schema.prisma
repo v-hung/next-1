@@ -68,11 +68,11 @@ model Admin {
   name     String
 
   imageId String?
-  image   Image?  @relation("avatar", fields: [imageId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  image   File?   @relation("avatar", fields: [imageId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  images Image[] @relation("images")
+  files File[] @relation("files")
 
-  folders FolderImage[] @relation("folders")
+  folders FolderFile[] @relation("folders")
 
   roleId String
   role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -95,7 +95,7 @@ model Role {
 }
 
 model Permission {
-  key       String // 'browse' | 'create' | 'edit' | 'delete' | 'image' 
+  key       String // 'browse' | 'create' | 'edit' | 'delete' | 'file' 
   tableName String
 
   roles PermissionsOnRoles[]
@@ -121,7 +121,7 @@ model PermissionsOnRoles {
   @@id([roleId, permissionKey, permissionTableName])
 }
 
-model FolderImage {
+model FolderFile {
   id        String @id @default(cuid())
   name      String
   tableName String
@@ -130,19 +130,19 @@ model FolderImage {
   admin   Admin  @relation("folders", fields: [adminId], references: [id])
 
   parentId String?
-  parent   FolderImage?  @relation("children", fields: [parentId], references: [id])
-  children FolderImage[] @relation("children")
+  parent   FolderFile?  @relation("children", fields: [parentId], references: [id])
+  children FolderFile[] @relation("children")
 
-  images Image[]
+  files File[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Image {
+model File {
   id            String  @id @default(cuid())
   name          String
-  type          String
+  mime          String
   caption       String?
   url           String
   width         Int?
@@ -153,23 +153,25 @@ model Image {
   tableName     String
 
   adminId String
-  admin   Admin  @relation("images", fields: [adminId], references: [id])
+  admin   Admin  @relation("files", fields: [adminId], references: [id])
 
-  folderImageId String?
-  folderImage   FolderImage? @relation(fields: [folderImageId], references: [id])
+  folderFileId String?
+  folderFile   FolderFile? @relation(fields: [folderFileId], references: [id])
 
   categories Category[]
   products   Product[]
   admins     Admin[]    @relation("avatar")
+
+  scenes Scene[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model GroupSetting {
-  id        String   @id @default(uuid())
+  id        String  @id @default(uuid())
   name      String
-  canDelete Boolean  @default(true)
+  canDelete Boolean @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -178,14 +180,14 @@ model GroupSetting {
 }
 
 model Setting {
-  id        String   @id @default(uuid())
-  name      String   @unique
+  id        String  @id @default(uuid())
+  name      String  @unique
   type      String
   details   String?
   value     String?
   required  Boolean
   col       Int?
-  canDelete Boolean  @default(true)
+  canDelete Boolean @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -202,8 +204,8 @@ model Category {
 
   products Product[]
 
-  imageId String?
-  image   Image?  @relation(fields: [imageId], references: [id])
+  fileId String?
+  file   File?   @relation(fields: [fileId], references: [id])
 
   publish   String   @default("publish") // or draft
   createdAt DateTime @default(now())
@@ -220,11 +222,77 @@ model Product {
   rank             String
   gem              Int
 
-  images Image[]
+  files File[]
 
   publish    String   @default("publish") // or draft
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model GroupScene {
+  id   String @id @default(uuid())
+  name String
+
+  scenes Scene[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Scene {
+  id                    String  @id @default(uuid())
+  url                   String
+  slug                  String  @unique
+  name                  String
+  levels                String
+  faceSize              Int
+  initialViewParameters String
+  description           String?
+  sort                  Int?
+
+  audioId String?
+  audio   File?   @relation(fields: [audioId], references: [id])
+
+  groupId String?
+  group   GroupScene? @relation(fields: [groupId], references: [id])
+
+  infoHotspots InfoHotspot[]
+  linkHotspots LinkHotspot[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model InfoHotspot {
+  id          String  @id @default(uuid())
+  yaw         Float
+  pitch       Float
+  direction   String?
+  title       String?
+  description String?
+  file        String?
+  type        String?
+
+  sceneId String
+  scene   Scene  @relation(fields: [sceneId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LinkHotspot {
+  id        String  @id @default(uuid())
+  yaw       Float
+  pitch     Float
+  direction String?
+  target    String
+  type      String?
+
+  sceneId String
+  scene   Scene  @relation(fields: [sceneId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

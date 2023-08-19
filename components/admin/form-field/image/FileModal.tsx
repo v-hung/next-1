@@ -1,49 +1,51 @@
 "use client"
 import {useEffect, useRef, useState} from 'react'
 import { useClickOutside } from '@/lib/clickOutside';
-import { FolderImage, Image } from '@prisma/client';
+import { FolderFile, File } from '@prisma/client';
 import { Button, Zoom } from '@mui/material';
 import { getScrollbarWidth } from '@/lib/utils/helper';
-import AdminImageAdd from './ImageModalAdd';
-import AdminImageEdit from './ImageModalEdit';
-import AdminImageModalAddFolder from './ImageModalAddFolder';
-import { getListFolderImage } from '@/lib/admin/imageFormField';
+import AdminFileAdd from './FileModalAdd';
+import AdminFileEdit from './FileModalEdit';
+import AdminFileModalAddFolder from './FileModalAddFolder';
+import { getListFolderFile } from '@/lib/admin/filesUpload';
+import { FileTypeState } from '@/lib/admin/sample';
 
 type ModalType = {
   show: boolean,
   setShow: (data: boolean) => void,
   multiple?: boolean,
-  data: Image[]
-  setData: (data: Image[]) => void,
+  data: File[]
+  setData: (data: File[]) => void,
   tableName: string,
   onlyTable?: boolean,
-  myself?: boolean
+  myself?: boolean,
+  fileTypes?: FileTypeState
 }
 
-const AdminImageModal: React.FC<ModalType> = ({
-  show, setShow, multiple, data, setData, tableName, onlyTable, myself
+const AdminFileModal: React.FC<ModalType> = ({
+  show, setShow, multiple, data, setData, tableName, onlyTable, myself, fileTypes
 }) => {
   const rechargeRef = useRef<HTMLDivElement>(null)
   const [loading, setLoading] = useState(false)
-  const [images, setImages] = useState<Image[]>([])
-  const [folders, setFolders] = useState<FolderImage[]>([])
-  const [folderParentId, setFolderParentId] = useState<string | undefined>(data.length > 0 ? (data[0].folderImageId || undefined) : undefined)
-  const [folderParents, setFolderParents] = useState<FolderImage[]>([])
+  const [files, setFiles] = useState<File[]>([])
+  const [folders, setFolders] = useState<FolderFile[]>([])
+  const [folderParentId, setFolderParentId] = useState<string | undefined>(data.length > 0 ? (data[0].folderFileId || undefined) : undefined)
+  const [folderParents, setFolderParents] = useState<FolderFile[]>([])
 
-  const [selects, setSelects] = useState<Image[]>(data)
+  const [selects, setSelects] = useState<File[]>(data)
   const [checked, setChecked] = useState<string[]>(data.map(v => v.id))
 
   const [page, setPage] = useState(0)
 
   const [addModal, setAddModal] = useState(false)
-  const [dataUpload, setDataUpload] = useState<Image[]>([])
+  const [dataUpload, setDataUpload] = useState<File[]>([])
 
   const [editModal, setEditModal] = useState(false)
-  const [dataEdit, setDataEdit] = useState<Image | null>(null)
+  const [dataEdit, setDataEdit] = useState<File | null>(null)
 
   const [addFolderModal, setAddFolderModal] = useState(false)
-  const [dataFolderEdit, setDataFolderEdit] = useState<FolderImage | null>(null)
-  const [dataFolderAdd, setDataFolderAdd] = useState<FolderImage | null>(null)
+  const [dataFolderEdit, setDataFolderEdit] = useState<FolderFile | null>(null)
+  const [dataFolderAdd, setDataFolderAdd] = useState<FolderFile | null>(null)
 
   useClickOutside(rechargeRef, () => {
     setShow(false)
@@ -60,16 +62,17 @@ const AdminImageModal: React.FC<ModalType> = ({
     }
   }, [show]) 
 
-  const fetchImages = async () => {
+  const fetchFiles = async () => {
     setLoading(true)
     try {
-      const { folderParents, folders, images } = await getListFolderImage({
+      const { folderParents, folders, files: filesData } = await getListFolderFile({
         parentId: folderParentId,
         tableName: onlyTable ? tableName : undefined,
-        myself
+        myself,
+        fileTypes
       })
 
-      setImages(images)
+      setFiles(filesData)
       setFolders(folders)
       setFolderParents(folderParents)
 
@@ -82,14 +85,14 @@ const AdminImageModal: React.FC<ModalType> = ({
 
   // reload data in folder
   useEffect(() => {
-    fetchImages()
+    fetchFiles()
   }, [folderParentId])
 
-  // upload images
+  // upload files
   useEffect(() => {
     if (dataUpload.length == 0) return
 
-    fetchImages()
+    fetchFiles()
     
     // checked
     var updatedList: string[] = []
@@ -107,8 +110,8 @@ const AdminImageModal: React.FC<ModalType> = ({
 
   }, [dataUpload])
 
-  const editImage = (image: Image) => {
-    setDataEdit(image)
+  const editFile = (file: File) => {
+    setDataEdit(file)
     setEditModal(true)
   }
 
@@ -126,7 +129,7 @@ const AdminImageModal: React.FC<ModalType> = ({
     }
   }, [dataFolderAdd])
 
-  const handelAddEditFolder = (e: React.MouseEvent, dataEdit?: FolderImage) => {
+  const handelAddEditFolder = (e: React.MouseEvent, dataEdit?: FolderFile) => {
     e.stopPropagation()
     if (dataEdit) {
       setDataFolderEdit(dataEdit)
@@ -162,17 +165,17 @@ const AdminImageModal: React.FC<ModalType> = ({
       }
     }
     
-    var tempImages: Image[] = []
+    var tempFiles: File[] = []
 
     updatedList.forEach(v => {
-      let tmp = images.find(v2 => v2.id == v)
+      let tmp = files.find(v2 => v2.id == v)
       if (tmp) {
-        tempImages.push(tmp)
+        tempFiles.push(tmp)
       }
     })
 
     setChecked(updatedList)
-    setSelects(tempImages)
+    setSelects(tempFiles)
   }
 
   const isChecked = (item: string) => checked.includes(item)
@@ -208,7 +211,7 @@ const AdminImageModal: React.FC<ModalType> = ({
                   onClick={() => setPage(0)}
                 >
                   <span>Danh sách</span>
-                  <span className="ml-1 px-1 py-0.5 bg-gray-100 rounded">{images.length}</span>
+                  <span className="ml-1 px-1 py-0.5 bg-gray-100 rounded">{files.length}</span>
                 </div>
                 <div 
                   className={`p-4 uppercase text-xs font-semibold border-b hover:bg-blue-100 cursor-pointer border-transparent ${page == 1 ? 'text-blue-600 !border-blue-600' : ''}`}
@@ -279,10 +282,10 @@ const AdminImageModal: React.FC<ModalType> = ({
                       }
                     
                       <div className="mt-6 px-6">
-                        <p className="font-semibold text-base mb-2">Ảnh ({images.length})</p>
-                        { images.length > 0
+                        <p className="font-semibold text-base mb-2">Ảnh ({files.length})</p>
+                        { files.length > 0
                           ? <div className="grid gap-4" style={{gridTemplateColumns: 'repeat(auto-fill, minmax(13rem, 1fr))'}}>
-                            { images.map((v,i) =>
+                            { files.map((v,i) =>
                               <div className="rounded border overflow-hidden" key={v.id}>
                                 <div className="relative w-full h-24 bg-make-transparent group">
                                   <img src={v.url} alt="" className="w-full h-full object-contain" loading='lazy' />
@@ -291,7 +294,7 @@ const AdminImageModal: React.FC<ModalType> = ({
                                   </div>
                                   <span
                                     className="absolute top-2 right-2 material-symbols-outlined w-8 h-8 !text-[18px] rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer hidden group-hover:block"
-                                    onClick={() => editImage(v)}
+                                    onClick={() => editFile(v)}
                                   >
                                     edit
                                   </span>
@@ -299,7 +302,7 @@ const AdminImageModal: React.FC<ModalType> = ({
                                 <div className="p-4 py-2 flex justify-between items-start border-t">
                                   <div className="flex-grow min-w-0 text-xs">
                                     <p className="font-semibold break-words">{v.name}</p>
-                                    <p className="uppercase">{v.type}</p>
+                                    <p className="uppercase">{v.mime}</p>
                                   </div>
                                   <div className="flex-none text-[10px] p-1 py-0.5 font-semibold rounded bg-gray-100">IMAGE</div>
                                 </div>
@@ -332,7 +335,7 @@ const AdminImageModal: React.FC<ModalType> = ({
                           </div>
                           <span
                             className="absolute top-2 right-2 material-symbols-outlined w-8 h-8 !text-[18px] rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer hidden group-hover:block"
-                            onClick={() => editImage(v)}
+                            onClick={() => editFile(v)}
                           >
                             edit
                           </span>
@@ -340,7 +343,7 @@ const AdminImageModal: React.FC<ModalType> = ({
                         <div className="p-4 py-2 flex justify-between items-start border-t">
                           <div className="flex-grow min-w-0 text-xs">
                             <p className="font-semibold break-words">{v.name}</p>
-                            <p className="uppercase">{v.type}</p>
+                            <p className="uppercase">{v.mime}</p>
                           </div>
                           <div className="flex-none text-[10px] p-1 py-0.5 font-semibold rounded bg-gray-100">IMAGE</div>
                         </div>
@@ -365,13 +368,13 @@ const AdminImageModal: React.FC<ModalType> = ({
             </div>
           </div>
         </Zoom>
-        <AdminImageAdd tableName={tableName} folderImageId={folderParentId} show={addModal} setShow={setAddModal} setData={setDataUpload} />
-        <AdminImageEdit show={editModal} setShow={setEditModal} data={dataEdit} setData={setDataEdit} />
-        <AdminImageModalAddFolder tableName={tableName} show={addFolderModal} parentId={folderParentId} setShow={setAddFolderModal} data={dataFolderEdit} setData={setDataFolderAdd} />
+        <AdminFileAdd tableName={tableName} fileTypes={fileTypes} folderFileId={folderParentId} show={addModal} setShow={setAddModal} setData={setDataUpload} />
+        <AdminFileEdit show={editModal} setShow={setEditModal} data={dataEdit} setData={setDataEdit} />
+        <AdminFileModalAddFolder tableName={tableName} show={addFolderModal} parentId={folderParentId} setShow={setAddFolderModal} data={dataFolderEdit} setData={setDataFolderAdd} />
       </div>
       {/* <div className="flex-grow"></div> */}
     </div>
   )
 }
 
-export default AdminImageModal
+export default AdminFileModal

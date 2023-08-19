@@ -2,7 +2,6 @@
 import { Backdrop, Button, CircularProgress } from '@mui/material'
 import { useRouter } from 'next/navigation'
 import React, { useState, FormEvent } from 'react'
-import AdminFormFieldImage from '@/components/admin/form-field/AdminFormFieldImage'
 import AdminFormFieldText from '../form-field/AdminFormFieldText'
 import AdminFormFieldSelect from '../form-field/AdminFormFieldSelect'
 import { VariantType, useSnackbar } from 'notistack'

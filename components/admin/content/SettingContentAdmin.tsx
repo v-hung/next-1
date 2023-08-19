@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import { TabPanel, TabsContext, TabsList } from '@mui/base';
@@ -33,6 +33,10 @@ const SettingContentAdmin: React.FC<State> = ({
   const handelOpenAddModal = () => {
     setOpenAddModal(true)
   }
+
+  useEffect(() => {
+    setGroupActive(groupSettings.length > 0 ? groupSettings[0] : undefined)
+  }, [groupSettings])
 
   // group settings
   const [groupDataEdit, setGroupDataEdit] = useState<GroupSettingType>()

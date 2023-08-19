@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import React, { FormEvent, useEffect, useState } from 'react'
 import { v4 } from 'uuid';
 import AdminAddField from '../add-form-field/AdminAddField';
-import { SampleColumnImageType, SampleColumnReactionType, SampleColumnSelectType, SampleFieldAndDetailsType } from '@/lib/admin/sample';
+import { SampleColumnFileType, SampleColumnReactionType, SampleColumnSelectType, SampleFieldAndDetailsType } from '@/lib/admin/sample';
 import { DATA_FIELDS } from '@/lib/admin/fields';
 import { CreateEditSettingType, GroupSettingType, SettingType } from '@/app/admin/(admin)/settings/page';
 import { promiseFunction } from '@/lib/admin/promise';
@@ -84,15 +84,16 @@ const SettingsModalAdd = ({
         return {
           list: [],
         } as SampleColumnSelectType['details']
-      case "image":
+      case "file":
         return {
-          multiple: false
-        } as SampleColumnImageType['details']
+          multiple: false,
+          fileTypes: []
+        } as SampleColumnFileType['details']
       case "relation":
         return {
           tableNameRelation: '',
           titleRelation: '',
-          type: 'one-to-one'
+          typeRelation: 'one-to-one'
         } as SampleColumnReactionType['details']
       default:
         return undefined

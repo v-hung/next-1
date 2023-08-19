@@ -3,8 +3,8 @@ import FormIOSSwitch from '@/components/FormIOSSwitch'
 import React, { useRef, useState } from 'react'
 
 type State = {
-  label: string,
-  name: string
+  label?: string,
+  name?: string
   required?: boolean,
   className?: string,
   placeholder?: string,

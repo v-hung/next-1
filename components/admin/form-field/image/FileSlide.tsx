@@ -1,12 +1,12 @@
 "use client"
-import { Image } from '@prisma/client'
+import { File } from '@prisma/client'
 import React, { useEffect, useRef } from 'react'
 import Swiper, { Navigation } from 'swiper';
 // import Swiper styles
 import 'swiper/css';
 // import 'swiper/css/navigation';
 
-const ImageSlide = ({images}: {images: Image[]}) => {
+const FilesSlide = ({files}: {files: File[]}) => {
   const swiperEl = useRef<HTMLDivElement | null>(null)
   const swiper = useRef<Swiper | null>(null)
 
@@ -44,15 +44,20 @@ const ImageSlide = ({images}: {images: Image[]}) => {
 
   useEffect(() => {
     swiper.current?.update()
-  }, [images])
+  }, [files])
+
+  console.log({files})
 
   return (
     <div className="w-full h-full relative select-none bg-make-transparent">
       <div className="swiper h-full" ref={swiperEl}>
         <div className="swiper-wrapper">
-          {images.map((v,i) =>
+          {files.map((v,i) =>
             <div className='swiper-slide w-full h-full !flex flex-col' key={v.id}>
-              <img src={v.url} alt="" className='my-1 w-full flex-grow min-h-0 object-contain' loading='lazy' />
+              { v.mime.startsWith('image')
+               ? <img src={v.url} alt="" className='my-1 w-full flex-grow min-h-0 object-contain' loading='lazy' />
+               : <div className='icon'>attachment</div>
+              }
               <p className="m-1 text-center text-sm">{v.name}</p>
             </div>
           )}
@@ -78,4 +83,4 @@ const ImageSlide = ({images}: {images: Image[]}) => {
   )
 }
 
-export default ImageSlide
+export default FilesSlide

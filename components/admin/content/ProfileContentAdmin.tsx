@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import React, { useState } from 'react'
 import AdminFormFieldText from '../form-field/AdminFormFieldText';
 import { TextField } from '@mui/material';
-import AdminFormFieldImage from '../form-field/AdminFormFieldImage';
+import AdminFormFieldFile from '../form-field/AdminFormFieldFile';
 import { AdminUserType } from '@/lib/admin/helperServer';
 import { VariantType, enqueueSnackbar } from 'notistack';
 import { useRouter } from 'next/navigation';
@@ -111,7 +111,7 @@ const ProfileContentAdmin: React.FC<State> = ({defaultValue, updateProfile}) => 
                   </span>
                 }
               </div>
-              <AdminFormFieldImage details={{tableName:"admin", onlyTable:true, myself: true}} defaultValue={defaultValue.image} onChange={(v) => setImageId(v)} name='name' className='w-96' />
+              <AdminFormFieldFile details={{tableName:"admin", onlyTable:true, myself: true}} defaultValue={defaultValue.image} onChange={(v) => setImageId(v)} name='name' className='w-96' />
             </div>
             <div className='border-b pb-6 pr-8'>
               <div className="font-semibold">Mật khẩu</div>

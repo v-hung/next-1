@@ -5,14 +5,8 @@ import { VariantType, enqueueSnackbar } from 'notistack'
 import React, { useEffect, useState, useRef } from 'react'
 
 type State = {
-  // label: string,
-  // name: string
-  // required?: boolean,
-  // defaultValue?: any,
-  // titleRelation: string,
-  // tableName: string
-  label: string,
-  name: string
+  label?: string,
+  name?: string
   required?: boolean,
   defaultValue?: any,
   value?: string,
@@ -72,7 +66,10 @@ const AdminFormFieldRelation: React.FC<State> = ({
 
   return (
     <div className={className}>
-      <p className="text-sm font-semibold mb-1 capitalize">{label} { required && <span className="text-red-500">*</span> }</p>
+      { label
+        ? <p className="text-sm font-medium mb-1 capitalize">{label} { required && <span className="text-red-500">*</span> }</p>
+        : null
+      }
       <input type="hidden" name={name} value={value} />
       <Autocomplete
         multiple={["one-to-many", "many-to-many"].includes(typeRelation)}

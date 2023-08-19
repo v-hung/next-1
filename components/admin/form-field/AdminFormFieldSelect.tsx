@@ -3,15 +3,16 @@ import { FormControl, FormHelperText, MenuItem, Select, SelectChangeEvent } from
 import React, { useState } from 'react'
 
 type State = {
-  label: string,
-  name: string
+  label?: string,
+  name?: string
   required?: boolean,
   defaultValue?: any,
-  value?: string,
-  onChange?: (data: any) => void
+  value?: any,
+  onChange?: (event: any) => void
   className?: string,
   details: {
-    list: Item[]
+    list: Item[],
+    multiple?: boolean
   }
 }
 
@@ -21,27 +22,32 @@ type Item = {
 }
 
 const AdminFormFieldSelect: React.FC<State> = ({
+  value,
   label,
   defaultValue,
   className,
   name,
+  onChange,
   required = false,
-  details: { list }
+  details: { list, multiple = false }
 }) => {
 
-  const [value, setValue] = useState<string>(defaultValue || '')
-
   const handleChange = (event: SelectChangeEvent) => {
-    setValue(event.target.value);
+    if (typeof onChange == "function")
+      onChange(event)
   }
 
   return (
     <div className={className}>
-      <p className="text-sm font-semibold mb-1 capitalize">{label} { required && <span className="text-red-500">*</span> }</p>
+      { label
+        ? <p className="text-sm font-medium mb-1 capitalize">{label} { required && <span className="text-red-500">*</span> }</p>
+        : null
+      }
       <FormControl className='w-full'>
         <Select
           value={value}
           onChange={handleChange}
+          multiple={multiple}
           displayEmpty
           size='small'
           name={name}

@@ -1,13 +1,14 @@
 "use client"
 import FormIOSSwitch from '@/components/FormIOSSwitch';
 import { DATA_FIELDS } from '@/lib/admin/fields';
-import { SampleFieldAndDetailsType } from '@/lib/admin/sample';
+import { FileTypeState, SampleFieldAndDetailsType } from '@/lib/admin/sample';
 import { Button, Collapse } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import React, { useEffect, useRef, useState } from 'react'
 import { v4 } from 'uuid';
+import AdminFormFieldSelect from '../form-field/AdminFormFieldSelect';
 
 type ComponentType = {
   onDelete: () => void,
@@ -72,14 +73,10 @@ const AdminAddField: React.FC<ComponentType> = ({
           </div>
           <div>
             { 
-              type == "image"
-              ? <div className='border-t flex justify-evenly space-x-2'>
-                  <DetailsImage defaultMultiple={details.multiple || false} defaultOnlyTable={true} onChangeDetails={onChangeDetails} />
-                </div>
-              : type == "select" ?
-                <div className='border-t'>
-                  <DetailsSelect defaultMultiple={details.multiple || true} defaultList={[]} onChangeDetails={onChangeDetails} setExpanded={setExpanded} />
-                </div>
+              type == "file"
+              ? <DetailsFile defaultMultiple={details.multiple || false} defaultOnlyTable={true} onChangeDetails={onChangeDetails} defaultFileTypes={details.fileTypes} />
+              : type == "select" 
+                ? <DetailsSelect defaultMultiple={details.multiple || false} defaultList={[]} onChangeDetails={onChangeDetails} setExpanded={setExpanded} />
               : null
             }
           </div>
@@ -89,29 +86,40 @@ const AdminAddField: React.FC<ComponentType> = ({
   )
 }
 
-const DetailsImage = ({
-  defaultMultiple, defaultOnlyTable, onChangeDetails
+const DetailsFile = ({
+  defaultMultiple, defaultOnlyTable, onChangeDetails, defaultFileTypes = ['image']
 }: {
   defaultMultiple: boolean, 
   defaultOnlyTable: boolean,
+  defaultFileTypes?: FileTypeState,
   onChangeDetails: (details: any) => void
 }) => {
 
   const [multiple, setMultiple] = useState(defaultMultiple)
   const [onlyTable, setOnlyTable] = useState(defaultOnlyTable)
+  const [fileTypes, setFileTypes] = useState(defaultFileTypes)
 
   useEffect(() => {
     onChangeDetails({
-      multiple: multiple,
-      onlyTable
+      multiple,
+      onlyTable,
+      fileTypes
     })
-  }, [multiple, onlyTable])
+  }, [multiple, onlyTable, fileTypes])
 
   return (
-    <>
-      <FormIOSSwitch label="Multiple" checked={multiple} onChange={(e,v) => setMultiple(v)} size='small' />
-      <FormIOSSwitch label="Only Table" checked={onlyTable} onChange={(e,v) => setOnlyTable(v)} size='small' />
-    </>
+    <div className='border-t'>
+      <div className="flex justify-evenly space-x-2">
+        <FormIOSSwitch label="Multiple" checked={multiple} onChange={(e,v) => setMultiple(v)} size='small' />
+        <FormIOSSwitch label="Only Table" checked={onlyTable} onChange={(e,v) => setOnlyTable(v)} size='small' />
+      </div>
+      <AdminFormFieldSelect label='File Types' details={{list: [
+        {title: 'Tất cả', value: 'all'},
+        {title: 'Ảnh', value: 'image'},
+        {title: 'Audio', value: 'audio'},
+        {title: 'Video', value: 'video'}
+      ], multiple: true}} value={fileTypes} onChange={(v) => setFileTypes(v.target.value)} />
+    </div>
   )
 }
 
@@ -165,28 +173,30 @@ const DetailsSelect = ({
   }, [multiple, list])
 
   return (
-    <div className='flex flex-col space-y-2 justify-center items-center mt-2'>
-      <FormIOSSwitch label="Multiple" checked={multiple} onChange={(e,v) => setMultiple(v)} size='small' />
-      <div className="flex w-full flex-col bg-gray-100 p-2 rounded space-y-2">
-        {list.length > 0 ? list.map(v =>
-          <div key={v.id} className="flex space-x-2">
-            <input type="text" className='flex-1 rounded !bg-gray-200 px-2 py-0.5' placeholder='Tiêu đề' required={true}
-              value={v.title} onChange={(e) => changeValue({title: e.target.value, id: v.id})}
-              onInvalid={inValidInput}
-            />
-            <input type="text" className='flex-1 rounded !bg-gray-200 px-2 py-0.5' placeholder='Giá trị' required={true}
-              value={v.value} onChange={(e) => changeValue({value: e.target.value, id: v.id})}
-              onInvalid={inValidInput}
-            />
-            <Button variant='text' size='small' color='error'
-              onClick={() => deleteItemInList(v.id)}
-            ><span className="icon">delete</span></Button>
-          </div>
-        )
-          : <p>Không có mục nào</p>
-        }
+    <div className='border-t'>
+      <div className='flex flex-col space-y-2 justify-center items-center mt-2'>
+        <FormIOSSwitch label="Multiple" checked={multiple} onChange={(e,v) => setMultiple(v)} size='small' />
+        <div className="flex w-full flex-col bg-gray-100 p-2 rounded space-y-2">
+          {list.length > 0 ? list.map(v =>
+            <div key={v.id} className="flex space-x-2">
+              <input type="text" className='flex-1 rounded !bg-gray-200 px-2 py-0.5' placeholder='Tiêu đề' required={true}
+                value={v.title} onChange={(e) => changeValue({title: e.target.value, id: v.id})}
+                onInvalid={inValidInput}
+              />
+              <input type="text" className='flex-1 rounded !bg-gray-200 px-2 py-0.5' placeholder='Giá trị' required={true}
+                value={v.value} onChange={(e) => changeValue({value: e.target.value, id: v.id})}
+                onInvalid={inValidInput}
+              />
+              <Button variant='text' size='small' color='error'
+                onClick={() => deleteItemInList(v.id)}
+              ><span className="icon">delete</span></Button>
+            </div>
+          )
+            : <p>Không có mục nào</p>
+          }
+        </div>
+        <Button variant='contained' size='small' onClick={addList}>Mục mới</Button>
       </div>
-      <Button variant='contained' size='small' onClick={addList}>Mục mới</Button>
     </div>
   )
 }

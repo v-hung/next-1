@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import { useState } from 'react'
 import styled from '@emotion/styled';
 import Link from 'next/link';
-import { Category, Image } from '@prisma/client';
+import { Category, File } from '@prisma/client';
 import { usePathname, useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import moment from 'moment';
@@ -244,7 +244,7 @@ const AdminContentSample: React.FC<SampleStateType> = ({
                           ? ViewDateField(row[column.name])
                           : column.type == 'publish' ? ViewPublishField(row[column.name])
                           : column.type == 'select' ? ViewSelectField(row[column.name], column.details.list)
-                          : column.type == 'image' ? ViewImageField(row[column.name])
+                          : column.type == 'file' ? ViewFileField(row[column.name])
                           : column.type == 'relation' ? ViewRelationField(row[column.name], column.details.titleRelation)
                           : column.type == 'permissions' ? null
                           : <span>{row[column.name] || ''}</span>
@@ -371,22 +371,22 @@ const ViewPublishField = (value: string) => {
   </div>
 }
 
-const ViewImageField = (data: Image | Image[] | null) => {
+const ViewFileField = (data: File | File[] | null) => {
   if (data == null) {
     return null
   }
 
-  const images = Array.isArray(data) ? data : [data]
-  const length = images.length > 2 ? 2 : images.length
+  const files = Array.isArray(data) ? data : [data]
+  const length = files.length > 2 ? 2 : files.length
 
   return (
     <div className="flex -space-x-10 justify-center">
-      {images.slice(0, length).map((image,i) =>
-        <img key={image.id} src={image.url} alt={image.caption || image.name} loading='lazy' 
+      {files.slice(0, length).map((file,i) =>
+        <img key={file.id} src={file.url} alt={file.caption || file.name} loading='lazy' 
           className='w-20 h-16 rounded-lg object-cover ring-2 ring-white' />
       )}
-      {images.length > length 
-        ? <div className="h-16 rounded-lg ring-2 ring-white bg-gray-300/90 flex items-center px-2 font-semibold text-xs">+{images.length - length} more</div>
+      {files.length > length 
+        ? <div className="h-16 rounded-lg ring-2 ring-white bg-gray-300/90 flex items-center px-2 font-semibold text-xs">+{files.length - length} more</div>
         : null
       }
     </div>

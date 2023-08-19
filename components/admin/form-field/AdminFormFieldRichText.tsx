@@ -4,8 +4,8 @@ import { Editor as TinyMCEEditor } from 'tinymce';
 import React, { useRef, useState } from 'react'
 
 type State = {
-  name: string,
-  label: string,
+  name?: string,
+  label?: string,
   required?: boolean,
   className?: string,
   placeholder?: string,
@@ -36,8 +36,10 @@ const AdminFormFieldRichText: React.FC<State> = ({
 
   return (
     <div className={`rounded bg-gray-200 focus-within:bg-gray-300 select-none ${className}`}>
-      <p className="text-sm font-semibold mb-1 capitalize">{label} { required && <span className="text-red-500">*</span> }</p>
-      {/* <textarea name={name} value={editorContent} readOnly className='sr-only' /> */}
+      { label
+        ? <p className="text-sm font-medium mb-1 capitalize">{label} { required && <span className="text-red-500">*</span> }</p>
+        : null
+      }
       <style>{`
         .tox-tinymce { border-radius: 5px }
         .tox-statusbar__branding {

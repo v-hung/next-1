@@ -1,19 +1,24 @@
 "use client"
-import {useEffect, useRef, useState} from 'react'
+import {useEffect, useRef, useState, memo} from 'react'
 import { useClickOutside } from '@/lib/clickOutside';
 import { Button, Zoom } from '@mui/material';
 import { VariantType, enqueueSnackbar } from 'notistack';
-import { uploadImages } from '@/lib/admin/imageFormField';
+import { uploadFiles } from '@/lib/admin/filesUpload';
+import { FileTypeState } from '@/lib/admin/sample';
+import { promiseFunction } from '@/lib/admin/promise';
 
-type AddModalType = {
+type AddModalFileState = {
   show: boolean,
   setShow: (data: boolean) => void,
   setData: (data: any) => void,
   tableName: string,
-  folderImageId?: string
+  folderFileId?: string,
+  fileTypes?: FileTypeState
 }
 
-const AdminImageAdd: React.FC<AddModalType> = ({show, setShow, setData, tableName, folderImageId}) => {
+const AdminFileAdd= memo(({
+  show, setShow, setData, tableName, folderFileId, fileTypes = ['image']
+}: AddModalFileState) => {
   const rechargeRef = useRef<HTMLDivElement>(null)
 
   useClickOutside(rechargeRef, () => {
@@ -62,37 +67,32 @@ const AdminImageAdd: React.FC<AddModalType> = ({show, setShow, setData, tableNam
   }
 
   const upload = async () => {
-    try {
-      setLoading(true)
+    await promiseFunction({
+      loading,
+      setLoading,
+      callback: async () => {
+        var formData = new FormData()
 
-      var formData = new FormData()
+        files.map(v => {
+          formData.append('files[]', v.file)
+        })
 
-      files.map(v => {
-        formData.append('images[]', v.file)
-      })
+        const { files: filesData } = await uploadFiles({
+          formData: formData,
+          tableName: tableName,
+          folderFileId: folderFileId
+        })
 
-      const { images } = await uploadImages({
-        formData: formData,
-        tableName: tableName,
-        folderImageId: folderImageId
-      })
+        files.forEach((v,i) => {
+          URL.revokeObjectURL(files[i].preview)
+        })
+        setFiles([])
 
-      files.forEach((v,i) => {
-        URL.revokeObjectURL(files[i].preview)
-      })
-      setFiles([])
-
-      setShow(false)
-      setData(images)
-      
-      let variant: VariantType = "success"
-      enqueueSnackbar('Thành công', { variant })
-    } catch (error) {
-      let variant: VariantType = "error"
-      enqueueSnackbar((typeof error === "string") ? error : 'Có lỗi xảy ra, vui lòng thử lại sau', { variant })
-    } finally {
-      setLoading(false)
-    }
+        setShow(false)
+        setData(filesData)
+      }
+    })
+   
   }
 
   useEffect(() => {
@@ -162,10 +162,13 @@ const AdminImageAdd: React.FC<AddModalType> = ({show, setShow, setData, tableNam
                     <span className="icon text-blue-600 !text-6xl">
                       add_photo_alternate
                     </span>
-                    <span className="my-4 font-semibold">Bấm để thêm một tài sản hoặc kéo và thả một trong khu vực này</span>
+                    <span className="my-4 font-semibold">Bấm để thêm một tài sản</span>
                     <Button variant="contained" component="label">
                       Chọn file
-                      <input hidden type="file" name="imageFile" id="imageFile" multiple={true} accept="image/*" onChange={(e) => changeFiles(e)} />
+                      <input hidden type="file" name="fileUpload" id="fileUpload" 
+                        multiple={true} accept={fileTypes.includes('all') ? '*' : fileTypes.map(v => `${v}/*`).toString()} 
+                        onChange={(e) => changeFiles(e)} 
+                      />
                     </Button>
                   </div>
                 </>
@@ -195,6 +198,6 @@ const AdminImageAdd: React.FC<AddModalType> = ({show, setShow, setData, tableNam
       </div> : null }
     </div>
   )
-}
+})
 
-export default AdminImageAdd
+export default AdminFileAdd

@@ -37,7 +37,7 @@ export default async function page() {
   
     } catch (error) {
       console.log(error)
-      throw (typeof error === "string" && error) ? error : 'Có lỗi xảy ra vui lòng thử lại sau'
+      throw (typeof error === "string" && error != "") ? error : 'Có lỗi xảy ra vui lòng thử lại sau'
     }
   }
 

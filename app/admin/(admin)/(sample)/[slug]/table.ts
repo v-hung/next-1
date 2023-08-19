@@ -19,7 +19,7 @@ export const TABLES_SAMPLE: TableType[] = [
     
       { name: 'name', label: 'Tên', type: 'string', show: true, required: true},
       { name: 'email', label: 'Email', type: 'string', show: true, required: true},
-      { name: 'image', label: 'Ảnh', type: 'image', show: true, details: { multiple: false, onlyTable: true }},
+      { name: 'image', label: 'Ảnh', type: 'file', show: true, details: { multiple: false, onlyTable: true }},
       { name: 'role', label: 'Quyền', type: 'relation', show: true, required: true, details: {
         typeRelation: 'many-to-one',
         tableNameRelation: 'role',
@@ -78,7 +78,7 @@ export const TABLES_SAMPLE: TableType[] = [
           { title: 'Vòng quay may mắn', value: "vong-quay"}
         ]
       }, show: true, required: true, },
-      { name: 'image', label: 'Ảnh', type: 'image', show: true, details: { multiple: false, onlyTable: true }},
+      { name: 'image', label: 'Ảnh', type: 'file', show: true, details: { multiple: false, onlyTable: true }},
       { name: 'sold', label: 'Đã bán', type: 'int', show: true},
     
       { name: 'createdAt', label: 'Ngày tạo', type: 'date', show: true},
@@ -106,7 +106,7 @@ export const TABLES_SAMPLE: TableType[] = [
         tableNameRelation: 'category',
         titleRelation: 'title'
       }},
-      { name: 'images', label: 'Ảnh', type: 'image', show: true, details: { multiple: true, onlyTable: true }},
+      { name: 'images', label: 'Ảnh', type: 'file', show: true, details: { multiple: true, onlyTable: true }},
     
       { name: 'createdAt', label: 'Ngày tạo', type: 'date', show: true},
       { name: 'updatedAt', label: 'Ngày cập nhập', type: 'date', show: true},

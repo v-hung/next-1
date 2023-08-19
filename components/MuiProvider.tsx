@@ -4,6 +4,7 @@ import { createTheme, alpha, getContrastRatio } from "@mui/material/styles";
 import { ThemeProvider, CssBaseline } from '@mui/material'
 import React from "react";
 import { Roboto } from 'next/font/google'
+import { SnackbarProvider } from "notistack";
 
 const font = Roboto({
   weight: ['400', '500', '700'],
@@ -35,12 +36,18 @@ export const lightTheme = createTheme({
     }
   },
   typography: {
-    fontFamily: font.style.fontFamily
+    fontFamily: ''
+    // fontFamily: font.style.fontFamily
   }
 })
 
-declare module "@mui/material/Button" {
+declare module "@mui/material" {
   interface ButtonPropsColorOverrides {
+    black: true,
+    white: true,
+  }
+
+  interface IconButtonPropsColorOverrides {
     black: true,
     white: true,
   }
@@ -51,13 +58,18 @@ const MuiProvider: React.FC<{
 }> = ({children}) => {
   return (
     <ThemeProvider theme={lightTheme}>
-      <style global jsx>
+      {/* <style global jsx>
         {`html {
           font-family: ${font.style.fontFamily};
         }`}
-      </style>
+      </style> */}
       <CssBaseline />
-      {children}
+      <SnackbarProvider maxSnack={3} autoHideDuration={3000} anchorOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}>
+        {children}
+      </SnackbarProvider>
     </ThemeProvider>
   )
 }

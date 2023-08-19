@@ -2,11 +2,12 @@
 import React from 'react'
 
 type State = {
-  label: string,
-  name: string
+  label?: string,
+  name?: string
   required?: boolean,
   defaultValue?: string,
   value?: string,
+  placeholder?: string,
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
   className?: string
 }
@@ -18,7 +19,8 @@ const AdminFormFieldText: React.FC<State> = ({
   defaultValue,
   value,
   onChange,
-  className
+  className,
+  placeholder
 }) => {
 
   const changeEvent = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,12 +30,12 @@ const AdminFormFieldText: React.FC<State> = ({
 
   return (
     <div className={className}>
-      <p className="text-sm font-semibold mb-1 capitalize">{label} { required && <span className="text-red-500">*</span> }</p>
+      { label
+        ? <p className="text-sm font-medium mb-1 capitalize">{label} { required && <span className="text-red-500">*</span> }</p>
+        : null
+      }
       <div className="border rounded focus-within:ring-2 ring-blue-600 bg-white">
-        { value != undefined
-          ? <input type='text' name={name} value={value} onChange={(e) => changeEvent(e)} className="w-full px-4 py-2" required={required} />
-          : <input type='text' name={name} defaultValue={defaultValue} className="w-full px-4 py-2" required={required} />
-        }
+        <input type='text' name={name} value={value} defaultValue={defaultValue} onChange={(e) => changeEvent(e)} className="w-full px-4 py-2" placeholder={placeholder} required={required} />
       </div>
     </div>
   )
