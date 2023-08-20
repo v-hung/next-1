@@ -61,25 +61,40 @@ export const TABLES_SAMPLE: TableType[] = [
       { name: 'updatedAt', label: 'Ngày cập nhập', type: 'date', show: true},
     ]
   },
+  // {
+  //   name: 'Danh mục sản phẩm',
+  //   tableName: 'category',
+  //   slug: 'categories',
+  //   rowsPerPages: [10, 20, 50],
+  //   columns: [
+  //     { name: 'id', label: 'ID', type: 'string', show: true},
+    
+  //     { name: 'title', label: 'Tên', type: 'string', show: true, required: true},
+  //     { name: 'type', label: 'Loại', type: 'select', details: {
+  //       list: [
+  //         { title: 'Game liên quân', value: "lien-quan"},
+  //         { title: 'Game tốc chiến', value: "toc-chien"},
+  //         { title: 'Game FREE FIRE', value: "free-fire"},
+  //         { title: 'Vòng quay may mắn', value: "vong-quay"}
+  //       ]
+  //     }, show: true, required: true, },
+  //     { name: 'image', label: 'Ảnh', type: 'file', show: true, details: { multiple: false, onlyTable: true }},
+  //     { name: 'sold', label: 'Đã bán', type: 'int', show: true},
+    
+  //     { name: 'createdAt', label: 'Ngày tạo', type: 'date', show: true},
+  //     { name: 'updatedAt', label: 'Ngày cập nhập', type: 'date', show: true},
+  //     { name: 'publish', label: 'Xuất bản', type: 'publish', show: true},
+  //   ]
+  // },
   {
-    name: 'Danh mục',
-    tableName: 'category',
-    slug: 'categories',
+    name: 'Danh mục điểm chụp',
+    tableName: 'groupScene',
+    slug: 'group',
     rowsPerPages: [10, 20, 50],
     columns: [
       { name: 'id', label: 'ID', type: 'string', show: true},
     
-      { name: 'title', label: 'Tên', type: 'string', show: true, required: true},
-      { name: 'type', label: 'Loại', type: 'select', details: {
-        list: [
-          { title: 'Game liên quân', value: "lien-quan"},
-          { title: 'Game tốc chiến', value: "toc-chien"},
-          { title: 'Game FREE FIRE', value: "free-fire"},
-          { title: 'Vòng quay may mắn', value: "vong-quay"}
-        ]
-      }, show: true, required: true, },
-      { name: 'image', label: 'Ảnh', type: 'file', show: true, details: { multiple: false, onlyTable: true }},
-      { name: 'sold', label: 'Đã bán', type: 'int', show: true},
+      { name: 'name', label: 'Tên', type: 'string', show: true, required: true},
     
       { name: 'createdAt', label: 'Ngày tạo', type: 'date', show: true},
       { name: 'updatedAt', label: 'Ngày cập nhập', type: 'date', show: true},

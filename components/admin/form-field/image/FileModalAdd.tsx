@@ -6,6 +6,7 @@ import { VariantType, enqueueSnackbar } from 'notistack';
 import { uploadFiles } from '@/lib/admin/filesUpload';
 import { FileTypeState } from '@/lib/admin/sample';
 import { promiseFunction } from '@/lib/admin/promise';
+import FileIcon from './FileIcon';
 
 type AddModalFileState = {
   show: boolean,
@@ -80,7 +81,8 @@ const AdminFileAdd= memo(({
         const { files: filesData } = await uploadFiles({
           formData: formData,
           tableName: tableName,
-          folderFileId: folderFileId
+          folderFileId: folderFileId,
+          fileTypes: fileTypes
         })
 
         files.forEach((v,i) => {
@@ -110,7 +112,7 @@ const AdminFileAdd= memo(({
         <Zoom in={show} unmountOnExit>
           <div className='w-full bg-white rounded'>
             <div className="p-6 flex items-center justify-between">
-              <span className='text-xl font-semibold'>Thêm ảnh mới</span>
+              <span className='text-xl font-semibold'>Thêm tài sản mới</span>
               <span 
                 className="w-8 h-8 rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer flex items-center justify-center"
                 onClick={() => setShow(false)}
@@ -133,7 +135,7 @@ const AdminFileAdd= memo(({
                     { files.map((v,i) =>
                       <div className="rounded border overflow-hidden" key={i}>
                         <div className="relative w-full h-24 bg-make-transparent">
-                          <img src={v.preview} alt="" className="w-full h-full object-contain" loading='lazy' />
+                          <FileIcon name={v.name} mime={v.type} url={v.preview}/>
                           <span
                             className="absolute top-2 right-2 icon w-8 h-8 !text-[18px] rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer"
                             onClick={() => {removeFileChange(i)}}
@@ -141,12 +143,9 @@ const AdminFileAdd= memo(({
                             delete
                           </span>
                         </div>
-                        <div className="p-4 py-2 flex justify-between items-start border-t">
-                          <div className="flex-col min-w-0 text-xs">
-                            <p className="font-semibold break-words">{v.name}</p>
-                            <p className="uppercase">{v.type}</p>
-                          </div>
-                          <div className="flex-none text-[10px] p-1 py-0.5 font-semibold rounded bg-gray-100">IMAGE</div>
+                        <div className="p-4 py-2 flex flex-col items-start space-y-2 text-xs">
+                          <p className="font-semibold break-words">{v.name}</p>
+                          <p className="uppercase text-[10px] p-1 py-0.5 font-semibold rounded bg-gray-100">{v.type}</p>
                         </div>
                       </div>
                     )}
@@ -160,7 +159,7 @@ const AdminFileAdd= memo(({
                   </div>
                   <div className="px-6 mt-6 overflow-y-auto max-h-[60vh] flex flex-col items-center justify-center w-full border border-dashed py-12 rounded bg-gray-50">
                     <span className="icon text-blue-600 !text-6xl">
-                      add_photo_alternate
+                      attach_file_add
                     </span>
                     <span className="my-4 font-semibold">Bấm để thêm một tài sản</span>
                     <Button variant="contained" component="label">
@@ -173,7 +172,6 @@ const AdminFileAdd= memo(({
                   </div>
                 </>
               }
-              
             </div>
 
             <div className="p-6 bg-gray-100 flex items-center">
@@ -184,7 +182,7 @@ const AdminFileAdd= memo(({
               <Button className='!ml-auto' variant="contained" size='small' color='primary'
                 onClick={upload}
               >
-                Tải ảnh lên
+                Tải tài sản lên
               </Button>
             </div>
           </div>

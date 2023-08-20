@@ -93,6 +93,7 @@ const AdminFormFieldRelation: React.FC<State> = ({
         }}
         defaultValue={defaultValue}
         onChange={(e,v) => handelChangeValue(v)}
+        className='bg-white'
         renderInput={(params) => (
           <TextField
             {...params}

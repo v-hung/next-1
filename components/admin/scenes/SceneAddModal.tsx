@@ -9,6 +9,9 @@ import AdminFormFieldText from "../form-field/AdminFormFieldText";
 import slugify from "slugify";
 import AdminFormFieldSelect from "../form-field/AdminFormFieldSelect";
 import AdminFormFieldFile from "../form-field/AdminFormFieldFile";
+import AdminFormFieldRichText from "../form-field/AdminFormFieldRichText";
+import AdminFormFieldRelation from "../form-field/AdminFormFieldRelation";
+import { addScene } from "@/lib/admin/scene";
 
 const SceneAddModal = ({
   scene, open, setOpen
@@ -35,15 +38,6 @@ const SceneAddModal = ({
     setHasCloseModal(false)
     setOpen(false)
     setData(scene)
-  }
-
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const openFields = Boolean(anchorEl)
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget)
-  }
-  const handleCloseMenu = () => {
-    setAnchorEl(null)
   }
 
   // data
@@ -93,13 +87,12 @@ const SceneAddModal = ({
       setLoading: setLoading,
       callback: async () => {
 
-        // await createEditSetting({
-        //   groupId: group.id,
-        //   settings: data
-        // })
+        var formData = new FormData(e.target as HTMLFormElement)
 
-        // router.refresh()
-        // setOpen(false)
+        await addScene(formData)
+
+        router.refresh()
+        setOpen(false)
       }
     })
   }
@@ -108,34 +101,37 @@ const SceneAddModal = ({
     <>
       <Drawer
         anchor='right'
+        keepMounted={true}
         open={open}
         onClose={onCloseModal}
       >
         <form className='w-[700px] max-w-[100vw] flex flex-col h-full' onSubmit={handelSubmit}>
-          <div className="flex-none bg-gray-100 py-6 px-8">
+          <div className="flex-none bg-gray-100 py-4 px-8">
             <div className="flex items-center justify-between">
               <h3 className='text-xl'>Thêm điểm chụp mới <span className="text-blue-600">{scene?.name}</span></h3>
               <IconButton color="black" sx={{borderRadius: '4px'}}><span className="icon">close</span></IconButton>
             </div>
           </div>
-          <div className="flex-grow min-h-0 overflow-y-auto py-6 px-8 flex flex-wrap -mx-4">
-            <div className="w-full px-4 mb-4">
-              <AdminFormFieldText label="Tiêu đề" name="name" value={name} onChange={handelChangeName} placeholder="Vd: bán đảo Bắc Hà" required={true} />
-            </div>
-            <div className="w-full px-4 mb-4">
-              <AdminFormFieldText label="Slug" name="slug" value={slugName} onChange={handelChangeSlugName} required={true} />
-            </div>
-            <div className="w-full md:w-1/2 px-4 mb-4">
-              <AdminFormFieldFile label="Slug" name="slug" details={{tableName: 'scene'}} />
-            </div>
-            <div className="w-full md:w-1/2 px-4 mb-4">
-              <AdminFormFieldFile label="Slug" name="slug" details={{tableName: 'scene'}} />
-            </div>
-            <div className="w-full px-4 mb-4">
-              <AdminFormFieldSelect label="Slug" name="slug" details={{list: []}} />
-            </div>
-            <div className="w-full px-4 mb-4">
-              <AdminFormFieldSelect label="Slug" name="slug" details={{list: []}} />
+          <div className="flex-grow min-h-0 overflow-x-hidden">
+            <div className="overflow-y-auto py-6 px-8 flex flex-wrap -mx-4">
+              <div className="w-full px-4 mb-4">
+                <AdminFormFieldText label="Tiêu đề" name="name" value={name} onChange={handelChangeName} placeholder="Vd: bán đảo Bắc Hà" required={true} />
+              </div>
+              <div className="w-full px-4 mb-4">
+                <AdminFormFieldText label="Slug" name="slug" value={slugName} onChange={handelChangeSlugName} required={true} />
+              </div>
+              <div className="w-full md:w-1/2 px-4 mb-4">
+                <AdminFormFieldFile label="Ảnh" name="image" details={{tableName: 'scene'}} />
+              </div>
+              <div className="w-full md:w-1/2 px-4 mb-4">
+                <AdminFormFieldFile label="Âm thanh" name="audio" details={{tableName: 'scene', fileTypes: ['audio']}} />
+              </div>
+              <div className="w-full px-4 mb-4">
+                <AdminFormFieldRelation label="Danh mục" name="group" details={{tableNameRelation: 'groupScene', titleRelation: 'name', typeRelation: 'many-to-one'}} />
+              </div>
+              <div className="w-full px-4 mb-4">
+                <AdminFormFieldRichText label="Nội dung" name="description" />
+              </div>
             </div>
           </div>
           <div className="flex-none py-6 px-8 flex justify-end space-x-4 border-t">

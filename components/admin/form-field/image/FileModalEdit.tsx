@@ -59,7 +59,7 @@ const AdminFileEdit: React.FC<EditModalType> = ({show, setShow, data, setData}) 
         <Zoom in={show} unmountOnExit>
           <div className='w-full bg-white rounded'>
             <div className="p-6 flex items-center justify-between">
-              <span className='text-xl font-semibold'>Chi tiết hình ảnh</span>
+              <span className='text-xl font-semibold'>Chi tiết hình tài sản</span>
               <span 
                 className="w-8 h-8 rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer flex items-center justify-center"
                 onClick={() => setShow(false)}
@@ -71,7 +71,7 @@ const AdminFileEdit: React.FC<EditModalType> = ({show, setShow, data, setData}) 
             <div className={`relative p-6 border-y overflow-y-auto max-h-[60vh] flex space-x-4 items-start ${deletePopup ? '!overflow-hidden': ''}`}>
               <div className="w-1/2 rounded border bg-gray-200">
                 <div className="p-2 flex justify-end space-x-2">
-                  <Tooltip title="Xóa ảnh" placement="top">
+                  <Tooltip title="Xóa tài sản" placement="top">
                     <span className="icon w-8 h-8 !text-lg rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer"
                       onClick={() => setDeletePopup(true)}
                     >
@@ -79,7 +79,7 @@ const AdminFileEdit: React.FC<EditModalType> = ({show, setShow, data, setData}) 
                     </span>
                   </Tooltip>
 
-                  <Tooltip title="Tải ảnh xuống" placement="top">
+                  <Tooltip title="Tải tài sản xuống" placement="top">
                     <span className="icon w-8 h-8 !text-lg rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer"
                       onClick={download}
                     >
@@ -120,14 +120,14 @@ const AdminFileEdit: React.FC<EditModalType> = ({show, setShow, data, setData}) 
                     <p className='mt-1'>{data?.mime.split("/")[0] || "Trống"}</p>
                   </div>
                   <div>
-                    <p className="uppercase font-semibold">ID ảnh</p>
+                    <p className="uppercase font-semibold">ID tài sản</p>
                     <p className='mt-1'>{data?.id || "Trống"}</p>
                   </div>
                 </div>
 
                 <div className="mt-6 flex flex-col space-y-4">
                   <div className='flex flex-col'>
-                    <label className="font-semibold text-xs mb-1">Tên ảnh</label>
+                    <label className="font-semibold text-xs mb-1">Tên tài sản</label>
                     <input type="text" className='rounded border px-4 py-2 bg-white focus:ring-2 ring-blue-500' defaultValue={data?.name} required />
                   </div>
                   <div className='flex flex-col'>
@@ -135,11 +135,11 @@ const AdminFileEdit: React.FC<EditModalType> = ({show, setShow, data, setData}) 
                     <input type="text" className='rounded border px-4 py-2 bg-white focus:ring-2 ring-blue-500' defaultValue={data?.caption || ""} />
                   </div>
                   <div className='flex flex-col'>
-                    <label className="font-semibold text-xs mb-1">Độ dài ảnh hiện thị</label>
+                    <label className="font-semibold text-xs mb-1">Độ dài tài sản hiện thị</label>
                     <input type="text" className='rounded border px-4 py-2 bg-white focus:ring-2 ring-blue-500' defaultValue={data?.width || ""} />
                   </div>
                   <div className='flex flex-col'>
-                    <label className="font-semibold text-xs mb-1">Chiều cao ảnh hiện thị</label>
+                    <label className="font-semibold text-xs mb-1">Chiều cao tài sản hiện thị</label>
                     <input type="text" className='rounded border px-4 py-2 bg-white focus:ring-2 ring-blue-500' defaultValue={data?.height || ""} />
                   </div>
                 </div>
@@ -149,10 +149,10 @@ const AdminFileEdit: React.FC<EditModalType> = ({show, setShow, data, setData}) 
                 <div className="fixed !ml-0 w-full h-full top-0 left-0 grid place-items-center bg-black/50">
                   <div className="w-72 rounded bg-white overflow-hidden">
                     <h5 className="font-semibold px-6 pt-6">
-                      Bạn chắc chắn xóa hình ảnh này
+                      Bạn chắc chắn xóa hình tài sản này
                     </h5>
                     <p className="mt-2 mb-4 px-6 text-sm">
-                      Việc hóa hình ảnh sẽ xóa vĩnh viễn chúng ra khỏi cơ sở dữ liệu và không thể khôi phục được.
+                      Việc hóa hình tài sản sẽ xóa vĩnh viễn chúng ra khỏi cơ sở dữ liệu và không thể khôi phục được.
                     </p>
                     <div className="p-4 bg-gray-200 flex space-x-4 justify-end">
                       <Button color='inherit' size='small' variant='text' onClick={() => setDeletePopup(false)}>Hủy bỏ</Button>

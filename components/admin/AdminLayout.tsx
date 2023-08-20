@@ -31,14 +31,8 @@ export const MANAGER_LINKS: LinkState[] = [
   {
     icon: 'category',
     name: "Danh mục",
-    tableName: 'category',
-    path: "/admin/categories"
-  },
-  {
-    icon: 'inventory_2',
-    name: "Sản phẩm",
-    tableName: 'product',
-    path: "/admin/products"
+    tableName: 'groupScene',
+    path: "/admin/group"
   }
 ]
 

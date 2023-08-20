@@ -13,6 +13,7 @@ import AdminFormFieldSelect from '../form-field/AdminFormFieldSelect';
 type ComponentType = {
   onDelete: () => void,
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
+  canDelete?: boolean,
   defaultValue?: string,
   required?: boolean,
   onChangeRequired: (data: boolean) => void,
@@ -27,7 +28,8 @@ const AdminAddField: React.FC<ComponentType> = ({
   details,
   onChangeDetails,
   required,
-  onChangeRequired
+  onChangeRequired,
+  canDelete = true
 }) => {
   const [expanded, setExpanded] = useState<boolean>(false)
 
@@ -69,7 +71,10 @@ const AdminAddField: React.FC<ComponentType> = ({
         <div className='rounded-b border-2 border-gray-300 p-2 bg-white'>
           <div className="flex justify-between" style={{userSelect: 'none'}}>
             <FormIOSSwitch label="None Empty" defaultValue={required} onChange={(e,v) => onChangeRequired(v)} size='small' />
-            <Button variant="text" color='error' onClick={(e) => deleteField(e)}>Remove</Button>
+            { canDelete
+              ? <Button variant="text" color='error' onClick={(e) => deleteField(e)}>Remove</Button>
+              : null
+            }
           </div>
           <div>
             { 

@@ -9,6 +9,7 @@ import AdminFileEdit from './FileModalEdit';
 import AdminFileModalAddFolder from './FileModalAddFolder';
 import { getListFolderFile } from '@/lib/admin/filesUpload';
 import { FileTypeState } from '@/lib/admin/sample';
+import FileIcon from './FileIcon';
 
 type ModalType = {
   show: boolean,
@@ -195,7 +196,7 @@ const AdminFileModal: React.FC<ModalType> = ({
         <Zoom in={show} unmountOnExit>
           <div className='w-full bg-white rounded'>
             <div className="p-6 flex items-center justify-between">
-              <span className='text-xl font-semibold'>Danh sách ảnh</span>
+              <span className='text-xl font-semibold'>Danh sách tài sản</span>
               <span 
                 className="w-8 h-8 rounded border p-1.5 bg-white hover:bg-gray-100 cursor-pointer flex items-center justify-center"
                 onClick={() => setShow(false)}
@@ -228,7 +229,7 @@ const AdminFileModal: React.FC<ModalType> = ({
                 <Button className='!ml-4' variant="contained" size='small' color='primary'
                   onClick={() => setAddModal(true)}
                 >
-                  Thêm ảnh
+                  Thêm tài sản
                 </Button>
               </div>
 
@@ -288,7 +289,7 @@ const AdminFileModal: React.FC<ModalType> = ({
                             { files.map((v,i) =>
                               <div className="rounded border overflow-hidden" key={v.id}>
                                 <div className="relative w-full h-24 bg-make-transparent group">
-                                  <img src={v.url} alt="" className="w-full h-full object-contain" loading='lazy' />
+                                  <FileIcon name={v.name} mime={v.mime} url={v.url} caption={v.caption} width={v.naturalWidth} height={v.naturalHeight} />
                                   <div className="absolute top-2 left-2">
                                     <input type="checkbox" value={v.id} checked={isChecked(v.id)} onChange={(e) => handleCheck(e)} />
                                   </div>
@@ -299,17 +300,14 @@ const AdminFileModal: React.FC<ModalType> = ({
                                     edit
                                   </span>
                                 </div>
-                                <div className="p-4 py-2 flex justify-between items-start border-t">
-                                  <div className="flex-grow min-w-0 text-xs">
-                                    <p className="font-semibold break-words">{v.name}</p>
-                                    <p className="uppercase">{v.mime}</p>
-                                  </div>
-                                  <div className="flex-none text-[10px] p-1 py-0.5 font-semibold rounded bg-gray-100">IMAGE</div>
+                                <div className="p-4 py-2 flex flex-col items-start space-y-2 text-xs">
+                                  <p className="font-semibold break-words">{v.name}</p>
+                                  <p className="uppercase text-[10px] p-1 py-0.5 font-semibold rounded bg-gray-100">{v.mime}</p>
                                 </div>
                               </div>
                             )}
                           </div>
-                          : <p>Không có ảnh nào</p>
+                          : <p>Không có tài sản nào</p>
                         }
                       </div>
                     </div>
@@ -329,7 +327,7 @@ const AdminFileModal: React.FC<ModalType> = ({
                     { selects.map((v,i) =>
                       <div className="rounded border overflow-hidden" key={v.id}>
                         <div className="relative w-full h-24 bg-make-transparent">
-                          <img src={v.url} alt="" className="w-full h-full object-contain" loading='lazy' />
+                        <FileIcon name={v.name} mime={v.mime} url={v.url} caption={v.caption} width={v.naturalWidth} height={v.naturalHeight} />
                           <div className="absolute top-2 left-2">
                             <input type="checkbox" value={v.id} checked={isChecked(v.id)} onChange={(e) => handleCheck(e)} />
                           </div>
@@ -340,17 +338,14 @@ const AdminFileModal: React.FC<ModalType> = ({
                             edit
                           </span>
                         </div>
-                        <div className="p-4 py-2 flex justify-between items-start border-t">
-                          <div className="flex-grow min-w-0 text-xs">
-                            <p className="font-semibold break-words">{v.name}</p>
-                            <p className="uppercase">{v.mime}</p>
-                          </div>
-                          <div className="flex-none text-[10px] p-1 py-0.5 font-semibold rounded bg-gray-100">IMAGE</div>
+                        <div className="p-4 py-2 flex flex-col items-start space-y-2 text-xs">
+                          <p className="font-semibold break-words">{v.name}</p>
+                          <p className="uppercase text-[10px] p-1 py-0.5 font-semibold rounded bg-gray-100">{v.mime}</p>
                         </div>
                       </div>
                     )}
                   </div>
-                  : <div className='px-6 my-6'>Không có ảnh nào được chọn</div>
+                  : <div className='px-6 my-6'>Không có tài sản nào được chọn</div>
                 }
               </div>
             </div>

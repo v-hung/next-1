@@ -235,6 +235,7 @@ model Product {
 model GroupScene {
   id   String @id @default(uuid())
   name String
+  sort Int?
 
   scenes Scene[]
 
@@ -273,14 +274,12 @@ model InfoHotspot {
   direction   String?
   title       String?
   description String?
-  file        String?
+  image       String?
   type        String?
+  video       String?
 
   sceneId String
   scene   Scene  @relation(fields: [sceneId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model LinkHotspot {
@@ -293,7 +292,4 @@ model LinkHotspot {
 
   sceneId String
   scene   Scene  @relation(fields: [sceneId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }

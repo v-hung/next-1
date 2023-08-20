@@ -46,12 +46,14 @@ const AdminFormFieldSelect: React.FC<State> = ({
       <FormControl className='w-full'>
         <Select
           value={value}
+          defaultValue={defaultValue}
           onChange={handleChange}
           multiple={multiple}
           displayEmpty
           size='small'
           name={name}
           required={required}
+          className='bg-white'
         >
           { !required && <MenuItem value="">
             <em>Không chọn</em>

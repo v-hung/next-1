@@ -13,6 +13,7 @@ import FormIOSSwitch from '@/components/FormIOSSwitch';
 import { VariantType, enqueueSnackbar } from 'notistack';
 import { DeleteDataSampleState, SampleColumnsType, deleteDataSample } from '@/lib/admin/sample';
 import { useTransition } from "react";
+import FileIcon from '../form-field/image/FileIcon';
 
 export type SampleStateType = {
   data: any[],
@@ -382,8 +383,7 @@ const ViewFileField = (data: File | File[] | null) => {
   return (
     <div className="flex -space-x-10 justify-center">
       {files.slice(0, length).map((file,i) =>
-        <img key={file.id} src={file.url} alt={file.caption || file.name} loading='lazy' 
-          className='w-20 h-16 rounded-lg object-cover ring-2 ring-white' />
+        <FileIcon key={file.id} name={file.name} mime={file.mime} url={file.url} className='w-20 h-16 rounded-lg object-cover ring-2 ring-white' />
       )}
       {files.length > length 
         ? <div className="h-16 rounded-lg ring-2 ring-white bg-gray-300/90 flex items-center px-2 font-semibold text-xs">+{files.length - length} more</div>

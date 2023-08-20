@@ -68,7 +68,7 @@ export const getListFolderFile = async ({
       db.file.findMany({
         where: {
           tableName,
-          folderFileId: parentId,
+          folderFileId: parentId ? parentId : null,
           adminId: myself ? user.id : undefined,
           ...queryFile
         },
@@ -144,11 +144,16 @@ export const uploadFiles = async ({
       mkdirSync(`./storage/${tableName}`, { recursive: true });
     }
 
-    const compress = {
+    const sharpCompress = {
       'png': {compressionLevel: 8, quality: 60},
       'jpeg': { quality: 60 },
       'webp': { quality: 60 },
-      'gif': { }
+      'gif': {},
+      'jp2': {},
+      'tiff': {},
+      'avif': {},
+      'heif': {},
+      'jxl': {}
     }
 
     const files = formData.getAll('files[]') as File[]
@@ -156,8 +161,10 @@ export const uploadFiles = async ({
     let res: any[] = []
     for (let file of files) {
       // check file
-      const mimeName = mime.lookup(file.type.toLowerCase())
       const extension = path.extname(file.name)
+      const mimeName = mime.lookup(extension)
+
+      console.log({mimeName}, isFileTypeAllowed(file.type))
 
       if (!isFileTypeAllowed(file.type) || !mimeName) {
         throw "Tập tin không hợp lệ"
@@ -176,7 +183,7 @@ export const uploadFiles = async ({
 
       // upload image
       if (mimeName.startsWith('image/')) {
-        if (Object.keys(compress).findIndex(v => `.${v}` == extension) < 0) {
+        if (Object.keys(sharpCompress).findIndex(v => `.${v}` == extension) < 0) {
           let name = v4() + extension
           let fileUrl = `./storage/${tableName}/${name}`
   
@@ -204,7 +211,7 @@ export const uploadFiles = async ({
           let fileUrl = `./storage/${tableName}/${name}`
       
           //@ts-ignore
-          let fileSave = await fileData[metadata.format || "png"](compress[metadata.format || "png"]).toFile(fileUrl)
+          let fileSave = await fileData[metadata.format || "png"](sharpCompress[metadata.format || "png"]).toFile(fileUrl)
             .then((data: any) => {
               return data
             })

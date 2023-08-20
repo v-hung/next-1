@@ -92,6 +92,10 @@
   button {
     background-color: transparent
   }
+
+  [hidden] {
+    @apply !hidden;
+  }
 }
 
 @layer components {

@@ -1,9 +1,11 @@
 "use client"
 import { File } from '@prisma/client'
+import Image from 'next/image';
 import React, { useEffect, useRef } from 'react'
 import Swiper, { Navigation } from 'swiper';
 // import Swiper styles
 import 'swiper/css';
+import FileIcon from './FileIcon';
 // import 'swiper/css/navigation';
 
 const FilesSlide = ({files}: {files: File[]}) => {
@@ -46,8 +48,6 @@ const FilesSlide = ({files}: {files: File[]}) => {
     swiper.current?.update()
   }, [files])
 
-  console.log({files})
-
   return (
     <div className="w-full h-full relative select-none bg-make-transparent">
       <div className="swiper h-full" ref={swiperEl}>
@@ -55,8 +55,23 @@ const FilesSlide = ({files}: {files: File[]}) => {
           {files.map((v,i) =>
             <div className='swiper-slide w-full h-full !flex flex-col' key={v.id}>
               { v.mime.startsWith('image')
-               ? <img src={v.url} alt="" className='my-1 w-full flex-grow min-h-0 object-contain' loading='lazy' />
-               : <div className='icon'>attachment</div>
+               ? <Image 
+                  src={v.url} 
+                  alt={v.caption || v.name}
+                  width={v.naturalWidth || 300}
+                  height={v.naturalHeight || 300}
+                  className='my-1 w-full flex-grow min-h-0 object-contain' 
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
+                : v.mime.startsWith('audio') ? <div className={`w-full h-full grid place-items-center`} >
+                  <span className="icon !text-4xl text-amber-600">audio_file</span>
+                </div>
+                : v.mime.startsWith('video') ? <div className={`w-full h-full grid place-items-center`} >
+                  <span className="icon !text-4xl text-green-600">video_file</span>
+                </div>
+                : <div className={`w-full h-full grid place-items-center`} >
+                  <span className="icon !text-4xl text-sky-600">attach_file</span>
+                </div>
               }
               <p className="m-1 text-center text-sm">{v.name}</p>
             </div>
