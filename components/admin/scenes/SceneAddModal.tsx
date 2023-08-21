@@ -2,7 +2,7 @@
 
 import { promiseFunction } from "@/lib/admin/promise";
 import { Backdrop, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Drawer, IconButton, Menu } from "@mui/material";
-import { Scene } from "@prisma/client";
+import { File, GroupScene, Scene } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import AdminFormFieldText from "../form-field/AdminFormFieldText";
@@ -11,12 +11,13 @@ import AdminFormFieldSelect from "../form-field/AdminFormFieldSelect";
 import AdminFormFieldFile from "../form-field/AdminFormFieldFile";
 import AdminFormFieldRichText from "../form-field/AdminFormFieldRichText";
 import AdminFormFieldRelation from "../form-field/AdminFormFieldRelation";
-import { addScene } from "@/lib/admin/scene";
+import { addEditScene } from "@/lib/admin/scene";
+import { SceneDataState } from "@/app/admin/(admin)/scenes/page";
 
 const SceneAddModal = ({
   scene, open, setOpen
 }: {
-  scene?: Scene,
+  scene?: SceneDataState,
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
@@ -24,7 +25,11 @@ const SceneAddModal = ({
   
   // modal
   const onCloseModal = () => {
-    if (JSON.stringify(scene) != JSON.stringify(data)) {
+    if (scene && (scene.name != name || scene.slug != slugName
+      || scene.audio?.id != audio?.id
+      || scene.group?.id != group?.id
+      || scene.description != description
+    )) {
       setHasCloseModal(true)
     }
     else {
@@ -37,14 +42,14 @@ const SceneAddModal = ({
   const changeHasCloseModal = () => {
     setHasCloseModal(false)
     setOpen(false)
-    setData(scene)
+    setDefaultData(scene)
   }
-
-  // data
-  const [data, setData] = useState<Scene>()
 
   const [name, setName] = useState('')
   const [slugName, setSlugName] = useState('')
+  const [audio, setAudio] = useState<File | null>(null)
+  const [group, setGroup] = useState<GroupScene | null>(null)
+  const [description, setDescription] = useState<string | null>(null)
 
   const handelChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value
@@ -70,10 +75,24 @@ const SceneAddModal = ({
     }))
   }
 
-  useEffect(() => {
-    if (!scene) return
+  const setDefaultData = (scene?: SceneDataState) => {
+    if (scene) {
+      setName(scene.name)
+      setSlugName(scene.slug)
+      setAudio(scene.audio)
+      setGroup(scene.group)
+      setDescription(scene.description)
+    }
+    else {
+      setName('')
+      setAudio(null)
+      setGroup(null)
+      setDescription(null)
+    }
+  }
 
-    setData(scene)
+  useEffect(() => {
+    setDefaultData(scene)
   },[scene])
 
   // create collection
@@ -89,7 +108,7 @@ const SceneAddModal = ({
 
         var formData = new FormData(e.target as HTMLFormElement)
 
-        await addScene(formData)
+        await addEditScene(formData)
 
         router.refresh()
         setOpen(false)
@@ -106,9 +125,10 @@ const SceneAddModal = ({
         onClose={onCloseModal}
       >
         <form className='w-[700px] max-w-[100vw] flex flex-col h-full' onSubmit={handelSubmit}>
+          <input type="hidden" name="id" value={scene?.id || ''} />
           <div className="flex-none bg-gray-100 py-4 px-8">
             <div className="flex items-center justify-between">
-              <h3 className='text-xl'>Thêm điểm chụp mới <span className="text-blue-600">{scene?.name}</span></h3>
+              <h3 className='text-xl'>{scene ? 'Thêm' : 'Sửa'} điểm chụp <span className="text-blue-600">{scene?.name}</span></h3>
               <IconButton color="black" sx={{borderRadius: '4px'}}><span className="icon">close</span></IconButton>
             </div>
           </div>
@@ -120,23 +140,28 @@ const SceneAddModal = ({
               <div className="w-full px-4 mb-4">
                 <AdminFormFieldText label="Slug" name="slug" value={slugName} onChange={handelChangeSlugName} required={true} />
               </div>
+              
+              { !scene
+                ? <div className="w-full md:w-1/2 px-4 mb-4">
+                  <AdminFormFieldFile label="Ảnh" name="image" details={{tableName: 'scene'}} />
+                </div>
+                : null
+              }
+              
               <div className="w-full md:w-1/2 px-4 mb-4">
-                <AdminFormFieldFile label="Ảnh" name="image" details={{tableName: 'scene'}} />
-              </div>
-              <div className="w-full md:w-1/2 px-4 mb-4">
-                <AdminFormFieldFile label="Âm thanh" name="audio" details={{tableName: 'scene', fileTypes: ['audio']}} />
+                <AdminFormFieldFile label="Âm thanh" value={audio} onChange={(v) => setAudio(v)} name="audio" details={{tableName: 'scene', fileTypes: ['audio']}} />
               </div>
               <div className="w-full px-4 mb-4">
-                <AdminFormFieldRelation label="Danh mục" name="group" details={{tableNameRelation: 'groupScene', titleRelation: 'name', typeRelation: 'many-to-one'}} />
+                <AdminFormFieldRelation label="Danh mục" name="group" value={group} onChange={(v) => setGroup(v)} details={{tableNameRelation: 'groupScene', titleRelation: 'name', typeRelation: 'many-to-one'}} />
               </div>
               <div className="w-full px-4 mb-4">
-                <AdminFormFieldRichText label="Nội dung" name="description" />
+                <AdminFormFieldRichText label="Nội dung" value={description} onChange={v => setDescription(v)} name="description" />
               </div>
             </div>
           </div>
           <div className="flex-none py-6 px-8 flex justify-end space-x-4 border-t">
             <Button variant="text" color='black' onClick={onCloseModal}>Hủy</Button>
-            <Button variant="contained" type='submit'>Cập nhập</Button>
+            <Button variant="contained" type='submit'>Tiếp tục</Button>
           </div>
         </form>
       </Drawer>
@@ -144,7 +169,6 @@ const SceneAddModal = ({
         open={hasCloseModal}
         keepMounted
         onClose={() => setHasCloseModal(false)}
-        aria-describedby="alert-dialog-slide-description"
       >
         <DialogTitle>Đóng bảng điều khiển</DialogTitle>
         <DialogContent>

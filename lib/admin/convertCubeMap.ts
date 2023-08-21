@@ -235,7 +235,7 @@ export async function equirectangularToFisheye(imageSharp: Sharp, size: number, 
 
   const outputBuffer = new Array(size * size * 4)
 
-  const inputBuffer = await imageSharp.resize({width: size * 2}).png().raw().ensureAlpha().toBuffer()
+  const inputBuffer = await imageSharp.resize({width: size * 2, height: size}).png().raw().ensureAlpha().toBuffer()
 
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
@@ -264,8 +264,8 @@ export async function equirectangularToFisheye(imageSharp: Sharp, size: number, 
     }
   }
 
-  const input = Uint8Array.from(outputBuffer);
-  const cubeMapBuffer = await sharp(input, {
+  const input = Uint8Array.from(outputBuffer)
+  const cubeMapBuffer = sharp(input, {
     // because the input does not contain its dimensions or how many channels it has
     // we need to specify it in the constructor options
     raw: {
@@ -276,8 +276,9 @@ export async function equirectangularToFisheye(imageSharp: Sharp, size: number, 
   })
 
   if (path != undefined) {
-    await cubeMapBuffer.toFile(path);
+    await cubeMapBuffer.png().toFile(path);
   }
-
-  return await cubeMapBuffer.png().toBuffer()
+  else {
+    return await cubeMapBuffer.png().toBuffer()
+  }
 }

@@ -164,8 +164,6 @@ export const uploadFiles = async ({
       const extension = path.extname(file.name)
       const mimeName = mime.lookup(extension)
 
-      console.log({mimeName}, isFileTypeAllowed(file.type))
-
       if (!isFileTypeAllowed(file.type) || !mimeName) {
         throw "Tập tin không hợp lệ"
       }

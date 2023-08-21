@@ -17,14 +17,15 @@ const facePositions = {
   ny: {x: 1, y: 2, name: 'd'}
 }
 
-export const addScene = async (data: FormData) => {
+export const addEditScene = async (data: FormData) => {
   try {
     let name = data.get('name') as string,
       slug = data.get('slug') as string,
       image = data.get('image') as string,
       audio = data.get('audio') as string,
       group = data.get('group') as string,
-      description = data.get('description') as string
+      description = data.get('description') as string,
+      id = data.get('id') as string | undefined
 
     const sceneBySlug = await db.scene.findMany({
       where: {
@@ -32,86 +33,98 @@ export const addScene = async (data: FormData) => {
       }
     })
 
-    const imageUrl = (await db.file.findUnique({
-      where: {
-        id: image,
-        mime: {
-          startsWith: 'image'
+    // create
+    if (!id) {
+      const imageUrl = (await db.file.findUnique({
+        where: {
+          id: image,
+          mime: {
+            startsWith: 'image'
+          }
         }
-      }
-    }))?.url
-
-    if (sceneBySlug.length > 0 || !imageUrl) {
-      throw { errorText: "Slug đã tồn tại"}
-    }
-
-    const imageSharp = sharp(`.${imageUrl}`, { limitInputPixels: false })
-    
-    let { width: w = 0, height: h = 0} = await imageSharp.metadata()
-
-    imageSharp.resize({ width: 8192, height: 4096, fit: 'fill' })
-    h = 4096
-    w = 8192
-
-    let uuid = v4()
-
-    if (!existsSync(`./storage/tiles/${uuid}`)) {
-      mkdirSync(`./storage/tiles/${uuid}`, { recursive: true })
-    }
-
-    await splitImage({
-      imageSharp,
-      width: w,
-      height: h,
-      numCols: 16,
-      numRows: 8,
-      outputDirectory: `./storage/tiles/${uuid}`
-    })
+      }))?.url
   
-    // save image low
-    await imageSharp.clone().resize({ width: 2000 }).jpeg({ quality: 60, force: true, mozjpeg: true }).toFile(`./storage/tiles/${uuid}/low.jpg`)
-      .then((data: any) => {
-        return data
-      })
-
-    // create face front image
-    const f = await renderFacePromise({
-      data: imageSharp,
-      width: w,
-      height: h,
-      face: 'nz',
-      interpolation: "linear"
-    })
-
-    await sharp(f).resize({width: 1024}).jpeg({ quality: 60, force: true, mozjpeg: true })
-      .toFile(`./storage/tiles/${uuid}/front.jpg`)
-      .then((data: any) => {
-        return data
-      })
-
-    // create fisheye image
-    await new Promise(res => res(equirectangularToFisheye(imageSharp.clone(), 512, `./storage/tiles/${uuid}/fisheye.png`)))
-
-    const scene = await db.scene.create({
-      data: {
-        id: uuid,
-        name: name,
-        slug: slug,
-        faceSize: w,
-        initialViewParameters: `{
-          "pitch": 0,
-          "yaw": 0,
-          "zoom": 50
-        }`,
-        url: `/storage/tiles/${uuid}`,
-        levels: `[]`,
-        description: description,
-        audioId: audio,
-        groupId: group != "null" ? group : null
+      if (sceneBySlug.length > 0 || !imageUrl) {
+        throw { errorText: "Slug đã tồn tại"}
       }
-    })
+  
+      const imageSharp = sharp(`.${imageUrl}`, { limitInputPixels: false })
+      
+      let { width: w = 0, height: h = 0} = await imageSharp.metadata()
+  
+      imageSharp.resize({ width: 8192, height: 4096, fit: 'fill' })
+      h = 4096
+      w = 8192
+  
+      let uuid = v4()
+  
+      if (!existsSync(`./storage/tiles/${uuid}`)) {
+        mkdirSync(`./storage/tiles/${uuid}`, { recursive: true })
+      }
+  
+      await splitImage({
+        imageSharp: imageSharp.clone(),
+        width: w,
+        height: h,
+        numCols: 16,
+        numRows: 8,
+        outputDirectory: `./storage/tiles/${uuid}`
+      })
+    
+      // save image low
+      await imageSharp.clone().resize({ width: 2000, height: 1000 }).jpeg({ quality: 60, force: true, mozjpeg: true }).toFile(`./storage/tiles/${uuid}/low.jpg`)
+  
+      // create fisheye image
+      await new Promise(res => res(equirectangularToFisheye(imageSharp.clone(), 512, `./storage/tiles/${uuid}/fisheye.png`)))
+  
+      // create face front image
+      const f = await renderFacePromise({
+        data: imageSharp,
+        width: w,
+        height: h,
+        face: 'nz',
+        interpolation: "linear"
+      })
+  
+      await sharp(f).resize({width: 1024}).jpeg({ quality: 60, force: true, mozjpeg: true }).toFile(`./storage/tiles/${uuid}/front.jpg`)
+  
+      await db.scene.create({
+        data: {
+          id: uuid,
+          name: name,
+          slug: slug,
+          faceSize: w,
+          initialViewParameters: `{
+            "pitch": 0,
+            "yaw": 0,
+            "zoom": 50
+          }`,
+          url: `/storage/tiles/${uuid}`,
+          levels: `[]`,
+          description: description,
+          imageId: image,
+          audioId: audio || undefined,
+          groupId: group || undefined
+        }
+      })
+    }
+    // update
+    else {
+      await db.scene.update({
+        where: {
+          id: id,
+        },
+        data: {
+          name: name,
+          slug: slug,
+          description: description,
+          audioId: audio || undefined,
+          groupId: group || undefined
+        }
+      })
+    }
 
-    return { success: true, scene }
+    return { success: true }
   }
   catch(error) {
     console.log({error})
@@ -119,29 +132,25 @@ export const addScene = async (data: FormData) => {
   }
 }
 
-const deleteScene = async (data: FormData) => {
+export const deleteScene = async ({id}: {id: string}) => {
   try {
-    let id = data.get('id') as string
-
-    const deleteInfoHotspots = db.infoHotspot.deleteMany({
-      where: {
-        sceneId: id
-      }
-    })
-
-    const deleteLinkHotspots = db.linkHotspot.deleteMany({
-      where: {
-        sceneId: id
-      }
-    })
-
-    const deletescene = db.scene.delete({
-      where: {
-        id: id
-      }
-    })
-
-    const transaction = await db.$transaction([deleteInfoHotspots, deleteLinkHotspots, deletescene])
+    await db.$transaction([
+      db.infoHotspot.deleteMany({
+        where: {
+          sceneId: id
+        }
+      }), 
+      db.linkHotspot.deleteMany({
+        where: {
+          sceneId: id
+        }
+      }), 
+      db.scene.delete({
+        where: {
+          id: id
+        }
+      })
+    ])
 
     // await rmSync(`./storage/tiles/${id}`, { recursive: true })
     await fsPromise.rm(`./storage/tiles/${id}`, { recursive: true })

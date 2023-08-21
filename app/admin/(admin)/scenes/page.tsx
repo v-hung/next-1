@@ -1,6 +1,6 @@
 import SceneContentAdmin from '@/components/admin/content/SceneContentAdmin'
 import db from '@/lib/admin/prismadb'
-import { InfoHotspot, LinkHotspot, Scene } from '@prisma/client'
+import { File, GroupScene, InfoHotspot, LinkHotspot, Scene } from '@prisma/client'
 import React from 'react'
 
 export type LevelsState = {
@@ -20,13 +20,17 @@ export type SceneDataState =  (Omit<Scene, 'levels' | 'initialViewParameters'> &
   initialViewParameters: InitialViewParametersState;
   infoHotspots: InfoHotspot[];
   linkHotspots: LinkHotspot[];
+  audio: File | null,
+  group: GroupScene | null
 })
 
 const getData = async () => {
   const scenes = await db.scene.findMany({
     include: {
       infoHotspots: true,
-      linkHotspots: true
+      linkHotspots: true,
+      audio: true,
+      group: true
     },
     orderBy: {
       sort: 'asc'
@@ -47,8 +51,6 @@ const getData = async () => {
 const page = async () => {
 
   const { scenes } = await getData()
-
-  console.log({scenes})
 
   return (
     <SceneContentAdmin scenes={scenes} />

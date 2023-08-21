@@ -248,7 +248,7 @@ const AdminContentSample: React.FC<SampleStateType> = ({
                           : column.type == 'file' ? ViewFileField(row[column.name])
                           : column.type == 'relation' ? ViewRelationField(row[column.name], column.details.titleRelation)
                           : column.type == 'permissions' ? null
-                          : <span>{row[column.name] || ''}</span>
+                          : <span className={column.name == "id" ? 'whitespace-nowrap' : ''}>{row[column.name] || ''}</span>
                         }
                       </TableCell>
                     )}

@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useTransition } from 'react'
+import React, { memo, useState, useTransition } from 'react'
 import useAdminMenu from 'stores/admin/adminMenu';
 import useAdminUser from '@/stores/admin/adminUser';
 import Link from 'next/link';
@@ -9,8 +9,9 @@ import { Avatar, Divider, Menu, MenuItem } from '@mui/material';
 import { AdminUserType, logoutUserAdmin } from '@/lib/admin/helperServer';
 import { LinkState } from './AdminLayout';
 import { usePathname } from 'next/navigation';
+import moment from 'moment';
 
-const HeaderAdmin = ({
+const HeaderAdmin = memo(({
   adminUser, managerLinks, generalLinks
 }:{ 
   adminUser: NonNullable<AdminUserType>,
@@ -47,7 +48,7 @@ const HeaderAdmin = ({
       </div>
     </div>
   )
-}
+})
 
 const Notification = ({ user }: { user: AdminUserType}) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
@@ -105,7 +106,7 @@ const Notification = ({ user }: { user: AdminUserType}) => {
 
               <div className="flex flex-col space-y-1">
                 <p><span className="font-medium">{user?.name}</span> chào mừng quay trở lại</p>
-                <p className="text-sm text-gray-600">11:12</p>
+                <p className="text-sm text-gray-600">{moment().format('h:mm:ss a')}</p>
               </div>
             </div>
           </div>

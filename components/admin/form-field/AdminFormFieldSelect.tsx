@@ -8,7 +8,7 @@ type State = {
   required?: boolean,
   defaultValue?: any,
   value?: any,
-  onChange?: (event: any) => void
+  onChange?: (event: SelectChangeEvent) => void
   className?: string,
   details: {
     list: Item[],

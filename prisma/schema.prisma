@@ -162,7 +162,8 @@ model File {
   products   Product[]
   admins     Admin[]    @relation("avatar")
 
-  scenes Scene[]
+  sceneAudios Scene[]
+  SceneImages Scene[] @relation("image")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -253,6 +254,9 @@ model Scene {
   initialViewParameters String
   description           String?
   sort                  Int?
+
+  imageId String?
+  image   File?   @relation("image",fields: [imageId], references: [id])
 
   audioId String?
   audio   File?   @relation(fields: [audioId], references: [id])

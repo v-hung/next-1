@@ -10,8 +10,8 @@ type AdminFormFieldFileType = {
   name?: string
   required?: boolean,
   defaultValue?: File[] | File | null,
-  value?: string,
-  onChange?: (id: string) => void
+  value?: File[] | File | null,
+  onChange?: (data: any) => void
   className?: string,
   details: {
     multiple?: boolean,
@@ -28,6 +28,7 @@ const AdminFormFieldFile: React.FC<AdminFormFieldFileType> = ({
   required = false,
   defaultValue,
   className,
+  value,
   onChange,
   details: {
     multiple = false,
@@ -37,9 +38,16 @@ const AdminFormFieldFile: React.FC<AdminFormFieldFileType> = ({
     fileTypes = ['image']
   }
 }) => {
-  const [value, setValue] = useState<string>("")
+  const [id, setId] = useState<string>("")
   const [showModal, setShowModal] = useState(false)
-  const [files, setFiles] = useState<File[]>(defaultValue ? Array.isArray(defaultValue) ? defaultValue : [defaultValue] : [])
+  const [files, setFiles] = useState<File[]>(value 
+    ? (value ? Array.isArray(value) ? value : [value] : []) 
+    : (defaultValue ? Array.isArray(defaultValue) ? defaultValue : [defaultValue] : [])
+  )
+
+  useEffect(() => {
+    setFiles(value ? Array.isArray(value) ? value : [value] : [])
+  }, [value])
 
   const handelShowModal = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation()
@@ -48,10 +56,10 @@ const AdminFormFieldFile: React.FC<AdminFormFieldFileType> = ({
 
   useEffect(() => {
     let tempValue = multiple ? JSON.stringify(files.map(v => v.id)) : files.length > 0 ? files[0].id : ""
-    setValue(tempValue)
+    setId(tempValue)
 
     if (typeof onChange == 'function') 
-      onChange(tempValue)
+      onChange(multiple ? files : files.length > 0 ? files[0] : null)
   }, [files])
 
   return (
@@ -61,7 +69,7 @@ const AdminFormFieldFile: React.FC<AdminFormFieldFileType> = ({
         : null
       }
       <div className={`h-40 border rounded bg-white ${className}`}>
-        <input type="hidden" name={name} value={value} className='sr-only' required={required} />
+        <input type="hidden" name={name} value={id} className='sr-only' required={required} />
         <div className="w-full h-full flex flex-col justify-center items-center cursor-pointer"
           onClick={handelShowModal}
         >
@@ -70,10 +78,11 @@ const AdminFormFieldFile: React.FC<AdminFormFieldFileType> = ({
             : <>
               <div className="flex">
                 { fileTypes.includes('all')
-                  ? <span className="icon text-orange-600 !text-4xl bg-white">attach_file</span>
-                  : fileTypes.map(v => 
-                    <span key={v} className="icon text-orange-600 !text-4xl bg-white">{v == "image" ? 'image' : v == "audio" ? 'audio_file' : 'video_file'}</span>
-                  )
+                  ? <span className="icon text-sky-600 !text-4xl bg-white">attach_file</span>
+                  : fileTypes.includes('image') ? <span className="icon text-orange-600 !text-4xl bg-white">image</span>
+                  : fileTypes.includes('audio') ? <span className="icon text-amber-600 !text-4xl bg-white">audio_file</span>
+                  : fileTypes.includes('video') ? <span className="icon text-green-600 !text-4xl bg-white">video_file</span>
+                  : <span className="icon text-sky-600 !text-4xl bg-white">attach_file</span>
                 }
               </div>
               {/* <span className="icon-svg w-10 h-10 text-orange-600">

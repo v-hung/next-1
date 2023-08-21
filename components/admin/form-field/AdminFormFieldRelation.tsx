@@ -2,14 +2,14 @@
 import { getListDataOfRelation } from '@/lib/admin/sample'
 import { Autocomplete, CircularProgress, TextField } from '@mui/material'
 import { VariantType, enqueueSnackbar } from 'notistack'
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, Dispatch, SetStateAction } from 'react'
 
 type State = {
   label?: string,
   name?: string
   required?: boolean,
   defaultValue?: any,
-  value?: string,
+  value?: any,
   onChange?: (data: any) => void
   className?: string,
   details: {
@@ -25,19 +25,24 @@ const AdminFormFieldRelation: React.FC<State> = ({
   required = false,
   className,
   defaultValue,
+  value, 
+  onChange,
   details: {
     typeRelation,
     titleRelation,
     tableNameRelation
   }
 }) => {
-  const [value, setValue] = useState<string>(defaultValue ? defaultValue.id : '')
+  // const [value, setValue] = useState<string>(defaultValue ? defaultValue.id : '')
 
   const handelChangeValue = (data: any) => {
-    if (data && data.id)
-      setValue(data.id)
-    else 
-      setValue('')
+    if (typeof onChange == 'function') 
+      if (data) {
+        onChange(data)
+      }
+      else {
+        onChange(null)
+      }
   }
 
   const [open, setOpen] = useState(false)
@@ -70,7 +75,7 @@ const AdminFormFieldRelation: React.FC<State> = ({
         ? <p className="text-sm font-medium mb-1 capitalize">{label} { required && <span className="text-red-500">*</span> }</p>
         : null
       }
-      <input type="hidden" name={name} value={value} />
+      <input type="hidden" name={name} value={value?.id || ''} />
       <Autocomplete
         multiple={["one-to-many", "many-to-many"].includes(typeRelation)}
         open={open}
@@ -92,6 +97,7 @@ const AdminFormFieldRelation: React.FC<State> = ({
           );
         }}
         defaultValue={defaultValue}
+        value={value}
         onChange={(e,v) => handelChangeValue(v)}
         className='bg-white'
         renderInput={(params) => (

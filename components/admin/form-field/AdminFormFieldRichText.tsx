@@ -10,6 +10,7 @@ type State = {
   className?: string,
   placeholder?: string,
   defaultValue?: any,
+  value?: any,
   onChange?: (data: any) => void,
 }
 
@@ -19,28 +20,30 @@ const AdminFormFieldRichText: React.FC<State> = ({
   required = false,
   className = '',
   placeholder,
+  value,
   defaultValue,
   onChange
 }) => {
   const editorRef = useRef<TinyMCEEditor | null>(null)
   
-  // const [editorContent, setEditorContent] = useState(value);
+  const [editorContent, setEditorContent] = useState(value);
 
   const handleEditorChange = (content: string, editor: TinyMCEEditor) => {
-    // setEditorContent(content)
+    setEditorContent(content)
 
-    if (onChange) {
+    if (typeof onChange == "function") {
       onChange(content)
     }
   }
 
   return (
-    <>
+    <div className={className}>
       { label
         ? <p className="text-sm font-medium mb-1 capitalize">{label} { required && <span className="text-red-500">*</span> }</p>
         : null
       }
       <div className={`rounded bg-gray-200 focus-within:bg-gray-300 select-none ${className}`}>
+        <input type="hidden" name={name} value={editorContent || ''} />
         <style>{`
           .tox-tinymce { border-radius: 5px }
           .tox-statusbar__branding {
@@ -64,6 +67,7 @@ const AdminFormFieldRichText: React.FC<State> = ({
           tinymceScriptSrc={'/js/tinymce/tinymce.min.js'}
           onEditorChange={handleEditorChange}
           initialValue={defaultValue}
+          value={value}
           tagName={name}
           init={{
             height: 300,
@@ -80,7 +84,7 @@ const AdminFormFieldRichText: React.FC<State> = ({
           }}
         />
       </div>
-    </>
+    </div>
   )
 }
 

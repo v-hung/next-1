@@ -45,9 +45,9 @@ const LoginContentAdmin = () => {
           <div className="w-full lg:w-6/12 px-20 py-8">
             <div className="flex h-full w-full flex-col justify-center space-y-8">
               <div>
-                <h3 className="text-2xl uppercase">LOGIN</h3>
-                <h5 className="mt-4 text-4xl font-semibold text-gray-800">Welcome Back</h5>
-                <p className="mt-4">Please enter your account details</p>
+                <h3 className="text-2xl uppercase">Đăng nhập</h3>
+                <h5 className="mt-4 text-4xl font-semibold text-gray-800">Chào mừng quay trở lại</h5>
+                <p className="mt-4">Vui lòng nhập chi tiết tài khoản của bạn</p>
 
                 <form
                   className="mt-16 flex max-w-xl flex-col space-y-6" 
@@ -79,7 +79,7 @@ const LoginContentAdmin = () => {
 
                   <div className="flex space-x-2 items-center">
                     <input type="checkbox" name='remember' id='remember' value="true" />
-                    <label htmlFor='remember' className='select-none cursor-pointer'>Remember me</label>
+                    <label htmlFor='remember' className='select-none cursor-pointer'>Ghi nhớ tôi</label>
                   </div>
 
                   { error != ""
@@ -89,7 +89,7 @@ const LoginContentAdmin = () => {
                   }
 
                   <button className="rounded-md bg-indigo-500 px-4 py-2.5 text-white hover:bg-indigo-400 relative overflow-hidden">
-                    <span>Continue</span>
+                    <span>Tiếp tục</span>
                     { loading
                       ? <div className="absolute w-full h-full top-0 left-0 grid place-items-center bg-indigo-400">
                         <span className="icon-svg animate-spin">

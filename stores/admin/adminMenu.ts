@@ -16,7 +16,7 @@ const NAME = "admin-menu"
 const useAdminMenu = create(
   persist<State & Actions>(
     (set, get) => ({
-      open: true,
+      open: false,
       width: "16rem",
       toggle: (data) => set({
         open: data ? data : !get().open

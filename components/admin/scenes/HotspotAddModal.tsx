@@ -17,8 +17,12 @@ const style = {
 };
 
 const HotspotAddModal = ({
-  data, open, setOpen
+  coordinates, data, open, setOpen
 }: {
+  coordinates: {
+    yaw: number;
+    pitch: number;
+  },
   data?: InfoHotspot | LinkHotspot,
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -33,6 +37,8 @@ const HotspotAddModal = ({
   const handleChangeTab = (event: React.SyntheticEvent, newValue: string) => {
     setTabcurrent(newValue)
   };
+
+  const [infoType, setInfoType] = useState('1')
 
   const handelSubmit = async () => {
     await promiseFunction({
@@ -89,8 +95,8 @@ const HotspotAddModal = ({
             </div>
             <div className="px-6 border-y max-h-[calc(100vh-220px)] overflow-y-auto">
               <div className={`mt-4 rounded bg-gray-50 p-4 flex flex-col space-y-4 ${tabCurrent == 'link' ? '' : '!hidden'}`}>
-                <TextField variant="standard" disabled label="Tọa độ" value='{"yaw":4.97723796586267,"pitch":0.3891439943040318}' />
-                <AdminFormFieldRelation label='Chọn điểm chụp' name='scene' details={{tableNameRelation: 'scene', titleRelation: 'name', typeRelation: 'many-to-one'}} />
+                <TextField variant="standard" disabled label="Tọa độ" value={JSON.stringify(data ? {yaw: data.yaw, pitch: data.pitch} : coordinates)} />
+                <AdminFormFieldRelation label='Chọn điểm chụp' name='scene' details={{tableNameRelation: 'scene', titleRelation: 'name', typeRelation: 'many-to-one'}} required={true} />
                 <AdminFormFieldSelect label='loại' name='type' details={{list: [
                   {title: 'Cơ bản', value: '1'},
                   {title: 'Mặt đất', value: '2'},
@@ -100,13 +106,18 @@ const HotspotAddModal = ({
               </div>
 
               <div className={`mt-4 rounded bg-gray-50 p-4 flex flex-col space-y-4 ${tabCurrent == 'info' ? '' : '!hidden'}`}>
-                <TextField variant="standard" disabled label="Tọa độ" value='{"yaw":4.97723796586267,"pitch":0.3891439943040318}' />
-                <AdminFormFieldText label='Tiêu đề' name='name' />
+                <TextField variant="standard" disabled label="Tọa độ" value={JSON.stringify(data ? {yaw: data.yaw, pitch: data.pitch} : coordinates)} />
+                <AdminFormFieldText label='Tiêu đề' name='name' required={true} />
                 <AdminFormFieldSelect label='loại' name='type' details={{list: [
                   {title: 'Cơ bản', value: '1'},
                   {title: 'Video', value: '2'},
-                ]}} required={true} defaultValue="1" />
-                <AdminFormFieldRichText />
+                ]}} required={true} value={infoType} onChange={v => setInfoType(v.target.value)} />
+                {
+                  infoType == "2" 
+                  ? <AdminFormFieldText label='Video' name='video' required={true} />
+                  : <AdminFormFieldRichText label='Nội dung' name='description' required={true} />
+                }
+                
               </div>
             </div>
 
@@ -118,7 +129,7 @@ const HotspotAddModal = ({
               <Button className='!ml-auto' variant="contained" size='small' color='primary'
                 onClick={handelSubmit}
               >
-                Tạo mới
+                Tiếp tục
               </Button>
             </div>
           </Box>
