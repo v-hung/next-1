@@ -16,6 +16,7 @@
     "singleQuote": true
   },
   "dependencies": {
+    "@emotion/babel-plugin": "11.11.0",
     "@emotion/react": "11.11.0",
     "@emotion/styled": "11.11.0",
     "@lottiefiles/lottie-player": "2.0.2",

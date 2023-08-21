@@ -9,7 +9,7 @@ const nextConfig = {
     serverActions: true,
     serverActionsBodySizeLimit: '20mb',
     serverComponentsExternalPackages: ['bcrypt', 'sharp', 'crypto', "uuid"],
-  }
+  },
 }
 
 const millionConfig = {

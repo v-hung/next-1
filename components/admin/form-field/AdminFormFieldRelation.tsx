@@ -33,9 +33,10 @@ const AdminFormFieldRelation: React.FC<State> = ({
     tableNameRelation
   }
 }) => {
-  // const [value, setValue] = useState<string>(defaultValue ? defaultValue.id : '')
+  const [valueId, setValueId] = useState<string>(defaultValue ? defaultValue.id : '')
 
   const handelChangeValue = (data: any) => {
+    setValueId(data?.id || '')
     if (typeof onChange == 'function') 
       if (data) {
         onChange(data)
@@ -75,7 +76,7 @@ const AdminFormFieldRelation: React.FC<State> = ({
         ? <p className="text-sm font-medium mb-1 capitalize">{label} { required && <span className="text-red-500">*</span> }</p>
         : null
       }
-      <input type="hidden" name={name} value={value?.id || ''} />
+      <input type="hidden" name={name} value={valueId || ''} />
       <Autocomplete
         multiple={["one-to-many", "many-to-many"].includes(typeRelation)}
         open={open}

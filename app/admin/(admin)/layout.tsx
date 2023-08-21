@@ -4,6 +4,7 @@ import React from 'react';
 import { useCurrentUserAdmin } from '@/lib/admin/helperServer';
 import ClientOnly from '@/components/ClientOnly';
 import { redirect } from 'next/navigation';
+import { getSettingsData } from '@/lib/admin/sample';
 
 export const metadata = {
   title: 'Admin Create Next App',
@@ -28,7 +29,7 @@ export default async function AdminRootLayout({
 
   return (
     // <ClientOnly>
-      <AdminLayout userData={user}>
+      <AdminLayout userData={user} >
         {children}
       </AdminLayout>
     // </ClientOnly>

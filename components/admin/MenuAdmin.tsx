@@ -1,9 +1,6 @@
 "use client"
 import React, { useState } from 'react'
 import Image from 'next/image'
-import Logo from "@/public/logo.png";
-import { GoDashboard } from "react-icons/go";
-import { BiUser, BiKey, BiCog, BiCategory, BiBaguette } from "react-icons/bi";
 import Link from 'next/link';
 import useAdminMenu from 'stores/admin/adminMenu';
 import { useStoreCustom } from '@/stores';
@@ -48,7 +45,7 @@ const MenuAdmin = ({
         <Link href={"/"} className="flex-none w-full h-16 flex items-center overflow-hidden border-b">
           <div className='flex-none grid place-items-center' style={{width: "52px"}}>
             <Image
-              src="/logo.png"
+              src="/admin-logo.png"
               alt="Picture of the author"
               width={50}
               height={50}

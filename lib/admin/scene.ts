@@ -7,6 +7,7 @@ import path from 'path'
 import { v4 } from 'uuid';
 import { equirectangularToFisheye, renderFacePromise } from "./convertCubeMap";
 import PQueue from "p-queue";
+import { InfoHotspot, LinkHotspot } from "@prisma/client";
 
 const facePositions = {
   pz: {x: 1, y: 1, name: 'b'},
@@ -163,55 +164,12 @@ export const deleteScene = async ({id}: {id: string}) => {
   }
 }
 
-const updateScene = async (data: FormData) => {
+export const updateInitialViewParametersScene = async ({
+  id, initialViewParameters
+}: {
+  id: string, initialViewParameters: string
+}) => {
   try {
-    let name = data.get('name') as string,
-      slug = data.get('slug') as string,
-      audio = data.get('audio') as File,
-      oldAduio = data.get('oldAduio') as string,
-      id = data.get('id') as string,
-      groupId = data.get('groupId') as string,
-      description = data.get('description') as string
-
-    // save audio file
-    let audioUrl = null
-    if (audio && audio.size > 0) {
-      let typeAduio = path.extname(audio.name)
-      await fsPromise.writeFile(`./storage/tiles/${id}/audio.${typeAduio}`, audio.stream() as any)
-      audioUrl = `./storage/tiles/${id}/audio.${typeAduio}`
-    }
-    
-    let dataUpdate: any = {
-      name: name,
-      description: description,
-      slug: slug,
-      groupId: groupId != "null" ? groupId : null
-    }
-
-    if (!oldAduio) {
-      dataUpdate = {...dataUpdate, audio: audioUrl}
-    }
-
-    const scene = await db.scene.update({
-      where: {
-        id: id,
-      },
-      data: dataUpdate
-    })
-
-    return { success: true, scene }
-  }
-  catch(error) {
-    console.log({error})
-    throw (typeof error === "string" && error != "") ? error : 'Có lỗi xảy ra vui lòng thử lại sau'
-  }
-}
-
-const updateInitialViewParametersScene = async (data: FormData) => {
-  try {
-    let initialViewParameters = data.get('initialViewParameters') as string,
-      id = data.get('id') as string
-
     const scene = await db.scene.update({
       where: {
         id: id,
@@ -221,7 +179,7 @@ const updateInitialViewParametersScene = async (data: FormData) => {
       }
     })
 
-    return { success: true, scene }
+    return { success: true }
   }
   catch(error) {
     console.log({error})
@@ -229,7 +187,7 @@ const updateInitialViewParametersScene = async (data: FormData) => {
   }
 }
 
-const sortScene = async (data: FormData) => {
+export const sortScene = async (data: FormData) => {
   try {
     let list = JSON.parse(data.get('list') as string) as string[]
 
@@ -244,7 +202,7 @@ const sortScene = async (data: FormData) => {
       })
     })
 
-    const transaction = await db.$transaction(scenesUpdate)
+    await db.$transaction(scenesUpdate)
 
     return { success: true }
   } 
@@ -254,43 +212,38 @@ const sortScene = async (data: FormData) => {
   }
 }
 
-const createHotspot = async (data: FormData) => {
+export const createEditHotspot = async (data: FormData) => {
   try {
     let sceneId = data.get('sceneId') as string,
         target = data.get('target') as string,
         yaw = data.get('yaw') as string,
         pitch = data.get('pitch') as string,
-        direction = data.get('direction') as string,
         hotspotType = data.get('hotspotType') as string,
         type = data.get('type') as string,
         video = data.get('video') as string,
         title = data.get('title') as string,
         description = data.get('description') as string
 
+    let linkHotspot: LinkHotspot | undefined = undefined
+    let infoHotspot: InfoHotspot | undefined = undefined
+
     if (hotspotType == "link") {
-      const linkHotspot = await db.linkHotspot.create({
+      linkHotspot = await db.linkHotspot.create({
         data: {
           sceneId: sceneId,
           yaw: +yaw,
           pitch: +pitch,
-          direction: direction,
           target: target,
           type: type
         }
       })
     }
     else if (hotspotType == "info") {
-
-      let imageUrl: sharp.OutputInfo | null = null
-      let videoUrl: string | null = null
-      let uuid = v4()
-
-      const infoHotspot = await db.infoHotspot.create({
+      infoHotspot = await db.infoHotspot.create({
         data: {
           sceneId: sceneId,
           yaw: +yaw,
           pitch: +pitch,
-          direction: direction,
           type: type,
           title: title,
           description: description,
@@ -300,7 +253,8 @@ const createHotspot = async (data: FormData) => {
       })
     }
     else throw ""
-    return { success: true }
+
+    return { success: true, linkHotspot, infoHotspot }
   } 
   catch(error) {
     console.log({error})

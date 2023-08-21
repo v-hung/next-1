@@ -2,9 +2,10 @@
 
 import { createTheme, alpha, getContrastRatio } from "@mui/material/styles";
 import { ThemeProvider, CssBaseline } from '@mui/material'
-import React from "react";
+import React, { useRef } from "react";
 import { Roboto } from 'next/font/google'
 import { SnackbarProvider } from "notistack";
+import useSettings from "@/stores/settings";
 
 const font = Roboto({
   weight: ['400', '500', '700'],
@@ -55,7 +56,18 @@ declare module "@mui/material" {
 
 const MuiProvider: React.FC<{
   children: React.ReactNode
-}> = ({children}) => {
+  settings: any[]
+}> = ({children, settings}) => {
+
+  const willMount = useRef(true)
+  const { setSettings } = useSettings()
+
+
+  if (willMount.current && settings) {
+    setSettings(settings)
+    willMount.current = false
+  }
+
   return (
     <ThemeProvider theme={lightTheme}>
       {/* <style global jsx>

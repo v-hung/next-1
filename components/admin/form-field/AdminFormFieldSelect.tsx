@@ -31,11 +31,18 @@ const AdminFormFieldSelect: React.FC<State> = ({
   required = false,
   details: { list, multiple = false }
 }) => {
-
   const handleChange = (event: SelectChangeEvent) => {
     if (typeof onChange == "function")
       onChange(event)
   }
+
+  const getValueProps = () => {
+    if (value) {
+      return { value: value };
+    } else {
+      return { defaultValue: defaultValue };
+    }
+  };
 
   return (
     <div className={className}>
@@ -45,8 +52,7 @@ const AdminFormFieldSelect: React.FC<State> = ({
       }
       <FormControl className='w-full'>
         <Select
-          value={value}
-          defaultValue={defaultValue}
+          {...getValueProps()}
           onChange={handleChange}
           multiple={multiple}
           displayEmpty

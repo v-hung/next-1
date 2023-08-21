@@ -36,7 +36,7 @@ const Header = ({className = "", user}: any) => {
   return (
     <div className={`sticky top-0 border-b bg-white z-50 ${className}`}>
       <Container className="relative w-full flex justify-between items-center">
-        <Link href={"/"}><img src="/logo2.png" alt="Logo" className='h-12 my-2' /></Link>
+        <Link href={"/"}><img src="/logo.png" alt="Logo" className='h-12 my-2' /></Link>
 
         <span 
           className="icon-svg rounded border w-8 h-8 p-1 hover:bg-gray-100 cursor-pointer lg:hidden"
@@ -56,7 +56,7 @@ const Header = ({className = "", user}: any) => {
               ${!showMenuMobile ? "-translate-x-full" : ""} transition-all`
             }
           >
-            <img src="/logo2.png" alt="Logo" className='h-12 mx-4 my-3 lg:hidden'  />
+            <img src="/logo.png" alt="Logo" className='h-12 mx-4 my-3 lg:hidden'  />
             { links.map((v,i) =>
               <Link href={v.path} key={i}
                 className={`font-semibold border-b-2 border-transparent py-4 px-6 uppercase hover:bg-gray-100

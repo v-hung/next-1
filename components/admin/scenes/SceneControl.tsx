@@ -1,9 +1,10 @@
 import { SceneDataState } from '@/app/admin/(admin)/scenes/page'
 import { promiseFunction } from '@/lib/admin/promise'
-import { deleteScene } from '@/lib/admin/scene'
+import { deleteScene, updateInitialViewParametersScene } from '@/lib/admin/scene'
+import useAdminScene from '@/stores/admin/adminScene'
 import { Dialog, DialogActions, DialogContent, DialogTitle, Divider } from '@mui/material'
 import { Button, Menu, MenuItem } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { MouseEvent, useEffect, useState } from 'react'
 
 const AdminSceneControl = ({
   scenes, sceneId, setOpenModalAdd
@@ -44,6 +45,28 @@ const AdminSceneControl = ({
       setLoading,
       callback: async () => {
         await deleteScene({id: currentScene.id})
+      }
+    })
+  }
+
+  const viewer = useAdminScene(state => state.viewer)
+  const handelUpdateInitial = async (e: MouseEvent) => {
+    e.preventDefault()
+    if (!currentScene) return
+    await promiseFunction({
+      loading,
+      setLoading,
+      callback: async () => {
+        if (!viewer) throw "Không tìm thấy viewer"
+
+        let _params = viewer.getPosition()
+
+        const initialViewParameters = JSON.stringify({ pitch: _params.pitch, yaw: _params.yaw, zoom: viewer.getZoomLevel() })
+
+        await updateInitialViewParametersScene({
+          id: currentScene.id,
+          initialViewParameters: initialViewParameters
+        })
       }
     })
   }
@@ -99,11 +122,11 @@ const AdminSceneControl = ({
         </div> 
         <div className="text-center p-2">{currentScene?.name}</div> 
           <div className="absolute right-0 top-0 flex-none flex divide-x divide-transparent">
-            <form method="post">
-              <button type="submit" className="icon w-10 h-10 p-2 bg-blue-500 hover:bg-blue-400 cursor-pointer">
-                <span className="material-symbols-outlined">save</span>
-              </button>
-            </form> 
+            <button type="submit" className="icon w-10 h-10 p-2 bg-blue-500 hover:bg-blue-400 cursor-pointer"
+              onClick={handelUpdateInitial}
+            >
+              <span className="material-symbols-outlined">save</span>
+            </button>
         </div>
       </div>
 

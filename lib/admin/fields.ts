@@ -19,7 +19,7 @@ export type DataFieldType = Record<SampleFieldAndDetailsType['type'], {
     name?: string
     required?: boolean,
     defaultValue?: any,
-    value?: string,
+    value?: any,
     onChange?: (data: any) => void
     className?: string,
     details: any

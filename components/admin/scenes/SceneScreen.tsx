@@ -14,6 +14,8 @@ import LinkHotSpot4 from './hotspots/LinkHotSpot4';
 import LinkHotSpot from './hotspots/LinkHotSpot';
 import InfoHotSpot from './hotspots/InfoHotSpot';
 import InfoHotSpot2 from './hotspots/InfoHotSpot2';
+import useAdminScene from '@/stores/admin/adminScene';
+import useSettings from '@/stores/settings';
 // import "$lib/admin/tinymce.css"
 
 const AdminSceneScreen = ({
@@ -24,9 +26,13 @@ const AdminSceneScreen = ({
   setSceneId: Dispatch<SetStateAction<string>>
 }) => {
   const isMounted = useRef(false)
+  const { findSettingByName } = useSettings()
+
+  const logo = findSettingByName('site logo')
 
   const viewerHTML = useRef<HTMLDivElement>(null)
-  const viewer = useRef<Viewer>()
+  const {viewer, setViewer} = useAdminScene()
+  // const viewer = useRef<Viewer>()
   const markersPlugin = useRef<MarkersPlugin>()
   const autoRotate = useRef<AutorotatePlugin>()
 
@@ -68,7 +74,7 @@ const AdminSceneScreen = ({
 
   function switchScene(scene: SceneDataState) {
     markersPlugin.current?.clearMarkers()
-    viewer.current?.setPanorama({
+    viewer?.setPanorama({
       width: scene.faceSize,
       cols: 16,
       rows: 8,
@@ -123,8 +129,9 @@ const AdminSceneScreen = ({
       else {
         html = renderToString(LinkHotSpot({
           title: findSceneDataById(hotspot.target)?.name || "", 
-          image: `/storage/tiles/${hotspot.target}/fisheye.png`}
-        ))
+          image: `/storage/tiles/${hotspot.target}/fisheye.png`,
+          logo: logo?.url
+        }))
       }
 
       markersPlugin.current?.addMarker({
@@ -185,7 +192,7 @@ const AdminSceneScreen = ({
   useEffect(() => {
     if (!viewerHTML.current) return
 
-    viewer.current = new Viewer({
+    const tempViewer = new Viewer({
       container: viewerHTML.current,
       adapter: EquirectangularTilesAdapter,
       navbar: false,
@@ -215,8 +222,10 @@ const AdminSceneScreen = ({
       },
     })
 
-    markersPlugin.current = viewer.current.getPlugin(MarkersPlugin) as MarkersPlugin
-    autoRotate.current = viewer.current.getPlugin(AutorotatePlugin) as AutorotatePlugin
+    setViewer(tempViewer)
+
+    markersPlugin.current = tempViewer.getPlugin(MarkersPlugin) as MarkersPlugin
+    autoRotate.current = tempViewer.getPlugin(AutorotatePlugin) as AutorotatePlugin
 
     if (scenes.length > 0) {
       createLinkHotspotElements(currentScene?.linkHotspots || [])
@@ -235,7 +244,7 @@ const AdminSceneScreen = ({
       }
     })
 
-    viewer.current.addEventListener('dblclick', ({ data }) => {
+    tempViewer.addEventListener('dblclick', ({ data }) => {
       setCoordinatesAdd({
         yaw: data.yaw,
         pitch: data.pitch
@@ -248,7 +257,7 @@ const AdminSceneScreen = ({
 
     return () => {
       if(viewer)
-        viewer.current?.destroy()
+        viewer?.destroy()
     }
   }, [])
 
@@ -259,7 +268,7 @@ const AdminSceneScreen = ({
         : <div className="w-full h-full grid place-items-center">Không có điểm chụp nào</div>
       }
       
-      <HotspotAddModal coordinates={coordinatesAdd} open={openHotspotModal} setOpen={setOpenHotspotModal} />
+      <HotspotAddModal sceneId={sceneId} coordinates={coordinatesAdd} open={openHotspotModal} setOpen={setOpenHotspotModal} />
     </>
   )
 }
