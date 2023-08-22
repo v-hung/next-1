@@ -19,11 +19,18 @@ import useSettings from '@/stores/settings';
 // import "$lib/admin/tinymce.css"
 
 const AdminSceneScreen = ({
-  scenes, sceneId, setSceneId
+  scenes, sceneId, setSceneId, tabCurrentHotspot, setTabCurrentHotspot,
+  editHotspotModal, setEditHotspotModal, openHotspotModal, setOpenHotspotModal
 }: {
   scenes: SceneDataState[],
   sceneId?: string, 
   setSceneId: Dispatch<SetStateAction<string>>
+  tabCurrentHotspot: 'link' | 'info',
+  setTabCurrentHotspot: Dispatch<SetStateAction<'link' | 'info'>>;
+  editHotspotModal: any | null,
+  setEditHotspotModal: Dispatch<SetStateAction<any>>
+  openHotspotModal: boolean,
+  setOpenHotspotModal: Dispatch<SetStateAction<boolean>>
 }) => {
   const isMounted = useRef(false)
   const { findSettingByName } = useSettings()
@@ -60,20 +67,17 @@ const AdminSceneScreen = ({
   }
 
   const changeDataScene = async (data: SceneDataState[]) => {
-    if (currentScene && isMounted.current) {
-      await new Promise(res => {
-        markersPlugin.current?.clearMarkers()
-        res(true)
-      })
-      createLinkHotspotElements(currentScene.linkHotspots)
-      createInfoHotspotElements(currentScene.infoHotspots)
+    let tempCurrentScene = data.find(v => v.id == sceneId)
+    if (tempCurrentScene && isMounted.current) {
+      markersPlugin.current?.clearMarkers()
+      createLinkHotspotElements(tempCurrentScene.linkHotspots)
+      createInfoHotspotElements(tempCurrentScene.infoHotspots)
     }
   }
 
   const findSceneDataById = (id: string ) => scenes.find(v => v.id == id)
 
-  function switchScene(scene: SceneDataState) {
-    markersPlugin.current?.clearMarkers()
+  async function switchScene(scene: SceneDataState) {
     viewer?.setPanorama({
       width: scene.faceSize,
       cols: 16,
@@ -83,27 +87,21 @@ const AdminSceneScreen = ({
         return `/storage/tiles/${scene.id}/${row}_${col}.jpg`
       },
     }, {
-      pitch: scene.initialViewParameters.pitch,
-      yaw: scene.initialViewParameters.yaw,
+      position: {
+        pitch: scene.initialViewParameters.pitch,
+        yaw: scene.initialViewParameters.yaw,
+      },
       zoom: scene.initialViewParameters.zoom,
       showLoader: false,
-      transition: 100,
+      // transition: 100,
+      // speed: '10rpm'
 
       // overlay: false
     }).then(v => {
+      markersPlugin.current?.clearMarkers()
       createLinkHotspotElements(scene.linkHotspots)
       createInfoHotspotElements(scene.infoHotspots)
     })
-  }
-
-  function toggleAutorotate() {
-    if (autoRotateCheck) {
-      autoRotate.current?.stop()
-      setAutoRotateCheck(false)
-    } else {
-      autoRotate.current?.start()
-      setAutoRotateCheck(true)
-    }
   }
  
   function createLinkHotspotElements(hotspots: LinkHotspot[]) {
@@ -186,7 +184,6 @@ const AdminSceneScreen = ({
   }
 
   // add hostpost modal
-  const [openHotspotModal, setOpenHotspotModal] = useState(false)
   const [coordinatesAdd , setCoordinatesAdd ] = useState({ yaw: 0, pitch: 0 })
 
   useEffect(() => {
@@ -234,7 +231,8 @@ const AdminSceneScreen = ({
 
     markersPlugin.current.addEventListener('select-marker', ({ marker }) => {
       if (marker.data?.type == "link" && marker.data?.target) {
-        sceneId = marker.data?.target
+        if (marker.data?.target)
+          setSceneId(marker.data.target)
       }
       
       if (marker.data?.type == "info") {
@@ -250,14 +248,17 @@ const AdminSceneScreen = ({
         pitch: data.pitch
       })
 
+      setEditHotspotModal(null)
       setOpenHotspotModal(true)
     })
 
     isMounted.current = true
 
     return () => {
-      if(viewer)
+      if(viewer) {
         viewer?.destroy()
+        markersPlugin.current?.clearMarkers()
+      }
     }
   }, [])
 
@@ -268,7 +269,16 @@ const AdminSceneScreen = ({
         : <div className="w-full h-full grid place-items-center">Không có điểm chụp nào</div>
       }
       
-      <HotspotAddModal sceneId={sceneId} coordinates={coordinatesAdd} open={openHotspotModal} setOpen={setOpenHotspotModal} />
+      <HotspotAddModal 
+        scenes={scenes}
+        data={editHotspotModal}
+        tabCurrentHotspot={tabCurrentHotspot} 
+        setTabCurrentHotspot={setTabCurrentHotspot} 
+        sceneId={sceneId} 
+        coordinates={coordinatesAdd} 
+        open={openHotspotModal} 
+        setOpen={setOpenHotspotModal} 
+      />
     </>
   )
 }

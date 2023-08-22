@@ -101,6 +101,11 @@ import bcrypt from 'bcrypt'
         { name: "Admin", canDelete: false, settings: [
           { name: 'admin title', type: 'string', required: false, canDelete: false },
           { name: 'admin description', type: 'string', required: false, canDelete: false },
+          { name: 'admin logo', type: 'file', required: false, details: `{
+            multiple: false,
+            onlyTable: true,
+            typeFiles: ['image']
+          }`, canDelete: false },
         ] }
       ].map(v => prisma.groupSetting.create({
         data: {

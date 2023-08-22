@@ -99,7 +99,7 @@ export const TABLES_SAMPLE: TableType[] = [
     
       { name: 'createdAt', label: 'Ngày tạo', type: 'date', show: true},
       { name: 'updatedAt', label: 'Ngày cập nhập', type: 'date', show: true},
-      // { name: 'publish', label: 'Xuất bản', type: 'publish', show: true},
+      { name: 'publish', label: 'Xuất bản', type: 'publish', show: true},
     ]
   },
   {

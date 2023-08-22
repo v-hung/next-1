@@ -10,8 +10,8 @@ type State = {
   className?: string,
   placeholder?: string,
   defaultValue?: any,
-  value?: any,
-  onChange?: (data: any) => void,
+  value?: string,
+  onChange?: (data: string) => void,
 }
 
 const AdminFormFieldRichText: React.FC<State> = ({

@@ -1,13 +1,15 @@
 "use client"
 import {FormEvent, useEffect, useRef, useState} from 'react'
 import { useClickOutside } from '@/lib/clickOutside';
-import { Button, Zoom } from '@mui/material';
+import { Backdrop, Box, Button, Zoom } from '@mui/material';
 import { FolderFile } from '@prisma/client';
 import AdminFormFieldText from '../AdminFormFieldText';
 import moment from 'moment';
 import { createEditFolder } from '@/lib/admin/filesUpload';
 import { VariantType, enqueueSnackbar } from 'notistack';
 import { promiseFunction } from '@/lib/admin/promise';
+import { Modal } from '@mui/material';
+import { CircularProgress } from '@mui/material';
 
 type AddModalType = {
   show: boolean,
@@ -53,11 +55,23 @@ const AdminFileModalAddFolder: React.FC<AddModalType> = ({show, setShow, data, s
   }
 
   return (
-    <div className={`fixed w-full h-full top-0 left-0 px-4 py-4 overflow-hidden flex flex-col items-center justify-center z-[200]
-      ${!show ? "pointer-events-none" : 'bg-black/40'}`}>
-      <div ref={rechargeRef} className='w-full max-w-2xl mx-auto'>
+    <>
+      <Modal
+        open={show}
+        // keepMounted={true}
+        onClose={() => setShow(false)}
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        slotProps={{
+          backdrop: {
+            timeout: 500,
+          },
+        }}
+      >
         <Zoom in={show} unmountOnExit>
-          <div className='w-full bg-white rounded'>
+          <Box className='w-[42rem] max-w-[100vw] absolute left-1/2 top-1/2 
+            !-translate-x-1/2 !-translate-y-1/2 rounded shadow bg-white outline-none'
+          >
             <div className="p-6 flex items-center justify-between">
               <span className='text-xl font-semibold'>{data ? 'Sửa' : 'Thêm'} thư mục mới</span>
               <span 
@@ -97,16 +111,17 @@ const AdminFileModalAddFolder: React.FC<AddModalType> = ({show, setShow, data, s
                 Tạo mới
               </Button>
             </div>
-          </div>
+          </Box>
         </Zoom>
-      </div>
+      </Modal>
 
-      { loading ? <div className="absolute w-full h-full top-0 left-0 bg-white/30 grid place-items-center pointer-events-auto">
-        <span className="icon-svg animate-spin w-10 h-10">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 22c5.421 0 10-4.579 10-10h-2c0 4.337-3.663 8-8 8s-8-3.663-8-8c0-4.336 3.663-8 8-8V2C6.579 2 2 6.58 2 12c0 5.421 4.579 10 10 10z"></path></svg>
-        </span>
-      </div> : null }
-    </div>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: 99999 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    </>
   )
 }
 

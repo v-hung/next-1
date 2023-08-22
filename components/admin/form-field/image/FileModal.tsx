@@ -2,7 +2,7 @@
 import {useEffect, useRef, useState} from 'react'
 import { useClickOutside } from '@/lib/clickOutside';
 import { FolderFile, File } from '@prisma/client';
-import { Button, Zoom } from '@mui/material';
+import { Box, Button, Modal, Zoom } from '@mui/material';
 import { getScrollbarWidth } from '@/lib/utils/helper';
 import AdminFileAdd from './FileModalAdd';
 import AdminFileEdit from './FileModalEdit';
@@ -10,6 +10,7 @@ import AdminFileModalAddFolder from './FileModalAddFolder';
 import { getListFolderFile } from '@/lib/admin/filesUpload';
 import { FileTypeState } from '@/lib/admin/sample';
 import FileIcon from './FileIcon';
+import { Backdrop } from '@mui/material';
 
 type ModalType = {
   show: boolean,
@@ -187,14 +188,23 @@ const AdminFileModal: React.FC<ModalType> = ({
   }
 
   return (
-    <div className={`fixed w-full h-full top-0 left-0 px-4 !m-0 overflow-hidden flex flex-col items-center justify-center z-[200]
-      ${!show ? "pointer-events-none" : 'bg-black/40'}`}
-      onClick={() => {}}
-    >
-      {/* <div className="flex-grow"></div> */}
-      <div ref={rechargeRef} className='flex-none w-full max-w-3xl mx-auto'>
+    <>
+      <Modal
+        open={show}
+        // keepMounted={true}
+        onClose={() => setShow(false)}
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        slotProps={{
+          backdrop: {
+            timeout: 500,
+          },
+        }}
+      >
         <Zoom in={show} unmountOnExit>
-          <div className='w-full bg-white rounded'>
+          <Box className='w-[48rem] max-w-[100vw] absolute left-1/2 top-1/2 
+            !-translate-x-1/2 !-translate-y-1/2 rounded shadow bg-white outline-none'
+          >
             <div className="p-6 flex items-center justify-between">
               <span className='text-xl font-semibold'>Danh sách tài sản</span>
               <span 
@@ -361,14 +371,14 @@ const AdminFileModal: React.FC<ModalType> = ({
                 Tiếp theo
               </Button>
             </div>
-          </div>
+          </Box>
         </Zoom>
-        <AdminFileAdd tableName={tableName} fileTypes={fileTypes} folderFileId={folderParentId} show={addModal} setShow={setAddModal} setData={setDataUpload} />
-        <AdminFileEdit show={editModal} setShow={setEditModal} data={dataEdit} setData={setDataEdit} />
-        <AdminFileModalAddFolder tableName={tableName} show={addFolderModal} parentId={folderParentId} setShow={setAddFolderModal} data={dataFolderEdit} setData={setDataFolderAdd} />
-      </div>
-      {/* <div className="flex-grow"></div> */}
-    </div>
+      </Modal>
+
+      <AdminFileAdd tableName={tableName} fileTypes={fileTypes} folderFileId={folderParentId} show={addModal} setShow={setAddModal} setData={setDataUpload} />
+      <AdminFileEdit show={editModal} setShow={setEditModal} data={dataEdit} setData={setDataEdit} setFiles={setFiles} />
+      <AdminFileModalAddFolder tableName={tableName} show={addFolderModal} parentId={folderParentId} setShow={setAddFolderModal} data={dataFolderEdit} setData={setDataFolderAdd} />
+    </>
   )
 }
 

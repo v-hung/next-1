@@ -262,6 +262,63 @@ export const uploadFiles = async ({
   }
 }
 
+export const editFileData = async({
+  id, name, caption, width, height
+}: {
+  id: string, name: string, caption?: string,
+  width?: number, height?: number
+}) => {
+  try {
+    const user = await useCurrentUserAdmin()
+
+    if (!user) throw "Authorization"
+
+    const file = await db.file.update({
+      where: {
+        id: id
+      },
+      data: {
+        name,
+        caption,
+        width : width ? +width : undefined,
+        height : height ? +height : undefined
+      }
+    })
+
+    return {file}
+
+  } catch (error) {
+    console.log({error})
+    throw (typeof error === "string" && error != "") ? error : 'Có lỗi xảy ra vui lòng thử lại sau'
+  }
+}
+
+export const deleteFileData = async({
+  id, url
+}: {
+  id: string, url: string
+}) => {
+  try {
+    const user = await useCurrentUserAdmin()
+
+    if (!user) throw "Authorization"
+
+    const file = await db.file.delete({
+      where: {
+        id: id
+      }
+    })
+
+    await fsPromise.unlink(`.${url}`)
+
+    return { message: 'Success'}
+
+  } catch (error) {
+    console.log({error})
+    throw (typeof error === "string" && error != "") ? error : 'Có lỗi xảy ra vui lòng thử lại sau'
+  }
+}
+
 const dangerousFileTypes = [
   'application/x-msdownload',
   'application/x-dosexec',

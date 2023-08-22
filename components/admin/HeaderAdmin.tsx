@@ -10,15 +10,6 @@ import { AdminUserType, logoutUserAdmin } from '@/lib/admin/helperServer';
 import { LinkState } from './AdminLayout';
 import { usePathname } from 'next/navigation';
 import moment from 'moment';
-import { css } from "@emotion/react";
-
-const buttonStyles = css`
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  cursor: pointer;
-`;
 
 const HeaderAdmin = memo(({
   adminUser, managerLinks, generalLinks
@@ -34,7 +25,7 @@ const HeaderAdmin = memo(({
   const linkCurrent = [...managerLinks, ...generalLinks].find(v => v.path == pathname)
 
   return (
-    <div css={buttonStyles} className='sticky top-0 w-full h-16 bg-white border-b z-50'>
+    <div className='sticky top-0 w-full h-16 bg-white border-b z-50'>
       <div className="w-full h-full px-4 flex items-center space-x-4">
         <button 
           className="w-10 h-10 p-2 rounded-full bg-white hover:bg-gray-100"

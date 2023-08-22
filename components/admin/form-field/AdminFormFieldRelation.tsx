@@ -33,12 +33,12 @@ const AdminFormFieldRelation: React.FC<State> = ({
     tableNameRelation
   }
 }) => {
-  const [valueId, setValueId] = useState<string>(defaultValue ? defaultValue.id : '')
+  const [valueId, setValueId] = useState<string>(value ? value?.id : defaultValue ? defaultValue.id : '')
 
   const handelChangeValue = (data: any) => {
     setValueId(data?.id || '')
     if (typeof onChange == 'function') 
-      if (data) {
+      if (data != undefined) {
         onChange(data)
       }
       else {
@@ -70,6 +70,15 @@ const AdminFormFieldRelation: React.FC<State> = ({
     })()
   }, [])
 
+
+  const getValueProps = () => {
+    if (typeof value != "undefined") {
+      return { value: value };
+    } else if (defaultValue) {
+      return { defaultValue: defaultValue };
+    }
+  }
+
   return (
     <div className={className}>
       { label
@@ -97,8 +106,7 @@ const AdminFormFieldRelation: React.FC<State> = ({
             </li>
           );
         }}
-        defaultValue={defaultValue}
-        value={value}
+        {...getValueProps()}
         onChange={(e,v) => handelChangeValue(v)}
         className='bg-white'
         renderInput={(params) => (

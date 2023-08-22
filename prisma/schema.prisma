@@ -240,6 +240,7 @@ model GroupScene {
 
   scenes Scene[]
 
+  publish   String   @default("publish") // or draft
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -256,7 +257,7 @@ model Scene {
   sort                  Int?
 
   imageId String?
-  image   File?   @relation("image",fields: [imageId], references: [id])
+  image   File?   @relation("image", fields: [imageId], references: [id])
 
   audioId String?
   audio   File?   @relation(fields: [audioId], references: [id])
@@ -267,6 +268,7 @@ model Scene {
   infoHotspots InfoHotspot[]
   linkHotspots LinkHotspot[]
 
+  publish   String   @default("publish") // or draft
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

@@ -18,6 +18,10 @@ const SceneContentAdmin = ({
   const [sceneId, setSceneId] = useState(scenes[0]?.id)
   const [sceneEdit, setSceneEdit] = useState<SceneDataState>()
 
+  const [openHotspotModal, setOpenHotspotModal] = useState(false)
+  const [tabCurrentHotspot, setTabCurrentHotspot] = useState<'link' | 'info'>('link');
+  const [editHotspotModal, setEditHotspotModal] = useState<any | null>(null)
+
   const handelOpenModalAddScene = (data?: SceneDataState) => {
     setSceneEdit(data)
     setOpenModalAdd(true)
@@ -30,8 +34,29 @@ const SceneContentAdmin = ({
           <ListScene scenes={scenes} setOpenModalAdd={handelOpenModalAddScene} sceneId={sceneId} setSceneId={setSceneId} />
         </div>
         <div className="flex-grow min-w-0 h-full relative">
-          <AdminSceneScreen scenes={scenes} sceneId={sceneId} setSceneId={setSceneId} />
-          <AdminSceneControl scenes={scenes} setOpenModalAdd={handelOpenModalAddScene} sceneId={sceneId} />
+          <AdminSceneScreen 
+            tabCurrentHotspot={tabCurrentHotspot} 
+            setTabCurrentHotspot={setTabCurrentHotspot} 
+            editHotspotModal={editHotspotModal}
+            setEditHotspotModal={setEditHotspotModal}
+            scenes={scenes} 
+            sceneId={sceneId} 
+            setSceneId={setSceneId}
+            openHotspotModal={openHotspotModal}
+            setOpenHotspotModal={setOpenHotspotModal}
+          />
+          <AdminSceneControl 
+            tabCurrentHotspot={tabCurrentHotspot} 
+            setTabCurrentHotspot={setTabCurrentHotspot}
+            editHotspotModal={editHotspotModal}
+            setEditHotspotModal={setEditHotspotModal}
+            scenes={scenes} 
+            setOpenModalAdd={handelOpenModalAddScene} 
+            sceneId={sceneId} 
+            setSceneId={setSceneId}
+            openHotspotModal={openHotspotModal}
+            setOpenHotspotModal={setOpenHotspotModal}
+          />
         </div>
       </div>
 

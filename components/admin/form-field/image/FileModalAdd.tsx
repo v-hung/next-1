@@ -1,12 +1,14 @@
 "use client"
 import {useEffect, useRef, useState, memo} from 'react'
 import { useClickOutside } from '@/lib/clickOutside';
-import { Button, Zoom } from '@mui/material';
+import { Box, Button, CircularProgress, Zoom } from '@mui/material';
 import { VariantType, enqueueSnackbar } from 'notistack';
 import { uploadFiles } from '@/lib/admin/filesUpload';
 import { FileTypeState } from '@/lib/admin/sample';
 import { promiseFunction } from '@/lib/admin/promise';
 import FileIcon from './FileIcon';
+import { Backdrop } from '@mui/material';
+import { Modal } from '@mui/material';
 
 type AddModalFileState = {
   show: boolean,
@@ -106,11 +108,23 @@ const AdminFileAdd= memo(({
   }, [])
 
   return (
-    <div className={`fixed w-full h-full top-0 left-0 px-4 py-4 overflow-hidden flex flex-col items-center justify-center z-[200]
-      ${!show ? "pointer-events-none" : 'bg-black/40'}`}>
-      <div ref={rechargeRef} className='w-full max-w-3xl mx-auto'>
+    <>
+      <Modal
+        open={show}
+        // keepMounted={true}
+        onClose={() => setShow(false)}
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        slotProps={{
+          backdrop: {
+            timeout: 500,
+          },
+        }}
+      >
         <Zoom in={show} unmountOnExit>
-          <div className='w-full bg-white rounded'>
+          <Box className='w-[48rem] max-w-[100vw] absolute left-1/2 top-1/2 
+            !-translate-x-1/2 !-translate-y-1/2 rounded shadow bg-white outline-none'
+          >
             <div className="p-6 flex items-center justify-between">
               <span className='text-xl font-semibold'>Thêm tài sản mới</span>
               <span 
@@ -185,16 +199,17 @@ const AdminFileAdd= memo(({
                 Tải tài sản lên
               </Button>
             </div>
-          </div>
+          </Box>
         </Zoom>
-      </div>
+      </Modal>
 
-      { loading ? <div className="absolute w-full h-full top-0 left-0 bg-white/30 grid place-items-center pointer-events-auto">
-        <span className="icon animate-spin">
-          progress_activity
-        </span>
-      </div> : null }
-    </div>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: 99999 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    </>
   )
 })
 

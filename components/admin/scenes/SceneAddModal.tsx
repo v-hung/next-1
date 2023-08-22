@@ -13,6 +13,7 @@ import AdminFormFieldRichText from "../form-field/AdminFormFieldRichText";
 import AdminFormFieldRelation from "../form-field/AdminFormFieldRelation";
 import { addEditScene } from "@/lib/admin/scene";
 import { SceneDataState } from "@/app/admin/(admin)/scenes/page";
+import AdminFormFieldBool from "../form-field/AdminFormFieldBool";
 
 const SceneAddModal = ({
   scene, open, setOpen
@@ -47,9 +48,10 @@ const SceneAddModal = ({
 
   const [name, setName] = useState('')
   const [slugName, setSlugName] = useState('')
-  const [audio, setAudio] = useState<File | null>(null)
+  const [audio, setAudio] = useState<File>()
   const [group, setGroup] = useState<GroupScene | null>(null)
-  const [description, setDescription] = useState<string | null>(null)
+  const [description, setDescription] = useState<string>()
+  const [publish, setPublish] = useState(true)
 
   const handelChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value
@@ -79,15 +81,18 @@ const SceneAddModal = ({
     if (scene) {
       setName(scene.name)
       setSlugName(scene.slug)
-      setAudio(scene.audio)
+      setAudio(scene.audio || undefined)
       setGroup(scene.group)
-      setDescription(scene.description)
+      setDescription(scene.description || '')
+      setPublish(scene.publish == "publish")
     }
     else {
       setName('')
-      setAudio(null)
+      setSlugName('')
+      setAudio(undefined)
       setGroup(null)
-      setDescription(null)
+      setDescription('')
+      setPublish(true)
     }
   }
 
@@ -100,6 +105,7 @@ const SceneAddModal = ({
 
   const handelSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    e.stopPropagation()
 
     await promiseFunction({
       loading: loading,
@@ -124,11 +130,11 @@ const SceneAddModal = ({
         open={open}
         onClose={onCloseModal}
       >
-        <form className='w-[700px] max-w-[100vw] flex flex-col h-full' onSubmit={handelSubmit}>
+        <form className='w-[700px] max-w-[100vw] flex flex-col h-full' id="addScene" onSubmit={handelSubmit}>
           <input type="hidden" name="id" value={scene?.id || ''} />
           <div className="flex-none bg-gray-100 py-4 px-8">
             <div className="flex items-center justify-between">
-              <h3 className='text-xl'>{scene ? 'Thêm' : 'Sửa'} điểm chụp <span className="text-blue-600">{scene?.name}</span></h3>
+              <h3 className='text-xl'>{!scene ? 'Thêm' : 'Sửa'} điểm chụp <span className="text-blue-600">{scene?.name}</span></h3>
               <IconButton color="black" sx={{borderRadius: '4px'}}><span className="icon">close</span></IconButton>
             </div>
           </div>
@@ -152,16 +158,19 @@ const SceneAddModal = ({
                 <AdminFormFieldFile label="Âm thanh" value={audio} onChange={(v) => setAudio(v)} name="audio" details={{tableName: 'scene', fileTypes: ['audio']}} />
               </div>
               <div className="w-full px-4 mb-4">
-                <AdminFormFieldRelation label="Danh mục" name="group" value={group} onChange={(v) => setGroup(v)} details={{tableNameRelation: 'groupScene', titleRelation: 'name', typeRelation: 'many-to-one'}} />
+                <AdminFormFieldRelation label="Danh mục" name="group" value={group || null} onChange={(v) => setGroup(v)} details={{tableNameRelation: 'groupScene', titleRelation: 'name', typeRelation: 'many-to-one'}} />
               </div>
               <div className="w-full px-4 mb-4">
                 <AdminFormFieldRichText label="Nội dung" value={description} onChange={v => setDescription(v)} name="description" />
+              </div>
+              <div className="w-full px-4 mb-4">
+                <AdminFormFieldBool label="Xuất bản" value={publish} onChange={(e,v) => setPublish(v)} name="publish" />
               </div>
             </div>
           </div>
           <div className="flex-none py-6 px-8 flex justify-end space-x-4 border-t">
             <Button variant="text" color='black' onClick={onCloseModal}>Hủy</Button>
-            <Button variant="contained" type='submit'>Tiếp tục</Button>
+            <Button variant="contained" type='submit' form="addScene">Tiếp tục</Button>
           </div>
         </form>
       </Drawer>

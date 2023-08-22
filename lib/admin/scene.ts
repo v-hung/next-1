@@ -187,11 +187,9 @@ export const updateInitialViewParametersScene = async ({
   }
 }
 
-export const sortScene = async (data: FormData) => {
+export const sortScene = async (list: string[]) => {
   try {
-    let list = JSON.parse(data.get('list') as string) as string[]
-
-    let scenesUpdate = list.map((v,i) => {
+    await db.$transaction(list.map((v,i) => {
       return db.scene.update({
         where: {
           id: v
@@ -200,9 +198,7 @@ export const sortScene = async (data: FormData) => {
           sort: i
         }
       })
-    })
-
-    await db.$transaction(scenesUpdate)
+    }))
 
     return { success: true }
   } 
@@ -214,43 +210,73 @@ export const sortScene = async (data: FormData) => {
 
 export const createEditHotspot = async (data: FormData) => {
   try {
-    let sceneId = data.get('sceneId') as string,
-        target = data.get('target') as string,
-        yaw = data.get('yaw') as string,
-        pitch = data.get('pitch') as string,
-        hotspotType = data.get('hotspotType') as string,
-        type = data.get('type') as string,
-        video = data.get('video') as string,
-        title = data.get('title') as string,
-        description = data.get('description') as string
+    let id = data.get('id') as string,
+      sceneId = data.get('sceneId') as string,
+      target = data.get('target') as string,
+      yaw = data.get('yaw') as string,
+      pitch = data.get('pitch') as string,
+      hotspotType = data.get('hotspotType') as string,
+      type = data.get('type') as string,
+      video = data.get('video') as string,
+      title = data.get('title') as string,
+      description = data.get('description') as string
 
     let linkHotspot: LinkHotspot | undefined = undefined
     let infoHotspot: InfoHotspot | undefined = undefined
 
     if (hotspotType == "link") {
-      linkHotspot = await db.linkHotspot.create({
-        data: {
-          sceneId: sceneId,
-          yaw: +yaw,
-          pitch: +pitch,
-          target: target,
-          type: type
-        }
-      })
+      if (id) {
+        linkHotspot = await db.linkHotspot.update({
+          where: {
+            id
+          },
+          data: {
+            target: target,
+            type: type
+          }
+        })
+      }
+      else {
+        linkHotspot = await db.linkHotspot.create({
+          data: {
+            sceneId: sceneId,
+            yaw: +yaw,
+            pitch: +pitch,
+            target: target,
+            type: type
+          }
+        })
+      }
     }
     else if (hotspotType == "info") {
-      infoHotspot = await db.infoHotspot.create({
-        data: {
-          sceneId: sceneId,
-          yaw: +yaw,
-          pitch: +pitch,
-          type: type,
-          title: title,
-          description: description,
-          // image: imageUrl ? `/storage/info-hotspots/${uuid}.${imageUrl.format}` : null,
-          video: video
-        }
-      })
+      if (id) {
+        infoHotspot = await db.infoHotspot.update({
+          where: {
+            id
+          },
+          data: {
+            type: type,
+            title: title,
+            description: description,
+            // image: imageUrl ? `/storage/info-hotspots/${uuid}.${imageUrl.format}` : null,
+            video: video
+          }
+        })
+      }
+      else {
+        infoHotspot = await db.infoHotspot.create({
+          data: {
+            sceneId: sceneId,
+            yaw: +yaw,
+            pitch: +pitch,
+            type: type,
+            title: title,
+            description: description,
+            // image: imageUrl ? `/storage/info-hotspots/${uuid}.${imageUrl.format}` : null,
+            video: video
+          }
+        })
+      }
     }
     else throw ""
 
@@ -262,11 +288,8 @@ export const createEditHotspot = async (data: FormData) => {
   }
 }
 
-const deleteHotspot = async (data: FormData) => {
+export const deleteHotspot = async ({id, type}: {id: string, type: 'link' | 'info'}) => {
   try {
-    let id = data.get('id') as string,
-        type = data.get('type') as string
-
     if (type == "link") {
       const linkHotspot = await db.linkHotspot.delete({
         where: {
@@ -284,73 +307,6 @@ const deleteHotspot = async (data: FormData) => {
       throw ""
     }
 
-    return { success: true }
-  } 
-  catch(error) {
-    console.log({error})
-    throw (typeof error === "string" && error != "") ? error : 'Có lỗi xảy ra vui lòng thử lại sau'
-  }
-}
-
-const editHotspot = async (data: FormData) => {
-  try {
-    let id = data.get('id') as string,
-        target = data.get('target') as string,
-        direction = data.get('direction') as string,
-        hotspotType = data.get('hotspotType') as string,
-        type = data.get('type') as string,
-        image = data.get('image') as File | null | undefined,
-        video = data.get('video') as string,
-        title = data.get('title') as string,
-        description = data.get('description') as string
-
-    if (hotspotType == "link") {
-      const linkHotspot = await db.linkHotspot.update({
-        where: {
-          id: id
-        },
-        data: {
-          direction: direction,
-          target: target,
-          type: type
-        }
-      })
-    }
-    else if (hotspotType == "info") {
-
-      let imageUrl: sharp.OutputInfo | null = null
-      let uuid = v4()
-      if (image && image?.size > 0) {
-
-        if (!existsSync(`./storage/info-hotspots`)) {
-          mkdirSync(`./storage/info-hotspots`, { recursive: true })
-        }
-
-        let imageFile = sharp(await image.arrayBuffer())
-        let { format } = await imageFile.metadata()
-        
-        imageUrl = await imageFile
-          .toFile(`./storage/info-hotspots/${uuid}.${format}`)
-          .then((data) => {
-            return data
-          })
-      }
-
-      const infoHotspot = await db.infoHotspot.update({
-        where: {
-          id: id,
-        },
-        data: {
-          direction: direction,
-          type: type,
-          title: title,
-          description: description,
-          image: imageUrl ? `/storage/info-hotspots/${uuid}.${imageUrl.format}` : null,
-          video: video
-        }
-      })
-    }
-    else throw ""
     return { success: true }
   } 
   catch(error) {

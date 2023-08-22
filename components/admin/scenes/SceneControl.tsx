@@ -1,18 +1,29 @@
 import { SceneDataState } from '@/app/admin/(admin)/scenes/page'
 import { promiseFunction } from '@/lib/admin/promise'
-import { deleteScene, updateInitialViewParametersScene } from '@/lib/admin/scene'
+import { deleteHotspot, deleteScene, updateInitialViewParametersScene } from '@/lib/admin/scene'
 import useAdminScene from '@/stores/admin/adminScene'
 import { Dialog, DialogActions, DialogContent, DialogTitle, Divider } from '@mui/material'
 import { Button, Menu, MenuItem } from '@mui/material'
-import React, { MouseEvent, useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import React, { Dispatch, MouseEvent, SetStateAction, useEffect, useState } from 'react'
 
 const AdminSceneControl = ({
-  scenes, sceneId, setOpenModalAdd
+  scenes, sceneId, setSceneId, setOpenModalAdd, tabCurrentHotspot, setTabCurrentHotspot,
+  editHotspotModal, setEditHotspotModal, openHotspotModal, setOpenHotspotModal
 }: {
   scenes: SceneDataState[],
   setOpenModalAdd: (data?: SceneDataState) => void,
   sceneId?: string, 
+  setSceneId: Dispatch<SetStateAction<string>>
+  tabCurrentHotspot: 'link' | 'info',
+  setTabCurrentHotspot: Dispatch<SetStateAction<'link' | 'info'>>;
+  editHotspotModal: any | null,
+  setEditHotspotModal: Dispatch<SetStateAction<any>>
+  openHotspotModal: boolean,
+  setOpenHotspotModal: Dispatch<SetStateAction<boolean>>
 }) => {
+  const router = useRouter()
+
   // list hotspot in scene
   const [anchorElHotspot, setAnchorElHotspot] = React.useState<null | HTMLElement>(null)
   const openHotspot = Boolean(anchorElHotspot)
@@ -29,7 +40,9 @@ const AdminSceneControl = ({
     setCurrentScene(scenes.find(v => v.id == sceneId))
   })
 
-  // delete
+  const findSceneDataById = (id: string ) => scenes.find(v => v.id == id)
+
+  // delete scene
   const [loading, setLoading] = useState(false)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
 
@@ -45,10 +58,66 @@ const AdminSceneControl = ({
       setLoading,
       callback: async () => {
         await deleteScene({id: currentScene.id})
+
+        if (scenes.length > 1) {
+          setSceneId(scenes[0].id)
+        }
+
+        router.refresh()
+        setOpenDeleteModal(false)
       }
     })
   }
 
+  // delete hotspot
+  const [openDeleteHotspotModal, setOpenDeleteHotspotModal] = useState(false)
+
+  const handelOpenHotspotModal = (data: any, type: 'link' | 'info') => {
+    if (loading) return
+    setEditHotspotModal(data)
+    setTabCurrentHotspot(type)
+    setOpenDeleteHotspotModal(true)
+  }
+
+  const getHotspotDeleteName = () => {
+    if (!editHotspotModal) return ""
+
+    if (tabCurrentHotspot == "link") {
+      return findSceneDataById(editHotspotModal?.target)?.name || ''
+    }
+    else {
+      return editHotspotModal?.title || ''
+    }
+  }
+
+  const handelCloseHotspotModal = (data: boolean) => {
+    if (loading) return
+    setOpenDeleteHotspotModal(data)
+  }
+
+  const handelDeleteHotspot = async () => {
+    if (!editHotspotModal) return
+    await promiseFunction({
+      loading,
+      setLoading,
+      callback: async () => {
+        await deleteHotspot({id: editHotspotModal.id, type: tabCurrentHotspot})
+
+        router.refresh()
+        setOpenDeleteHotspotModal(false)
+      }
+    })
+  }
+
+  // edit hotspot
+  const handelOpenEditHotspotModal = (data: any, type: 'link' | 'info') => {
+    if (loading) return
+    setEditHotspotModal(data)
+    setTabCurrentHotspot(type)
+    setOpenHotspotModal(true)
+  }
+
+  // update coordinates
   const viewer = useAdminScene(state => state.viewer)
   const handelUpdateInitial = async (e: MouseEvent) => {
     e.preventDefault()
@@ -74,7 +143,7 @@ const AdminSceneControl = ({
   return (
     <>
       <div className="absolute top-0 right-0 p-4 z-10">
-        <Button variant='contained' onClick={handleShowHotspots}>Danh sách điểm nóng (8)</Button>
+        <Button variant='contained' onClick={handleShowHotspots}>Danh sách điểm nóng ({(currentScene?.linkHotspots.length || 0) + (currentScene?.infoHotspots.length || 0)})</Button>
         <Menu
           anchorEl={anchorElHotspot}
           open={openHotspot}
@@ -83,27 +152,45 @@ const AdminSceneControl = ({
             sx: { width: '300px' }
           }}
         >
-          {new Array(5).fill(0).map((v,i)=>
+          {currentScene?.linkHotspots.map((v,i)=>
             <MenuItem key={i} onClick={handleCloseHotspot}>
               <div className="hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left flex items-center text-base font-semibold gap-2 cursor-auto">
                 <span className="flex-none icon">my_location</span>
-                <span className="flex-grow min-w-0">Sân đua ngựa</span> 
-                <span className="flex-none icon p-1 hover:text-sky-600 cursor-pointer">edit</span>
-                <span className="flex-none icon p-1 hover:text-red-600 cursor-pointer">delete</span>
+                <span className="flex-grow min-w-0">{findSceneDataById(v.target)?.name}</span> 
+                <span className="flex-none icon p-1 hover:text-sky-600 cursor-pointer"
+                  onClick={() => handelOpenEditHotspotModal(v, 'link')}
+                >edit</span>
+                <span className="flex-none icon p-1 hover:text-red-600 cursor-pointer"
+                  onClick={() => handelOpenHotspotModal(v, 'link')}
+                >delete</span>
               </div>
             </MenuItem>
           )}
-          <Divider />
-          {new Array(5).fill(0).map((v,i)=>
+
+          { (currentScene?.linkHotspots.length || 0) > 0 && (currentScene?.infoHotspots.length || 0) > 0
+           ? <Divider />
+           : null
+          }
+          
+          {currentScene?.infoHotspots.map((v,i)=>
             <MenuItem key={i} onClick={handleCloseHotspot}>
               <div className="hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left flex items-center text-base font-semibold gap-2 cursor-auto">
                 <span className="flex-none icon">info</span>
-                <span className="flex-grow min-w-0">Sân đua ngựa</span> 
-                <span className="flex-none icon p-1 hover:text-sky-600 cursor-pointer">edit</span>
-                <span className="flex-none icon p-1 hover:text-red-600 cursor-pointer">delete</span>
+                <span className="flex-grow min-w-0">{v.title}</span> 
+                <span className="flex-none icon p-1 hover:text-sky-600 cursor-pointer"
+                  onClick={() => handelOpenEditHotspotModal(v, 'info')}
+                >edit</span>
+                <span className="flex-none icon p-1 hover:text-red-600 cursor-pointer"
+                  onClick={() => handelOpenHotspotModal(v, 'info')}
+                >delete</span>
               </div>
             </MenuItem>
           )}
+
+          { currentScene?.linkHotspots.length == 0 && currentScene?.infoHotspots.length == 0
+           ? <div className='px-4 py-1.5'>Không có điểm nóng nào</div>
+           : null
+          }
         </Menu>
       </div>
 
@@ -143,6 +230,24 @@ const AdminSceneControl = ({
         <DialogActions>
           <Button disabled={loading} onClick={() => handelCloseModal(false)}>Hủy</Button>
           <Button disabled={loading} variant='contained' color='error' onClick={handelDeleteScene} startIcon={loading ? (
+            <span className='icon animate-spin'>progress_activity</span>
+          ) : null} >Tiếp tục</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* dialog delete hotspot */}
+      <Dialog
+        open={openDeleteHotspotModal}
+        keepMounted
+        onClose={() => handelCloseHotspotModal(false)}
+      >
+        <DialogTitle>Xóa điểm nóng</DialogTitle>
+        <DialogContent>
+          Bạn có thực sự muốn xóa điểm nóng <span className="text-red-500">{getHotspotDeleteName()}</span>?
+        </DialogContent>
+        <DialogActions>
+          <Button disabled={loading} onClick={() => handelCloseHotspotModal(false)}>Hủy</Button>
+          <Button disabled={loading} variant='contained' color='error' onClick={handelDeleteHotspot} startIcon={loading ? (
             <span className='icon animate-spin'>progress_activity</span>
           ) : null} >Tiếp tục</Button>
         </DialogActions>
