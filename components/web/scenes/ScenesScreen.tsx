@@ -1,81 +1,63 @@
 "use client"
-import { Dispatch, MouseEvent, SetStateAction, useEffect, useRef, useState } from 'react'
-import { renderToString } from 'react-dom/server';
-import HotspotAddModal from './HotspotAddModal'
-import { Viewer } from "@photo-sphere-viewer/core";
-import { EquirectangularTilesAdapter } from "@photo-sphere-viewer/equirectangular-tiles-adapter";
-import { AutorotatePlugin } from "@photo-sphere-viewer/autorotate-plugin";
-import { MarkersPlugin } from "@photo-sphere-viewer/markers-plugin";
-import "@photo-sphere-viewer/core/index.css"
-import "@photo-sphere-viewer/markers-plugin/index.css"
-import { SceneDataState } from '@/app/admin/(admin)/scenes/page';
-import { InfoHotspot, LinkHotspot } from '@prisma/client';
-import LinkHotSpot4 from './hotspots/LinkHotSpot4';
-import LinkHotSpot from './hotspots/LinkHotSpot';
-import InfoHotSpot from './hotspots/InfoHotSpot';
-import InfoHotSpot2 from './hotspots/InfoHotSpot2';
-import useAdminScene from '@/stores/admin/adminScene';
-import useSettings from '@/stores/settings';
-// import "$lib/admin/tinymce.css"
 
-const AdminSceneScreen = ({
-  scenes, sceneId, setSceneId, tabCurrentHotspot, setTabCurrentHotspot,
-  editHotspotModal, setEditHotspotModal, openHotspotModal, setOpenHotspotModal
-}: {
-  scenes: SceneDataState[],
-  sceneId?: string, 
-  setSceneId: Dispatch<SetStateAction<string>>
-  tabCurrentHotspot: 'link' | 'info',
-  setTabCurrentHotspot: Dispatch<SetStateAction<'link' | 'info'>>;
-  editHotspotModal: any | null,
-  setEditHotspotModal: Dispatch<SetStateAction<any>>
-  openHotspotModal: boolean,
-  setOpenHotspotModal: Dispatch<SetStateAction<boolean>>
-}) => {
+import { SceneDataState } from "@/app/admin/(admin)/scenes/page"
+import InfoHotSpot from "@/components/admin/scenes/hotspots/InfoHotSpot"
+import InfoHotSpot2 from "@/components/admin/scenes/hotspots/InfoHotSpot2"
+import LinkHotSpot from "@/components/admin/scenes/hotspots/LinkHotSpot"
+import LinkHotSpot4 from "@/components/admin/scenes/hotspots/LinkHotSpot4"
+import useSettings from "@/stores/settings"
+import useScene from "@/stores/web/scene"
+import { Button } from "@mui/material"
+import { AutorotatePlugin } from "@photo-sphere-viewer/autorotate-plugin"
+import { Viewer, utils } from "@photo-sphere-viewer/core"
+import { EquirectangularTilesAdapter } from "@photo-sphere-viewer/equirectangular-tiles-adapter"
+import { MarkersPlugin } from "@photo-sphere-viewer/markers-plugin"
+import { InfoHotspot, LinkHotspot } from "@prisma/client"
+import { usePathname, useRouter } from "next/navigation"
+import { useEffect, useRef, useState } from "react"
+import { renderToString } from "react-dom/server"
+
+const ScenesScreen = () => {
+  const router = useRouter()
+  const pathname = usePathname()
+
   const isMounted = useRef(false)
   const { findSettingByName } = useSettings()
-
   const logo = findSettingByName('site logo')
 
+  const { start, scenes, viewer, setViewer, videoShow } = useScene()
+
+  const [sceneSlug, setSceneSlug] = useState<string>()
   const viewerHTML = useRef<HTMLDivElement>(null)
-  const {viewer, setViewer} = useAdminScene()
-  // const viewer = useRef<Viewer>()
   const markersPlugin = useRef<MarkersPlugin>()
   const autoRotate = useRef<AutorotatePlugin>()
 
-  const [currentScene, setCurrentScene] = useState<SceneDataState | undefined>(scenes.find(v => v.id == sceneId))
-  const [autoRotateCheck, setAutoRotateCheck] = useState(false)
+  const [currentScene, setCurrentScene] = useState<SceneDataState | undefined>(
+    sceneSlug ? scenes.find(v => v.slug == sceneSlug) || scenes[0] : scenes[0]
+  )
 
   useEffect(() => {
-    setCurrentScene(scenes.find(v => v.id == sceneId))
-    changeScene(sceneId)
-  }, [sceneId])
+    const slug = pathname?.split('/')[2]
+    const tempScene = scenes.find(v => v.slug == slug)
 
-  useEffect(() => {
-    changeDataScene(scenes)
-  }, [scenes])
+    setSceneSlug(slug)
+    setCurrentScene(tempScene || scenes[0])
 
-  const changeScene = (id: string | undefined) => {
+    if (tempScene) {
+      changeScene(tempScene)
+    }
+  }, [pathname])
+
+  const changeScene = (scene: SceneDataState) => {
     if (!isMounted.current) return
-    let scene = scenes.find(v => v.id == id)
-    if (scene) {
-      autoRotate.current?.setOptions({
-        autorotatePitch: scene.initialViewParameters.pitch
-      })
-      switchScene(scene)
-    }
+
+    autoRotate.current?.setOptions({
+      autorotatePitch: scene.initialViewParameters.pitch
+    })
+    switchScene(scene)
   }
 
-  const changeDataScene = async (data: SceneDataState[]) => {
-    let tempCurrentScene = data.find(v => v.id == sceneId)
-    if (tempCurrentScene && isMounted.current) {
-      markersPlugin.current?.clearMarkers()
-      createLinkHotspotElements(tempCurrentScene.linkHotspots)
-      createInfoHotspotElements(tempCurrentScene.infoHotspots)
-    }
-  }
-
-  const findSceneDataById = (id: string ) => scenes.find(v => v.id == id)
+  const findSceneDataById = (slug: string) => scenes.find(v => v.slug == slug)
 
   async function switchScene(scene: SceneDataState) {
     viewer?.setPanorama({
@@ -183,8 +165,98 @@ const AdminSceneScreen = ({
     })
   }
 
-  // add hostpost modal
-  const [coordinatesAdd , setCoordinatesAdd ] = useState({ yaw: 0, pitch: 0 })
+  // toggle scene
+  const [autoRotateCheck, setAutoRotateCheck] = useState(false)
+
+  function toggleAutoRotate(value?: boolean) {
+    if (value != undefined) {
+      value ? autoRotate.current?.start() : autoRotate.current?.stop()
+      setAutoRotateCheck(value)
+      autoRotate.current?.setOptions({
+        autostartOnIdle: value,
+      });
+      return
+    }
+
+    if (autoRotateCheck) {
+      autoRotate.current?.stop()
+      autoRotate.current?.setOptions({
+        autostartOnIdle: false,
+      });
+      setAutoRotateCheck(false)
+    } 
+    else {
+      autoRotate.current?.setOptions({
+        autostartOnIdle: true,
+      });
+      autoRotate.current?.start()
+      setAutoRotateCheck(true)
+    }
+  }
+
+  // stop auto rotate in video show
+  useEffect(() => {
+    changeVideoShow(videoShow)
+  }, [videoShow])
+
+  let autoRotateAfterVideoShow = true
+  const changeVideoShow = (videoShow: string | undefined) => {
+    if (videoShow != null) {
+      autoRotateAfterVideoShow = autoRotateCheck
+      toggleAutoRotate(false)
+    }
+    else {
+      if (autoRotateAfterVideoShow) { 
+        toggleAutoRotate(true)
+      }
+    }
+  }
+
+  // start in tro
+  useEffect(() => {
+    startIntro(start)
+  }, [start])
+
+  const startIntro = (start: boolean) => {
+    if (start) {
+      intro()
+    }
+  }
+
+  let animatedValues = {
+    pitch: { start: -Math.PI / 2, end: currentScene?.initialViewParameters.pitch || 0.2 },
+    yaw: { start: -1, end: currentScene?.initialViewParameters.yaw || 0 },
+    zoom: { start: 0, end: currentScene?.initialViewParameters.zoom || 50 },
+    fisheye: { start: 2, end: 0 },
+  }
+
+  function intro() {
+    autoRotate.current?.stop();
+    // markersPlugin?.hideAllMarkers()
+
+    new utils.Animation({
+      properties: animatedValues,
+      duration: 2500,
+      easing: "inOutQuad",
+      onTick: (properties) => {
+        viewer?.setOption("fisheye", properties.fisheye);
+        viewer?.rotate({ yaw: properties.yaw, pitch: properties.pitch });
+        viewer?.zoom(properties.zoom);
+      },
+    }).then(() => {
+      createLinkHotspotElements(currentScene?.linkHotspots || [])
+      createInfoHotspotElements(currentScene?.infoHotspots || [])
+
+      autoRotate.current?.setOptions({
+        autorotatePitch: currentScene?.initialViewParameters.pitch,
+        autostartDelay: 1000,
+        autostartOnIdle: true,
+      });
+      autoRotate.current?.start();
+
+      // markersPlugin?.showAllMarkers()
+    });
+  }
 
   useEffect(() => {
     if (!viewerHTML.current) return
@@ -225,14 +297,14 @@ const AdminSceneScreen = ({
     autoRotate.current = tempViewer.getPlugin(AutorotatePlugin) as AutorotatePlugin
 
     // if (scenes.length > 0) {
-      createLinkHotspotElements(currentScene?.linkHotspots || [])
-      createInfoHotspotElements(currentScene?.infoHotspots || [])
+    //   createLinkHotspotElements(currentScene?.linkHotspots || [])
+    //   createInfoHotspotElements(currentScene?.infoHotspots || [])
     // }
 
     markersPlugin.current.addEventListener('select-marker', ({ marker }) => {
       if (marker.data?.type == "link" && marker.data?.target) {
         if (marker.data?.target)
-          setSceneId(marker.data.target)
+          setSceneSlug(marker.data.target)
       }
       
       if (marker.data?.type == "info") {
@@ -240,16 +312,6 @@ const AdminSceneScreen = ({
           // $videoShow = marker.data?.video
         }
       }
-    })
-
-    tempViewer.addEventListener('dblclick', ({ data }) => {
-      setCoordinatesAdd({
-        yaw: data.yaw,
-        pitch: data.pitch
-      })
-
-      setEditHotspotModal(null)
-      setOpenHotspotModal(true)
     })
 
     isMounted.current = true
@@ -263,24 +325,10 @@ const AdminSceneScreen = ({
   }, [])
 
   return (
-    <>
-      { scenes.length > 0
-        ? <div ref={viewerHTML} className='w-full h-full'></div>
-        : <div className="w-full h-full grid place-items-center">Không có điểm chụp nào</div>
-      }
-      
-      <HotspotAddModal 
-        scenes={scenes}
-        data={editHotspotModal}
-        tabCurrentHotspot={tabCurrentHotspot} 
-        setTabCurrentHotspot={setTabCurrentHotspot} 
-        sceneId={sceneId} 
-        coordinates={coordinatesAdd} 
-        open={openHotspotModal} 
-        setOpen={setOpenHotspotModal} 
-      />
-    </>
+    <div>
+      {/* <div id="viewer" ref={viewerHTML}  className="w-full h-screen" /> */}
+    </div>
   )
 }
 
-export default AdminSceneScreen
+export default ScenesScreen

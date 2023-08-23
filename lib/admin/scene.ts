@@ -26,6 +26,7 @@ export const addEditScene = async (data: FormData) => {
       audio = data.get('audio') as string,
       group = data.get('group') as string,
       description = data.get('description') as string,
+      publish = data.get('publish') as string | undefined,
       id = data.get('id') as string | undefined
 
     const sceneBySlug = await db.scene.findMany({
@@ -105,7 +106,8 @@ export const addEditScene = async (data: FormData) => {
           description: description,
           imageId: image,
           audioId: audio || undefined,
-          groupId: group || undefined
+          groupId: group || undefined,
+          publish: publish ? 'publish' : 'draft'
         }
       })
     }
@@ -120,7 +122,8 @@ export const addEditScene = async (data: FormData) => {
           slug: slug,
           description: description,
           audioId: audio || undefined,
-          groupId: group || undefined
+          groupId: group || undefined,
+          publish: publish ? 'publish' : 'draft'
         }
       })
     }

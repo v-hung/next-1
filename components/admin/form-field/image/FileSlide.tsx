@@ -61,7 +61,7 @@ const FilesSlide = ({files}: {files: File[]}) => {
                   width={v.naturalWidth || 300}
                   height={v.naturalHeight || 300}
                   className='my-1 w-full flex-grow min-h-0 object-contain' 
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 70vw, 100vw"
                 />
                 : v.mime.startsWith('audio') ? <div className={`w-full h-full grid place-items-center`} >
                   <span className="icon !text-4xl text-amber-600">audio_file</span>

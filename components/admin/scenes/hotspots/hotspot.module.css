@@ -16,7 +16,7 @@
   position: relative;
   /* background: radial-gradient(circle at bottom, #81e8f6, #76deef 10%, #055194 80%, #062745 100%);  */
   /* background: radial-gradient(circle at bottom, #ffffff, #ffffff 10%, #000000 80%, #000000 100%); */
-  background: white;
+  /* background: white; */
   box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
 }
 .linkHotspot :global(.ball:before) {

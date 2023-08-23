@@ -1,0 +1,15 @@
+:global(.psv-loader-container) {
+  display: none !important;
+}
+:global(.psv-container) {
+  background: none !important;
+}
+
+:global(.psv-panel-content) {
+  @apply backdrop-blur-md;
+}
+
+:global(.psv-panel.psv--capture-event.psv-panel--open) {
+  width: 600px;
+  max-width: 100%;
+}
