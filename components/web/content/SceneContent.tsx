@@ -3,28 +3,33 @@
 import { SceneDataState } from "@/app/admin/(admin)/scenes/page"
 import { GroupScene } from "@prisma/client"
 import ScenesScreen from "../scenes/ScenesScreen"
-import { useRef, useState } from "react"
+import { Children, useRef, useState } from "react"
 import useSettings from "@/stores/settings"
 import Image from "next/image"
 import { Button } from "@mui/material"
 import useScene from "@/stores/web/scene"
+import { motion } from "framer-motion"
 
 const SceneContent = ({
-  defaultScenes, defaultGroups
+  defaultScenes = [], defaultGroups = [], children
 }: {
   defaultScenes: SceneDataState[],
-  defaultGroups: GroupScene[]
+  defaultGroups: GroupScene[],
+  children: React.ReactNode
 }) => {
   const {findSettingByName} = useSettings()
 
-  const  {start, setStart, setScenes} = useScene()
+  const  {start, setStart, setScenes, setGroups} = useScene()
 
   const willMount = useRef(true)
 
-  if (willMount.current && defaultScenes) {
+  if (willMount.current) {
     setScenes(defaultScenes)
+    setGroups(defaultGroups)
     willMount.current = false
   }
+
+  const [startCompleted, setStartCompleted] = useState(false)
 
   return (
     <>
@@ -35,8 +40,19 @@ const SceneContent = ({
         </div>
       }
 
-      { start
-        ? <div className="fixed w-full h-screen top-0 left-0 z-[100] bg-white">
+      { !start
+        ? <motion.div 
+            className="fixed w-full h-screen top-0 left-0 z-[100] bg-white"
+            animate={{
+              scale: startCompleted ? 2 : 1,
+              opacity: startCompleted ? 0 : 1
+            }}
+            initial={false}
+            transition={{ type: "tween", duration: 0.7}}
+            onAnimationComplete={() => {
+              setStart(true)
+            }}
+          >
           <Image 
             src={findSettingByName('banner')?.url || ''} 
             alt="banner website"
@@ -51,14 +67,14 @@ const SceneContent = ({
               size="large" 
               variant="contained" 
               className="!rounded-full !bg-gradient-to-r !from-cyan-500 !to-blue-500" 
-              onClick={() => setStart(true)}
+              onClick={() => setStartCompleted(true)}
             >Bắt đầu tham quan</Button>
           </div>
-        </div>
+        </motion.div>
         : null
       }
 
-      <slot />
+      { children }
     </>
   )
 }

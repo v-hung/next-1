@@ -7,7 +7,6 @@ import LinkHotSpot from "@/components/admin/scenes/hotspots/LinkHotSpot"
 import LinkHotSpot4 from "@/components/admin/scenes/hotspots/LinkHotSpot4"
 import useSettings from "@/stores/settings"
 import useScene from "@/stores/web/scene"
-import { Button } from "@mui/material"
 import { AutorotatePlugin } from "@photo-sphere-viewer/autorotate-plugin"
 import { Viewer, utils } from "@photo-sphere-viewer/core"
 import { EquirectangularTilesAdapter } from "@photo-sphere-viewer/equirectangular-tiles-adapter"
@@ -16,6 +15,13 @@ import { InfoHotspot, LinkHotspot } from "@prisma/client"
 import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { renderToString } from "react-dom/server"
+
+import "@photo-sphere-viewer/core/index.css"
+import "@photo-sphere-viewer/markers-plugin/index.css"
+import styles from "./scenes.module.css";
+import LeftSideScene from "./LeftSideScene"
+import BarOptionsScene from "./BarOptionsScene"
+import VideoShowScene from "./VideoShowScene"
 
 const ScenesScreen = () => {
   const router = useRouter()
@@ -214,14 +220,10 @@ const ScenesScreen = () => {
 
   // start in tro
   useEffect(() => {
-    startIntro(start)
-  }, [start])
-
-  const startIntro = (start: boolean) => {
     if (start) {
       intro()
     }
-  }
+  }, [start])
 
   let animatedValues = {
     pitch: { start: -Math.PI / 2, end: currentScene?.initialViewParameters.pitch || 0.2 },
@@ -275,11 +277,12 @@ const ScenesScreen = () => {
         MarkersPlugin
       ],
 
-      defaultPitch: currentScene?.initialViewParameters.pitch,
-      defaultYaw: currentScene?.initialViewParameters.yaw,
-      defaultZoomLvl: currentScene?.initialViewParameters.zoom,
+      defaultPitch: animatedValues.pitch.start,
+      defaultYaw: animatedValues.yaw.start,
+      defaultZoomLvl: animatedValues.zoom.start,
+      fisheye: animatedValues.fisheye.start,
 
-      touchmoveTwoFingers: true,
+      // touchmoveTwoFingers: true,
       panorama: {
         width: currentScene?.faceSize,
         cols: 16,
@@ -325,9 +328,13 @@ const ScenesScreen = () => {
   }, [])
 
   return (
-    <div>
-      {/* <div id="viewer" ref={viewerHTML}  className="w-full h-screen" /> */}
-    </div>
+    <>
+      {/* <div id="viewer" ref={viewerHTML}  className={`w-full h-screen ${styles.viewer}`} /> */}
+      
+      {/* <LeftSideScene sceneSlug={sceneSlug} currentScene={currentScene} /> */}
+      <BarOptionsScene autoRotateCheck={autoRotateCheck} toggleAutoRotate={toggleAutoRotate} currentScene={currentScene} />
+      {/* <VideoShowScene /> */}
+    </>
   )
 }
 

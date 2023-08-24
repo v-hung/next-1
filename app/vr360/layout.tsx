@@ -1,6 +1,7 @@
 import db from "@/lib/admin/prismadb"
-import { InitialViewParametersState, LevelsState, SceneDataState } from "../admin/(admin)/scenes/layout"
 import SceneContent from "@/components/web/content/SceneContent"
+import { ReactNode } from "react"
+import { InitialViewParametersState, LevelsState, SceneDataState } from "../admin/(admin)/scenes/page"
 
 const getData = async () => {
   const [scenes, groups] = await Promise.all([
@@ -24,6 +25,9 @@ const getData = async () => {
     db.groupScene.findMany({
       where: {
         publish: 'publish'
+      },
+      orderBy: {
+        sort: 'asc'
       }
     })
   ])
@@ -37,19 +41,27 @@ const getData = async () => {
   })
 
   let scenesGroup: SceneDataState[] = []
-  groups.forEach(v => {
-    scenesGroup.push(...scenesData.filter(v2 => v2.groupId == v.id))
+  let groupsData = groups.filter(v => {
+    let scenesInGroup = scenesData.filter(v2 => v2.groupId == v.id)
+
+    if (scenesInGroup.length > 0) {
+      scenesGroup.push(...scenesData.filter(v2 => v2.groupId == v.id))
+      return true
+    }
+    else {
+      return false
+    }
   })
 
-  return { scenes: scenesGroup, groups }
+  return { scenes: scenesGroup, groups: groupsData }
 }
 
-const layout = async () => {
+const layout = async ({children}: {children: ReactNode}) => {
 
   const {scenes, groups} = await getData()
 
   return (
-    <SceneContent defaultScenes={scenes} defaultGroups={groups} />
+    <SceneContent defaultScenes={scenes} defaultGroups={groups} children={children} />
   )
 }
 

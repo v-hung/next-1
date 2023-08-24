@@ -46,8 +46,11 @@ const AdminFormFieldFile: React.FC<AdminFormFieldFileType> = ({
   )
 
   useEffect(() => {
-    setFiles(value ? Array.isArray(value) ? value : [value] : [])
-  }, [value])
+    setFiles(value 
+      ? (value ? Array.isArray(value) ? value : [value] : []) 
+      : (defaultValue ? Array.isArray(defaultValue) ? defaultValue : [defaultValue] : [])
+    )
+  }, [value, defaultValue])
 
   const handelShowModal = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation()
