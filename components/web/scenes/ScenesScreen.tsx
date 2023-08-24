@@ -331,9 +331,9 @@ const ScenesScreen = () => {
     <>
       {/* <div id="viewer" ref={viewerHTML}  className={`w-full h-screen ${styles.viewer}`} /> */}
       
-      {/* <LeftSideScene sceneSlug={sceneSlug} currentScene={currentScene} /> */}
+      <LeftSideScene sceneSlug={sceneSlug} currentScene={currentScene} />
       <BarOptionsScene autoRotateCheck={autoRotateCheck} toggleAutoRotate={toggleAutoRotate} currentScene={currentScene} />
-      {/* <VideoShowScene /> */}
+      <VideoShowScene />
     </>
   )
 }

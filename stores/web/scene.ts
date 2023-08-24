@@ -9,8 +9,7 @@ type State = {
   scenes: SceneDataState[],
   groups: GroupScene[]
   videoShow?: string,
-  showListScene: boolean,
-  allowedPlayAudio: boolean,
+  showListScene: boolean
 }
 
 type Actions = {
@@ -19,11 +18,10 @@ type Actions = {
   setScenes:( data: SceneDataState[]) => void,
   setGroups:( data: GroupScene[]) => void,
   setVideoShow: (data: string | undefined) => void
-  setShowListScene: (data?: boolean) => void,
-  setAllowedPlayAudio: (data: boolean) => void
+  setShowListScene: (data?: boolean) => void
 }
 
-const useScene = create<State & Actions>((set, get) => ({
+const useScene = create<State & Actions>(set => ({
   start: false,
   setStart: (data) => set({
     start: data
@@ -50,14 +48,17 @@ const useScene = create<State & Actions>((set, get) => ({
   }),
 
   showListScene: true,
-  setShowListScene: (data) => ({
-    showListScene: data ? data : !get().showListScene
-  }),
+  // setShowListScene: (data) => set({
+  //   showListScene: data
+  // }),
+  setShowListScene: (data) => set((state) => ({
+    showListScene: data ? data : !state.showListScene
+  })),
 
-  allowedPlayAudio: false,
-  setAllowedPlayAudio: (data) => ({
-    allowedPlayAudio: data
-  }),
+  // allowedPlayAudio: false,
+  // setAllowedPlayAudio: (data) => set({
+  //   allowedPlayAudio: data
+  // }),
 })
 )
 

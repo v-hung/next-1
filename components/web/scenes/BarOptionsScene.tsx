@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import 'photoswipe/style.css';
 import Image from "next/image";
+import Link from "next/link";
 
 const BarOptionsScene = ({
   autoRotateCheck, toggleAutoRotate, currentScene
@@ -21,7 +22,7 @@ const BarOptionsScene = ({
   currentScene?: SceneDataState
 }) => {
   const router = useRouter()
-  const { viewer, scenes, setShowListScene, groups, start, allowedPlayAudio, videoShow } = useScene()
+  const { viewer, scenes, showListScene, setShowListScene, groups, start, videoShow } = useScene()
   const { findSettingByName } = useSettings()
 
   const mainAudio = useRef<HTMLAudioElement>(null)
@@ -101,12 +102,12 @@ const BarOptionsScene = ({
   }, [sceneAudio.current, currentScene])
 
   useEffect(() => {
-    watchChangeAllowedPlayAudio(allowedPlayAudio)
-  }, [allowedPlayAudio])
+    watchChangeAllowedPlayAudio(start)
+  }, [start])
 
   const watchChangeSceneAudio = (sceneAudio: HTMLAudioElement | null, currentScene: SceneDataState) => {
     if (sceneAudio && currentScene.audio) {
-      if(allowedPlayAudio) {
+      if(start) {
         // sceneAudio.pause()
         sceneAudio.src = currentScene.audio.url
         sceneAudio.load()
@@ -118,8 +119,8 @@ const BarOptionsScene = ({
     }
   }
 
-  const watchChangeAllowedPlayAudio = (allowedPlayAudio: boolean) => {
-    if(allowedPlayAudio) {
+  const watchChangeAllowedPlayAudio = (start: boolean) => {
+    if(start) {
       toggleMainAudio(true)
 
       if (sceneAudio.current && currentScene?.audio) {
@@ -183,12 +184,15 @@ const BarOptionsScene = ({
   const findNextScene = (currentScene: SceneDataState) => {
     let index = scenes.findIndex(v => v.id == currentScene.id)
 
-    setPrevScene(index > 0 ? scenes[index - 1] : undefined)
+    const tempPrevScene = index > 0 ? scenes[index - 1] : undefined
+    const tempNextScene = (index < scenes.length - 1) ? scenes[index + 1] : undefined
 
-    setNextScene((index < scenes.length - 1) ? scenes[index + 1] : undefined)
+    setPrevScene(tempPrevScene)
 
-    if (currentScene?.groupId != nextScene?.groupId) {
-      setNextGroup(groups.find(v => v.id == nextScene?.groupId) || undefined)
+    setNextScene(tempNextScene)
+
+    if (currentScene?.groupId != tempNextScene?.groupId) {
+      setNextGroup(groups.find(v => v.id == tempNextScene?.groupId) || undefined)
     }
     else {
       setNextGroup(undefined)
@@ -201,7 +205,7 @@ const BarOptionsScene = ({
     document.addEventListener('mozfullscreenchange', exitHandler)
     document.addEventListener('MSFullscreenChange', exitHandler)
 
-    if (allowedPlayAudio) {
+    if (start) {
       if (sceneAudio.current && currentScene?.audio) {
         sceneAudio.current.pause()
         sceneAudio.current.src = currentScene.audio.url
@@ -231,52 +235,52 @@ const BarOptionsScene = ({
   return (
     <div className={styles.baroptions}>
       <audio src={findSettingByName("main audio")?.url} ref={mainAudio} className="sr-only" loop></audio>
-      <audio ref={sceneAudio} onEnded={(e) => setSceneAudioEnded(true)} className="sr-only"></audio>
+      <audio ref={sceneAudio} onEnded={(e) => setSceneAudioCheck(false)} className="sr-only"></audio>
 
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10">
+      <div className="hidden md:block absolute bottom-4 left-1/2 -translate-x-1/2 z-10">
         <div className="flex flex-col justify-center items-center space-y-2">
           { nextScene
             ? <>
               { nextGroup
-                ? <a href="/{nextScene.slug}" className="px-4 py-2 rounded-full shadow flex items-center
+                ? <Link href={`/vr360/${nextScene.slug}`} className="px-4 py-2 rounded-full shadow flex items-center
                   bg-gradient-to-t from-gray-400 via-gray-200 to-gray-100 text-sm font-semibold"
                 >
                   {nextGroup.name}
                   <span className="material-symbols-outlined !-mr-2">
                     navigate_next
                   </span>
-                </a>
-              : <a href="/{nextScene.slug}" className="block">
+                </Link>
+              : <Link href={`/vr360/${nextScene.slug}`} className="block">
                   <Image src="/images/tien.svg" alt="icon tien" width={32} height={32} className="w-8 h-8" />
-                </a>
+                </Link>
               }
             </>
             : null
           }
 
           { prevScene
-            ? <a href="/{prevScene.slug}" className="block">
+            ? <Link href={`/vr360/${prevScene.slug}`} className="block">
                 <Image src="/images/lui.svg" alt="icon tien" width={32} height={32} className="w-8 h-8" />
-              </a>
+              </Link>
             : null
           }
         </div>
       </div>
 
       { nextScene
-        ? <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
-          <a href="/{nextScene.slug}" className="w-36 md:w-40 p-2 pr-0.5 rounded-l-lg bg-black/40 text-white 
+        ? <div className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 z-10">
+          <Link href={`/vr360/${nextScene.slug}`} className="w-36 md:w-40 p-2 pr-0.5 rounded-l-lg bg-black/40 text-white 
             flex space-x-2 items-center text-xs md:text-sm">
             <div className="flex-grow min-w-0 flex flex-col items-center justify-center text-center space-y-1">
               <p>Điểm đến tiếp:</p>
-              <p className="font-semibold">{nextScene.name}</p>
+              <p className="font-semibold line-clamp-3">{nextScene.name}</p>
             </div>
             <div className="flex-none w-8 h-8 md:w-10 md:h-10 rounded-full bg-black/70 text-white flex items-center justify-center">
               <span className="material-symbols-outlined text-2xl md:!text-3xl">
                 arrow_forward
               </span>
             </div>
-          </a>
+          </Link>
         </div>
         : null
       }
@@ -285,18 +289,18 @@ const BarOptionsScene = ({
         <AnimatePresence>
           { showDescription
             ? <motion.div 
-              initial={{ y: 50, opacity: 0, scale: 0.8 }}
+              initial={{ y: 200, opacity: 0, scale: 1 }}
               animate={{ y: 0, opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{duration: .5}}
-              className="absolute w-screen right-0 bottom-0 sm:right-4 sm:bottom-16 sm:w-80 max-h-[24rem] z-10 rounded bg-gradient-to-br from-sky-400
-                to-teal-500 flex flex-col items-center pointer-events-auto text-white"
+              exit={{ opacity: 0, scale: 0.5 }}
+              transition={{duration: .3}}
+              className="absolute w-screen right-0 bottom-0 sm:right-4 sm:bottom-16 sm:w-80 max-h-[24rem] z-10 rounded bg-gray-50 shadow-sm flex flex-col items-center pointer-events-auto text-white"
             >
-              <div className="w-full flex-grow min-h-0 py-4 px-4 overflow-y-auto whitespace-pre-wrap custom-bar">
-                {currentScene?.description || "Chưa có mô tả"}
+              <div className="w-full flex-grow min-h-0 py-4 px-4 overflow-y-auto whitespace-pre-wrap custom-bar"
+                dangerouslySetInnerHTML={{__html: currentScene?.description || "Chưa có mô tả"}}
+              >
               </div>
 
-              <div className="p-2 flex items-center justify-center cursor-pointer"
+              <div className="w-full p-2 flex items-center justify-center cursor-pointer text-black bg-gray-100 border-t hover:bg-gray-200 rounded-b"
                 onClick={() => setShowDescription(false)}
               >
                 <span className="material-symbols-outlined">
@@ -313,7 +317,7 @@ const BarOptionsScene = ({
             onClick={() => setShowListScene()}
           >
             <span className="material-symbols-outlined">
-              {mainAudioCheck ? 'menu' : 'menu_open'}
+              {showListScene ? 'menu' : 'menu_open'}
             </span>
           </div>
 
@@ -324,7 +328,7 @@ const BarOptionsScene = ({
               onClick={() => toggleSceneAudio()}
             >
               <Image 
-                src={`/images/${(sceneAudioEnded ? false : sceneAudioCheck) ? 'voice_on.png' : 'voice_off.png'}`} 
+                src={`/images/${sceneAudioCheck ? 'voice_on.png' : 'voice_off.png'}`} 
                 width={128}
                 height={128}
                 alt="ảnh bật tắt âm thanh" 
@@ -342,8 +346,8 @@ const BarOptionsScene = ({
           </div>
 
           <div className="flex flex-col space-y-2 select-none">
-            <div id="gallery" className="flex flex-col space-y-2 opacity-0 invisible translate-y-11 transition-all 
-              {showMoreOptions ? '!opacity-100 !visible !translate-y-0' : ''}">
+            <div id="gallery" className={`flex flex-col space-y-2 opacity-0 invisible translate-y-11 transition-all 
+              ${showMoreOptions ? '!opacity-100 !visible !translate-y-0' : ''}`}>
               <a href={findSettingByName("so do")?.url} className="bar-icon block"
                 data-pswp-width="10000" 
                 data-pswp-height="10000" 

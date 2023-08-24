@@ -33,6 +33,14 @@ const SceneContent = ({
 
   return (
     <>
+      <style global jsx>
+        {`body {
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+        }`}
+      </style>
+
       { defaultScenes.length > 0
         ? <ScenesScreen />
         : <div className="fixed w-full h-screen top-0 left-0 grid place-items-center">

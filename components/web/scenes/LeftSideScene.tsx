@@ -112,21 +112,29 @@ const LeftSideScene = ({
 
       <div className="absolute top-0 left-0 w-full h-full p-6 pointer-events-none overflow-hidden select-none flex flex-col z-10">
         <div className="flex-none md:pl-6 lg:pl-12 mb-12">
-          <motion.div 
-            className="block w-20 h-20 md:w-32 md:h-32 pointer-events-auto"
-            animate={{ scale: start ? 1 : 0, opacity: start ? 1 : 0 }}
-            initial={false}
-          >
-            <Link href="/">
-              <Image
-                src={findSettingByName('site logo')?.url || '/logo.png'}
-                width={100}
-                height={100}
-                alt="logo Bắc Hà"
-                className="w-full h-full object-contain"
-              />
-            </Link>
-          </motion.div>
+          <AnimatePresence>
+            { start && showListScene
+              ? <motion.div 
+                  className="block w-20 h-20 md:w-32 md:h-32 pointer-events-auto"
+                  // animate={{ scale: start ? 1 : 0, opacity: start ? 1 : 0 }}
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0, opacity: 0 }}
+                  // initial={false}
+                >
+                  <Link href="/vr360">
+                    <Image
+                      src={findSettingByName('site logo')?.url || '/logo.png'}
+                      width={100}
+                      height={100}
+                      alt="logo Bắc Hà"
+                      className="w-full h-full object-contain"
+                    />
+                  </Link>
+                </motion.div>
+                : null
+              }
+          </AnimatePresence>
         </div>
         
         <AnimatePresence>
